@@ -1,23 +1,31 @@
 from database.db import db
 
-
 class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    first_name = db.Column(db.String(50),unique=True,nullable=False)
-    last_name = db.Column(db.String(50),unique=True,nullable=False)
-    email = db.Column(db.String(320),unique=True,nullable=False)
-    password = db.Column(db.String(128),nullable=False)
-    team_id = db.Column(db.Integer,unique=True)
-    access = db.Column(db.String(25),nullable=False)
-    IS_Reviewed=db.Column(db.Boolean,nullable=False)
+    """ Class representation of the User table in the Endzone database
+    Args:
+        db (_type_): Model of Database
+    """
+    
+    __tablename__ = 'Users'
+    ID = db.Column(db.Integer, primary_key= True, autoincrement = True)
+    Email = db.Column(db.String(320), unique= True, nullable = False)
+    Password = db.Column(db.String(128), unique= False , nullable = False)
 
-    def __init__(self, id, first_name, last_name, email, password, team_id, access, IS_Reviewed):
-        self.id = id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.password = password 
-        self.team_id = team_id
-        self.access = access
+    First_Name = db.Column(db.String(50), unique = False, nullable = False)
+    Last_Name = db.Column(db.String(50), unique = False, nullable = False)
+    Team_Code = db.Column(db.String(25), unique = False, nullable = False)
+    Access = db.Column(db.String(25), nullable = False, default = "Coach")
+    IS_Reviewed = db.Column(db.Boolean, nullable = False, default = False)
+
+    def __init__(self, id, first_name, last_name, email, password, team_id, access, IS_Reviewed) -> None:
+        self.ID = id
+        self.First_Name = first_name
+        self.Last_Name = last_name
+        self.Email = email
+        self.Password = password 
+        self.Team_Code = team_id
+        self.Access = access
         self.IS_Reviewed = IS_Reviewed
+
+    def test_cases(self):
+        pass
