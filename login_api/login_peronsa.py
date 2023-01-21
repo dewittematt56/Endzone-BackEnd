@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 
-class UserLogin(UserMixin):
+class LoggedInPersona(UserMixin):
     def __init__(self, **kwargs):
         self.id = kwargs["ID"]
         self.Email = kwargs["Email"]
