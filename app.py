@@ -1,9 +1,9 @@
-from flask import Flask
+from flask import Flask, Blueprint, request, Response
 from flask_login import login_manager, LoginManager
 from database.db import db, db_uri
 from database.models import User
 from login_api.login_peronsa import LoggedInPersona
-from flask import Blueprint, request, Response
+from web_pages.content_api import content_api  
 import json
 
 
@@ -12,6 +12,7 @@ app.config['SECRET_KEY'] = 'secret key'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
+app.register_blueprint(content_api)
     
 db.init_app(app)
 # builds database if not existing
@@ -35,7 +36,7 @@ def load_user(user_persona: User):
     # Sendd Keyword Arguments of user_persona class to Login Class
     return LoggedInPersona(**user_persona.__dict__)    
     
-@app.route('/loginattempt', methods = ['POST'])
+@app.route('/login/attempt', methods = ['POST'])
 def loginAttempt(): 
     try:
         params = ["email","password"]  
