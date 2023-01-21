@@ -1,20 +1,29 @@
-from flask import Flask
+from flask import Flask, Blueprint, request, Response
 from flask_login import login_manager, LoginManager
+
 from database.db import db, db_uri
 from database.models import User
+<<<<<<< Updated upstream
 from login.login import UserLogin
 from flask import Blueprint, request, Response
 import json
+=======
 
+from login_api.login_peronsa import LoggedInPersona
+>>>>>>> Stashed changes
+
+from web_pages.pages_api import pages_api
+import json
 
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret key'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
-    
+
+app.register_blueprint(pages_api)
+
 db.init_app(app)
 # builds database if not existing
 with app.app_context():
@@ -29,9 +38,13 @@ def load_user(email):
     response = query.all()
     return UserLogin(response[0].id,response[0].first_name[0], response[0].last_name, response[0].email, response[0].password, response[0].team_id, response[0].access, response[0].IS_Reviewed)    
     
+<<<<<<< Updated upstream
 
 @app.route('/loginattempt', methods = ['POST'])
 
+=======
+@app.route('/login/attempt', methods = ['POST'])
+>>>>>>> Stashed changes
 def loginAttempt(): 
     try:
         params = ["email","password"]  
@@ -60,7 +73,6 @@ def loginAttempt():
     except Exception as e:
         return Response("Something unexpected happened", status = 500)
 if __name__ == "__main__":
-
     app.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)
 
     
