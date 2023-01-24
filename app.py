@@ -1,5 +1,5 @@
-from flask import Flask, Blueprint, request, Response
-from flask_login import login_manager, LoginManager
+from flask import Flask, request, Response, redirect
+from flask_login import login_manager, LoginManager, login_user, current_user
 from database.db import db, db_uri
 from database.models import User
 from login_api.login_peronsa import LoggedInPersona
@@ -23,18 +23,11 @@ with app.app_context():
 login_manager = LoginManager()
 login_manager.init_app(app)
 @login_manager.user_loader
-def load_user(user_persona: User):
-    """ Module to load a user into our Flask application
-
-    Args:
-        email (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-
-    # Sendd Keyword Arguments of user_persona class to Login Class
-    return LoggedInPersona(**user_persona.__dict__)    
+def load_user(email: str):
+    query = db.session.query(User).filter(User.Email == email)
+    query_response = query.all()
+    loaded_user = LoggedInPersona(query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Team_Code, query_response[0].Access)
+    return loaded_user
     
 @app.route('/login/attempt', methods = ['POST'])
 def loginAttempt(): 
@@ -47,7 +40,7 @@ def loginAttempt():
             for param in params:
                 if param not in data.keys():
                     # Exposed to end user
-                    return Response('Please Provide a ' + param, status = 404)
+                    return Response('Please Provide a ' + param, status = 403)
             email = data["email"]
             password = data["password"]
             query = db.session.query(User).filter(User.Email == email). \
@@ -57,20 +50,20 @@ def loginAttempt():
             if len(query_response) == 0:
                 if len(db.session.query(User).filter(User.Email == email).all()) == 0:
                     # Exposed to end user
-                    return Response("No account with that email exists", 404)
+                    return Response("No account with that email exists", 403)
                 else:
                     # Exposed to end user
-                    return Response("Inncorrect Password", 404)
+                    return Response("Incorrect Password", 403)
             elif len(query_response) == 1:
-                load_user(query_response[0])
-                return "Successful login"
+                if query_response[0].Email == email and query_response[0].Password == password:
+                    login_user(load_user(query_response[0].Email))
+                    return redirect("/endzone/hub")
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
 
 if __name__ == "__main__":
-
     app.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)
 
     
