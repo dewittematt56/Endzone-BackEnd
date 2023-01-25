@@ -1,9 +1,10 @@
 from flask import Flask, request, Response, redirect
-from flask_login import login_manager, LoginManager, login_user, current_user
+from flask_login import login_manager, LoginManager, login_user
 from database.db import db, db_uri
 from database.models import User
-from login_api.login_peronsa import LoggedInPersona
+from login_api.login_persona import LoggedInPersona
 from web_pages.content_api import content_api  
+from utils_api.utils_api import utils_api
 import json
 
 
@@ -13,6 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
 app.register_blueprint(content_api)
+app.register_blueprint(utils_api)
     
 db.init_app(app)
 # builds database if not existing
@@ -28,7 +30,11 @@ def load_user(email: str):
     query_response = query.all()
     loaded_user = LoggedInPersona(query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Team_Code, query_response[0].Access)
     return loaded_user
-    
+
+@login_manager.unauthorized_handler
+def no_login_redirect():
+    return redirect("/login")
+
 @app.route('/login/attempt', methods = ['POST'])
 def loginAttempt(): 
     try:
