@@ -10,6 +10,7 @@ class User(db.Model):
     ID = db.Column(db.Integer, primary_key= True, autoincrement = True)
     Email = db.Column(db.String(320), unique= True, nullable = False)
     Password = db.Column(db.String(128), unique= False , nullable = False)
+    phone_number = db.Column(db.String)
 
     First_Name = db.Column(db.String(50), unique = False, nullable = False)
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
@@ -17,8 +18,7 @@ class User(db.Model):
     Access = db.Column(db.String(25), nullable = False, default = "Coach")
     IS_Reviewed = db.Column(db.Boolean, nullable = False, default = False)
 
-    def __init__(self, id, first_name, last_name, email, password, team_id, access, IS_Reviewed) -> None:
-        self.ID = id
+    def __init__(self, first_name, last_name, email, password, team_id, access, IS_Reviewed) -> None:
         self.First_Name = first_name
         self.Last_Name = last_name
         self.Email = email
