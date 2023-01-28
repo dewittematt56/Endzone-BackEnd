@@ -71,7 +71,7 @@ def loginAttempt():
 @app.route('/create/user', methods = ['POST'])
 def register():
     try:
-        params = ["first", "last", "email", "password1", "password2", "team_code", "join_action"]
+        params = ["first", "last", "email", "password1", "password2", "phone", "join_action"]
         if request.method == "POST":
             data = json.loads(request.get_data())
 
@@ -85,6 +85,7 @@ def register():
             password1 = data["password1"]
             password2 = data["password2"]
             team_code = data["team_code"]
+            phone = data["phone"]
             join_team = data["join_team"]
 
             has_letter = any(map(str.isalpha,password1))
@@ -107,22 +108,24 @@ def register():
                 return Response("At least 1 number or special character is needed", status = 404)
             elif has_letter == False:
                 return Response("Password needs at least 1 letter")
-            # make sure the team code exists
-            elif len(db.session.query(User).filter(User.Team_Code == team_code).all()) < 1:
-                return Response("Invalid team code, please try again", status = 404)
             
-            new_user = User(first, last, email, password1, team_code, "Requested", 0)
-            db.session.add(new_user)
-            db.session.commit()
-
-
-            # Logic to handle different actions
             if join_team:
-                # Add as member of teamCode team
-                pass
-                
+                team_code = data["team_code"]
+                if len(db.session.query(User).filter(User.Team_Code == team_code).all()) < 1:
+                    return Response("Invalid team code, please try again", status = 404)
+                else:
+                    new_user = User(first, last, email, phone, password1, "Joined Team", 0)
+                    db.session.add(new_user)
+                    db.session.commit()
+                    # To-Do: Get User.Id from Database via User.get_id()
+                    # To-Do add new_user to Team_Member table with that team_code
+                    load_user(new_user.Email)
+
             else:
-                # redirect 
+                new_user = User(first, last, email, phone, password1, "Creating Team", 0)
+                db.session.add(new_user)
+                db.session.commit()
+                load_user(new_user.Email)
                 return redirect("/create/team")
     except Exception as e:
         print(e)
