@@ -29,3 +29,4 @@ class User(db.Model):
 
     def test_cases(self):
         pass
+

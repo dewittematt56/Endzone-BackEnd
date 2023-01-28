@@ -13,4 +13,4 @@ def login():
 @content_api.route("/endzone/hub", methods = ["GET"])
 @login_required
 def hub():
-    return "test"
+    return render_template("/hub/hub.html")
