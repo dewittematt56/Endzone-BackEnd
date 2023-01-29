@@ -1,7 +1,7 @@
 from flask import Flask, request, Response, redirect
 from flask_login import login_manager, LoginManager, login_user
 from database.db import db, db_uri
-from database.models import User
+from database.models import *
 from login_api.login_persona import LoggedInPersona
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
@@ -84,9 +84,8 @@ def register():
             email = data["email"]
             password1 = data["password1"]
             password2 = data["password2"]
-            team_code = data["team_code"]
             phone = data["phone"]
-            join_team = data["join_team"]
+            join_team = data["join_team"] # True/False
 
             has_letter = any(map(str.isalpha,password1))
             has_number = any(map(str.isdigit, password1)) # contains if the passwords have a number in them
@@ -111,13 +110,14 @@ def register():
             
             if join_team:
                 team_code = data["team_code"]
-                if len(db.session.query(User).filter(User.Team_Code == team_code).all()) < 1:
+                if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
                     return Response("Invalid team code, please try again", status = 404)
                 else:
                     new_user = User(first, last, email, phone, password1, "Joined Team", 0)
                     db.session.add(new_user)
                     db.session.commit()
                     # To-Do: Get User.Id from Database via User.get_id()
+                    new_team_member = Team_Member()
                     # To-Do add new_user to Team_Member table with that team_code
                     load_user(new_user.Email)
 
