@@ -20,9 +20,8 @@ class User(db.Model):
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
     Team_Code = db.Column(db.String(25), unique = False, nullable = False)
     Stage = db.Column(db.String(25), unique = False, nullable = False)
-    IS_Reviewed = db.Column(db.Boolean, nullable = False, default = False)
 
-    def __init__(self, first_name, last_name, email, phone_number, password, team_id, stage, IS_Reviewed) -> None:
+    def __init__(self, first_name, last_name, email, phone_number, password, team_id, stage) -> None:
         self.ID = gen_primary_key()
         self.First_Name = first_name
         self.Last_Name = last_name
@@ -31,7 +30,6 @@ class User(db.Model):
         self.Phone_Number = phone_number
         self.Team_Code = team_id
         self.Stage = stage
-        self.IS_Reviewed = IS_Reviewed
         
     def get_id(self) -> str:
         return self.ID

@@ -68,7 +68,7 @@ def loginAttempt():
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-@app.route('/create/user', methods = ['POST'])
+@app.route('account/create/user', methods = ['POST'])
 def register():
     try:
         params = ["first", "last", "email", "password1", "password2", "phone", "join_action"]
@@ -85,7 +85,7 @@ def register():
             password1 = data["password1"]
             password2 = data["password2"]
             phone = data["phone"]
-            join_team = data["join_team"] # True/False
+            join_team = data["join_action"] # True/False
 
             has_letter = any(map(str.isalpha,password1))
             has_number = any(map(str.isdigit, password1)) # contains if the passwords have a number in them
@@ -126,7 +126,7 @@ def register():
                 db.session.add(new_user)
                 db.session.commit()
                 load_user(new_user.Email)
-                return redirect("/create/team")
+                return redirect("account/create/team")
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
