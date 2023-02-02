@@ -18,7 +18,7 @@ class User(db.Model):
     Phone_Number =  db.Column(db.String(15), unique = False, nullable = False)
     First_Name = db.Column(db.String(50), unique = False, nullable = False)
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
-    Team_Code = db.Column(db.String(25), unique = False, nullable = False)
+    Team_Code = db.Column(db.String(36), unique = False, nullable = False)
     Stage = db.Column(db.String(25), unique = False, nullable = False)
     
 

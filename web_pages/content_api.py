@@ -22,7 +22,21 @@ def product():
 def login():
     return render_template("/login/login.html")
 
+@content_api.route("/account/create", methods = ["GET"])
+def frontOffice():
+    return render_template("/front-office/front-office.html")
 
+@content_api.route("/account/terms", methods = ["GET"])
+def accountTermsServices():
+    return render_template("/terms-services/terms-services.html")
+
+@content_api.route("/account/user", methods = ["GET"])
+def accountUser():
+    return render_template("/user-create/user-create.html")
+
+@content_api.route("/account/team", methods = ["GET"])
+def accountTeam():
+    return render_template("/team-create/team-create.html")
 
 @content_api.route("/endzone/hub", methods = ["GET"])
 @login_required

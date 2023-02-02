@@ -28,8 +28,11 @@ login_manager.init_app(app)
 def load_user(email: str):
     query = db.session.query(User).filter(User.Email == email)
     query_response = query.all()
-    loaded_user = LoggedInPersona(query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Team_Code)
-    return loaded_user
+    if len(query_response) > 0:
+        loaded_user = LoggedInPersona(query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Team_Code)
+        return loaded_user
+    else:
+        return
 
 @login_manager.unauthorized_handler
 def no_login_redirect():
@@ -99,45 +102,45 @@ def register():
             
             # Make sure there isn't already an account with this email
             if len(db.session.query(User).filter(User.Email == email).all()) != 0:
-                return Response("There is an account already associated with this email", status = 404)
+                return Response("There is an account already associated with this email", status = 403)
             
             # Conditionals for the name fields
             if any(map(str.isdigit,first)) or any(map(str.isdigit,last)):
-                return Response("Numbers are not allowed in name fields", status = 404) 
+                return Response("Numbers are not allowed in name fields", status = 403) 
             elif " " in first or " " in last:
-                return Response("Spaces are not allowed in name field", status = 404)
+                return Response("Spaces are not allowed in name field", status = 403)
             
             elif first_has_number == True or last_has_number == True:
-                return Response("Numbers not allowed in name fields", status = 404)
+                return Response("Numbers not allowed in name fields", status = 403)
 
             # Conditionals for the passwords
             if len(password1) < 8: 
-                return Response("Password needs at least 8 characters", status = 404)
+                return Response("Password needs at least 8 characters", status = 403)
             elif password1 != password2:
-                return Response("Password fields do not match", status = 404)
+                return Response("Password fields do not match", status = 403)
             elif pass_has_number == False and special_char.search(password1) == None: 
-                return Response("At least 1 number or special character is needed", status = 404)
+                return Response("At least 1 number or special character is needed", status = 403)
             elif pass_has_letter == False:
                 return Response("Password needs at least 1 letter")
             elif " " in password1:
-                return Response("Spaces are not allowed in the password field", status = 404)
+                return Response("Spaces are not allowed in the password field", status = 403)
             
             # Phone number conditionals
-            if len(phone) != 10:
-                return Response("Phone number must be a string of 10 consecutive numbers", status = 404)
-            elif phone_has_letter == True:
-                return Response("Letters are not allowed in the phone number field", status = 404)
-            elif special_char.search(phone) != None:
-                return Response("Special characters not allowed in phone number field", status = 404)
-            elif " " in phone:
-                return  Response("Spaces are not allowed in phone number field", status = 404)
+            # if len(phone) != 10:
+            #     return Response("Phone number must be a string of 10 consecutive numbers", status = 404)
+            # elif phone_has_letter == True:
+            #     return Response("Letters are not allowed in the phone number field", status = 404)
+            # elif special_char.search(phone) != None:
+            #     return Response("Special characters not allowed in phone number field", status = 404)
+            # elif " " in phone:
+            #     return  Response("Spaces are not allowed in phone number field", status = 404)
             
             if join_team:
-                teamId = data["teamId"] 
+                team_code = data["team_code"] 
                 if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
                     return Response("Invalid team code, please try again", status = 404)
                 else:
-                    new_user = User(first, last, email, phone, password1, teamId, "Joined Team")
+                    new_user = User(first, last, email, phone, password1, team_code, "Joined Team")
                     db.session.add(new_user)
                     db.session.commit()
                     userId = new_user.get_id()
@@ -215,9 +218,13 @@ def createTeam():
         
        
         new_team = Team(teamName, state, address, zipCode, city, competitionLevel)
+        # To-Do update User Status
+
+        # To-Do add User as TeamOwner Role
+
         db.session.add(new_team)
         db.session.commit()
-        return "test"
+        return redirect("/endzone/hub")
     except Exception as e:
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
