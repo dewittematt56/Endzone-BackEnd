@@ -159,7 +159,6 @@ def register():
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
 
-
 @app.route('/account/team/create', methods = ['POST'])
 def createTeam():
     try:
