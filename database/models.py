@@ -49,7 +49,7 @@ class Team_Member(db.Model):
     __tablename__ = "Team_Member"
     ID = db.Column(db.Integer, primary_key= True, autoincrement = True)
     Team_Code = db.Column(db.String(36))
-    User_ID = db.Column(db.Integer)
+    User_ID = db.Column(db.String(36))
     Role = db.Column(db.String(25), default = "Coach")
 
     def __init__(self, team_code, user_id, role) -> None:
@@ -74,14 +74,17 @@ class Team(db.Model):
     State = db.Column(db.String(2), nullable = False)
     Address = db.Column(db.String(320), nullable = False)
     Zip = db.Column(db.String(5), nullable = False)
+    City = db.Column(db.String(50), unique= False, nullable = False)
     Competition_Level = db.Column(db.String(50), nullable = True)
     
-    def __init__(self, team_name: str, state: str, address: str, zip: str, comp_level: str) -> None:
+    
+    def __init__(self, team_name: str, state: str, address: str, zip: str,city: str, comp_level: str) -> None:
         self.Team_Code = gen_primary_key()
         self.Team_Name = team_name
         self.State = state
         self.Address = address
         self.Zip = zip
+        self.City = city
         self.Competition_Level = comp_level
 
     def get_id(self) -> str:
