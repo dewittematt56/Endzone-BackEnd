@@ -68,9 +68,8 @@ def loginAttempt():
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-@app.route('/create/user', methods = ['POST'])
-def register():
-    
+@app.route('/account/user/create', methods = ['POST'])
+def register():    
     try:
         params = ["first", "last", "email", "password1", "password2", "phone", "join_action"]
         if request.method == "POST":
@@ -134,20 +133,13 @@ def register():
                 return  Response("Spaces are not allowed in phone number field", status = 404)
             
             if join_team:
-                
                 teamId = data["teamId"] 
-                
                 if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
                     return Response("Invalid team code, please try again", status = 404)
-                    
                 else:
-        
                     new_user = User(first, last, email, phone, password1, teamId, "Joined Team")
                     db.session.add(new_user)
-                    
                     db.session.commit()
-                    
-                    # To-Do: Get User.Id from Database via User.get_id()
                     userId = new_user.get_id()
                     new_teamMember = Team_Member(team_code, userId, "Coach")
                     db.session.add(new_teamMember)
@@ -157,12 +149,9 @@ def register():
                     return redirect("/endzone/hub")
 
             else:
-                
                 new_user = User(first, last, email, phone, password1, "Creating Team", 0)
-                
                 db.session.add(new_user)
                 db.session.commit()
-                
                 load_user(new_user.Email)
                 return redirect("/create/team")
     except Exception as e:
@@ -171,7 +160,7 @@ def register():
 
 
 
-@app.route('/account/createTeam', methods = ['POST'])
+@app.route('/account/team/create', methods = ['POST'])
 def createTeam():
     try:
         params = ['teamName', 'competitionLevel', 'state', 'address', 'zipCode', "city"]
@@ -180,7 +169,6 @@ def createTeam():
             for param in params:
                 if param not in data.keys():
                     return Response('Please provide a ' + param, status = 404)
-        
         teamName = data["teamName"]
         competitionLevel = data["competitionLevel"]
         state = data["state"]
