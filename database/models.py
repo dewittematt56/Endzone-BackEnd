@@ -11,25 +11,23 @@ class User(db.Model):
         db (_type_): Model of Database
     """
     
-    __tablename__ = 'Users'
+    __tablename__ = 'User'
     ID = db.Column(db.String(36), primary_key= True)
     Email = db.Column(db.String(320), unique= True, nullable = False)
     Password = db.Column(db.String(128), unique= False , nullable = False)
     Phone_Number =  db.Column(db.String(15), unique = False, nullable = False)
     First_Name = db.Column(db.String(50), unique = False, nullable = False)
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
-    Team_Code = db.Column(db.String(36), unique = False, nullable = False)
     Stage = db.Column(db.String(25), unique = False, nullable = False)
-    
+    # To-Do add join date
 
-    def __init__(self, first_name, last_name, email, phone_number, password, team_id, stage) -> None:
+    def __init__(self, first_name, last_name, email, phone_number, password, stage) -> None:
         self.ID = gen_primary_key()
         self.First_Name = first_name
         self.Last_Name = last_name
         self.Password = password 
         self.Email = email
         self.Phone_Number = phone_number
-        self.Team_Code = team_id
         self.Stage = stage
         
         
@@ -56,7 +54,6 @@ class Team_Member(db.Model):
         self.Team_Code = team_code
         self.User_ID = user_id
         self.Role = role
-        super().__init__()
 
     def get_id(self) -> str:
         return self.ID

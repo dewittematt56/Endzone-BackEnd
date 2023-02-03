@@ -28,7 +28,7 @@ def frontOffice():
 
 @content_api.route("/account/terms", methods = ["GET"])
 def accountTermsServices():
-    return render_template("/terms-services/terms-services.html")
+    return render_template("/terms-conditions/terms-conditions.html")
 
 @content_api.route("/account/user", methods = ["GET"])
 def accountUser():

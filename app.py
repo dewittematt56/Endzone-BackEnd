@@ -1,5 +1,5 @@
 from flask import Flask, request, Response, redirect
-from flask_login import login_manager, LoginManager, login_user
+from flask_login import login_manager, LoginManager, login_user, current_user
 from database.db import db, db_uri
 from database.models import *
 from login_api.login_persona import LoggedInPersona
@@ -28,8 +28,10 @@ login_manager.init_app(app)
 def load_user(email: str):
     query = db.session.query(User).filter(User.Email == email)
     query_response = query.all()
-    if len(query_response) > 0:
-        loaded_user = LoggedInPersona(query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Team_Code)
+    # To-Do get Team Codes for user
+
+    if len(query_response) == 1:
+        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email)
         return loaded_user
     else:
         return
@@ -81,7 +83,7 @@ def register():
             # Make sure all fields are filled in
             for param in params:
                 if param not in data.keys():
-                    return Response("Please provide a " + param, status = 404)
+                    return Response("Please provide a " + param, status = 400)
             
             first = data["first"]
             last = data["last"]
@@ -97,7 +99,6 @@ def register():
             last_has_number = any(map(str.isdigit,last))
             pass_has_letter = any(map(str.isalpha,password1))
             pass_has_number = any(map(str.isdigit, password1)) # contains if the passwords have a number in them
-            phone_has_letter = any(map(str.isalpha,phone))
             special_char = re.compile('[\'@_!#$%^&*()<>?/\\|}{~:]') # compiles the special characters to check for them in password
             
             # Make sure there isn't already an account with this email
@@ -125,22 +126,12 @@ def register():
             elif " " in password1:
                 return Response("Spaces are not allowed in the password field", status = 403)
             
-            # Phone number conditionals
-            # if len(phone) != 10:
-            #     return Response("Phone number must be a string of 10 consecutive numbers", status = 404)
-            # elif phone_has_letter == True:
-            #     return Response("Letters are not allowed in the phone number field", status = 404)
-            # elif special_char.search(phone) != None:
-            #     return Response("Special characters not allowed in phone number field", status = 404)
-            # elif " " in phone:
-            #     return  Response("Spaces are not allowed in phone number field", status = 404)
-            
             if join_team:
                 team_code = data["team_code"] 
                 if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
-                    return Response("Invalid team code, please try again", status = 404)
+                    return Response("Invalid team code, please try again", status = 403)
                 else:
-                    new_user = User(first, last, email, phone, password1, team_code, "Joined Team")
+                    new_user = User(first, last, email, phone, password1, "Complete")
                     db.session.add(new_user)
                     db.session.commit()
                     userId = new_user.get_id()
@@ -148,15 +139,15 @@ def register():
                     db.session.add(new_teamMember)
                     db.session.commit()
                     
-                    load_user(new_user.Email)
+                    login_user(load_user(new_user.Email))
                     return redirect("/endzone/hub")
 
             else:
-                new_user = User(first, last, email, phone, password1, "Creating Team", 0)
+                new_user = User(first, last, email, phone, password1, "Creating Team")
                 db.session.add(new_user)
                 db.session.commit()
-                load_user(new_user.Email)
-                return redirect("/create/team")
+                login_user(load_user(new_user.Email))
+                return redirect("/account/team")
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
@@ -218,13 +209,14 @@ def createTeam():
         
        
         new_team = Team(teamName, state, address, zipCode, city, competitionLevel)
-        # To-Do update User Status
+        updated_user = db.session.query(User.ID == current_user.id)
+        updated_user.Stage = "Complete"
 
-        # To-Do add User as TeamOwner Role
-
+        team_owner = Team_Member(new_team.Team_Code, current_user.id, "Owner")
         db.session.add(new_team)
+        db.session.add(team_owner)
         db.session.commit()
-        return redirect("/endzone/hub")
+        return Response("Successfully Created Team", 200)
     except Exception as e:
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
