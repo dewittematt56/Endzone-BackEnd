@@ -5,6 +5,7 @@ from database.models import *
 from login_api.login_persona import LoggedInPersona
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
+from profile import profile_app
 import json
 import re
 
@@ -220,6 +221,14 @@ def createTeam():
     except Exception as e:
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+
+@app.route('/account/user/profile', methods = ['GET'])
+def getProfileInfo(): 
+    try:
+        response = profile_app.handle(user, db)
+        return(response)
+    except Exception as e:
+        print(e)
 
 if __name__ == "__main__":
     app.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)

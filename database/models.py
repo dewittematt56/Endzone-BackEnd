@@ -34,6 +34,19 @@ class User(db.Model):
     def get_id(self) -> str:
         return self.ID
 
+    def get_first_name(self) -> str:
+        return self.First_Name
+
+    def get_last_name(self) -> str:
+        return self.Last_Name
+
+    def get_email(self) -> str:
+        return self.Email
+
+    def get_phone(self) -> str:
+        return self.Phone_Number
+
+
 class Team_Member(db.Model):
     """_summary_
 
