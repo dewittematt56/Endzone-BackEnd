@@ -54,7 +54,7 @@ def loginAttempt():
                 filter(User.Password == password)
             
             query_response = query.all()
-            if len(query_response) == 0:
+            if len(query_response) == 0: # ask mater about this
                 if len(db.session.query(User).filter(User.Email == email).all()) == 0:
                     # Exposed to end user
                     return Response("No account with that email exists", 404)
@@ -68,8 +68,12 @@ def loginAttempt():
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
+<<<<<<< Updated upstream
 
 @app.route('/account/createuser', methods = ['POST'])
+=======
+@app.route('/account/create/user', methods = ['POST'])
+>>>>>>> Stashed changes
 def register():
     
     

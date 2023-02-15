@@ -27,5 +27,84 @@ class User(db.Model):
         self.Access = access
         self.IS_Reviewed = IS_Reviewed
 
+<<<<<<< Updated upstream
     def test_cases(self):
         pass
+=======
+class Team_Member(db.Model):
+    """_summary_
+
+    Args:
+        db (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    __tablename__ = "Team_Member"
+    ID = db.Column(db.Integer, primary_key= True, autoincrement = True)
+    Team_Code = db.Column(db.String(36))
+    User_ID = db.Column(db.Integer)
+    Role = db.Column(db.String(25), default = "Coach")
+
+    def __init__(self, team_code, user_id, role) -> None:
+        self.Team_Code = team_code
+        self.User_ID = user_id
+        self.Role = role
+        super().__init__()
+
+    def get_id(self) -> str:
+        return self.ID
+
+class Team(db.Model):
+    """_summary_
+
+    Args:
+        db (_type_): _description_
+    """
+
+    __tablename__ = "Team"
+    Team_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
+    Team_Name = db.Column(db.String(50), unique= False, nullable = False)
+    State = db.Column(db.String(2), nullable = False)
+    Address = db.Column(db.String(320), nullable = False)
+    Zip = db.Column(db.String(5), nullable = False)
+    Competition_Level = db.Column(db.String(50), nullable = True)
+    
+    def __init__(self, team_name: str, state: str, address: str, zip: str, comp_level: str) -> None:
+        self.Team_Code = gen_primary_key()
+        self.Team_Name = team_name
+        self.State = state
+        self.Address = address
+        self.Zip = zip
+        self.Competition_Level = comp_level
+
+    def get_id(self) -> str:
+        return self.ID
+
+class Formations(db.Model):
+    __tablename__ = "Formation"
+    ID = db.Column(db.Integer, autoincrement = True, primary_key= True)
+    Formation = db.Column(db.String(50), unique = False, nullable = False)
+    wideRecievers = db.Column(db.Integer, nullable = False)
+    tightEnds = db.Column(db.Integer, nullable = False)
+    runningBacks = db.Column(db.Integer, nullable = False)
+    Image = db.Column(db.String(100), nullable = False, primary_key = True)
+    Team_Code = db.Column(db.String(36), nullable = False)
+    Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False)
+
+    def __init__(self, formation: str, wideRecievers: int, tightEnds: int, runningBacks: int, image: str, teamCode: str, squadCode: str)-> None:
+        
+        self.Formation = formation
+        self.wideRecievers = wideRecievers
+        self.tightEnds = tightEnds
+        self.runningBacks = runningBacks
+        self.Image = image
+        self.Team_Code = teamCode
+        self.Squad_Code = squadCode
+
+    def get_id(self) -> str:
+        return self.ID
+
+        
+>>>>>>> Stashed changes
