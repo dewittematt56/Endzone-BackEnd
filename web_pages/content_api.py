@@ -42,3 +42,9 @@ def accountTeam():
 @login_required
 def hub():
     return render_template("/hub/hub.html")
+
+
+@content_api.route("/endzone/coaches-corner/formation", methods = ["GET"])
+@login_required
+def Formation():
+    return render_template("/coaches-corner/formation/formation.html")

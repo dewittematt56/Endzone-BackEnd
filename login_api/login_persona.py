@@ -6,7 +6,7 @@ class LoggedInPersona(UserMixin):
         self.Email = email
         self.First_Name = first_name
         self.Last_Name = last_name
-        
+        self.Team_Code = "test"
 
     def is_active(self):
         return self.is_active()
