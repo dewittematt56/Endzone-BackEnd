@@ -1,10 +1,18 @@
 from database.db import db
 import uuid
 from sqlalchemy.dialects.postgresql import BYTEA
+import decimal, datetime
 
 # Creates a team key
 def gen_primary_key():
     return str(uuid.uuid4())
+
+def alchemyencoder(obj):
+    """JSON encoder function for SQLAlchemy special classes."""
+    if isinstance(obj, datetime.date):
+        return obj.isoformat()
+    elif isinstance(obj, decimal.Decimal):
+        return float(obj)
 
 class User(db.Model):
     """ Class representation of the User table in the Endzone database
@@ -92,16 +100,16 @@ class Formations(db.Model):
     __tablename__ = "Formation"
     ID = db.Column(db.Integer, autoincrement = True, primary_key= True)
     Formation = db.Column(db.String(50), unique = False, nullable = False)
-    wideRecievers = db.Column(db.Integer, nullable = False)
+    wideReceivers = db.Column(db.Integer, nullable = False)
     tightEnds = db.Column(db.Integer, nullable = False)
     runningBacks = db.Column(db.Integer, nullable = False)
     Image = db.Column(db.LargeBinary, nullable = True) # Confused on how to do the blob thing
     Team_Code = db.Column(db.String(36), nullable = False)
     Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False)
 
-    def __init__(self, formation: str, wideRecievers: int, tightEnds: int, runningBacks: int, image: str, teamCode: str, squadCode: str)-> None:
+    def __init__(self, formation: str, wideReceivers: int, tightEnds: int, runningBacks: int, image: str, teamCode: str, squadCode: str)-> None:
         self.Formation = formation
-        self.wideRecievers = wideRecievers
+        self.wideReceivers = wideReceivers
         self.tightEnds = tightEnds
         self.runningBacks = runningBacks
         self.Image = image
@@ -110,6 +118,9 @@ class Formations(db.Model):
 
     def get_id(self) -> str:
         return self.ID
+
+    def as_dict(self):
+        return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
 
 class Play(db.Model):
     __tablename__ = "Play"
