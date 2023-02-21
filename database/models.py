@@ -1,4 +1,9 @@
 from database.db import db
+import uuid
+
+# Creates a team key
+def gen_primary_key():
+    return str(uuid.uuid4)
 
 class User(db.Model):
     """ Class representation of the User table in the Endzone database
@@ -7,30 +12,28 @@ class User(db.Model):
     """
     
     __tablename__ = 'Users'
-    ID = db.Column(db.Integer, primary_key= True, autoincrement = True)
+    ID = db.Column(db.String(36), primary_key= True)
     Email = db.Column(db.String(320), unique= True, nullable = False)
     Password = db.Column(db.String(128), unique= False , nullable = False)
-    phone_number = db.Column(db.String)
-
+    Phone_Number =  db.Column(db.String(15), unique = False, nullable = False)
     First_Name = db.Column(db.String(50), unique = False, nullable = False)
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
     Team_Code = db.Column(db.String(25), unique = False, nullable = False)
-    Access = db.Column(db.String(25), nullable = False, default = "Coach")
-    IS_Reviewed = db.Column(db.Boolean, nullable = False, default = False)
+    Stage = db.Column(db.String(25), unique = False, nullable = False)
 
-    def __init__(self, first_name, last_name, email, password, team_id, access, IS_Reviewed) -> None:
+    def __init__(self, first_name, last_name, email, phone_number, password, team_id, stage) -> None:
+        self.ID = gen_primary_key()
         self.First_Name = first_name
         self.Last_Name = last_name
-        self.Email = email
         self.Password = password 
+        self.Email = email
+        self.Phone_Number = phone_number
         self.Team_Code = team_id
-        self.Access = access
-        self.IS_Reviewed = IS_Reviewed
+        self.Stage = stage
+        
+    def get_id(self) -> str:
+        return self.ID
 
-<<<<<<< Updated upstream
-    def test_cases(self):
-        pass
-=======
 class Team_Member(db.Model):
     """_summary_
 
@@ -89,7 +92,7 @@ class Formations(db.Model):
     wideRecievers = db.Column(db.Integer, nullable = False)
     tightEnds = db.Column(db.Integer, nullable = False)
     runningBacks = db.Column(db.Integer, nullable = False)
-    Image = db.Column(db.String(100), nullable = False, primary_key = True)
+    Image = db.Column(db.String(100), nullable = False, primary_key = True) # Confused on how to do the blob thing
     Team_Code = db.Column(db.String(36), nullable = False)
     Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False)
 
@@ -105,6 +108,82 @@ class Formations(db.Model):
 
     def get_id(self) -> str:
         return self.ID
+    
 
+
+
+class plays(db.Model):
+    __tablename__ = "plays"
+    ID = db.Column(db.Integer, autoincrement = True, primary_key = True)
+    Game_ID = db.Column(db.String(36), unique = False, nullable = False)
+    Play_Number = db.Column(db.Integer, autoincrement = True, nullable = False) # autoincrement here?
+    Possession = db.Column(db.String(100), nullable = True)
+    Yard = db.Column(db.Integer, nullable = False)
+    Hash = db.Column(db.String, nullable = False) # make this left right or middle
+    Down = db.Column(db.Integer, nullable = False)
+    Distance = db.Column(db.Integer, nullable = False) # make restrictions to keep the number in between 0 and 100
+    Quarter = db.Column(db.Integer, nullable = False) # make this between 1 and 4
+    D_Formation = db.Column(db.String(25), nullable = False)
+    O_Formation = db.Column(db.String(25), nullable = False)
+    Formation_Strength = db.Column(db.String(10), nullable = False) # make this either left, right or balanced
+    Play_Type = db.Column(db.String(35), nullable = False) # went with 35 characters here (wasnt specified like the rest) [inside run, outside run, pass, boot pass, option]
+    Play = db.Column(db.String(100), nullable = False, unique = True)
+    Play_Type_Dir = db.Column(db.String(35), nullable = False) # [left, right, unknown]
+    Pass_Zone = db.Column(db.String(35), nullable = False) # see options for this in the trello
+    Coverage = db.Column(db.String(35), nullable = False) # see options for this in the trello
+    Pressure_Left = db.Column(db.String(35), nullable = False) # ask mater
+    Pressure_Middle = db.Column(db.String(35), nullable = False) # ask mater
+    Pressure_Right = db.Column(db.String(35), nullable = False) # ask mater
+    Ball_Carrier = db.Column(db.String(35), nullable = False) # ask mater
+    Event = db.Column(db.String(35), nullable = False) # see options for this in trello
+    Result = db.Column(db.String(35), nullable = False) # ask mater
+    Result_Lat = db.Column(db.String(35), nullable = False) # ask mater
+    Result_Lon = db.Column(db.String(35), nullable = False) # ask mater
+    Play_Lat = db.Column(db.String(35), nullable = False) # ask mater
+    Play_Lon = db.Column(db.String(35), nullable = False) # ask mater
+
+    def __init__(self, gameId : str, playNumber  : int, possession : str, yard : int, hash : str, down : int, distance : int, quarter : int, dFormation : str, 
+                 oFormation : str, formationStrength : str, playType : str, play : str, playTypeDir : str, passZone : str, coverage : str, pressureLeft : str, 
+                 pressureMiddle : str, pressureRight : str, ballCarrier : str, event : str, result : str, resultLat : str, resultLon : str, playLat: str, playLon: str) -> None:
+        self.ID = gen_primary_key()
+        self.Game_ID = gameId
+        self.Play_Number = playNumber
+        self.Possession = possession
+        self.Yard = yard
+        self.Hash = hash
+        self.Down = down
+        self.Distance = distance
+        self.Quarter = quarter
+        self.D_Formation = dFormation
+        self.O_Formation = oFormation
+        self.Formation_Strength = formationStrength
+        self.Play_Type = playType
+        self.Play = play
+        self.Play_Type_Dir = playTypeDir
+        self.Pass_Zone = passZone
+        self.Coverage = coverage
+        self.Pressure_Left = pressureLeft
+        self.Pressure_Middle = pressureMiddle
+        self.Pressure_Right = pressureRight
+        self.Ball_Carrier = ballCarrier
+        self.Event = event
+        self.Result = result
+        self.Result_Lat = resultLat
+        self.Result_Lon = resultLon
+        self.Play_Lat = playLat
+        self.Play_Lon = playLon
+
+
+        def get_id(self) -> str:
+            return self.ID
         
->>>>>>> Stashed changes
+class Squad(db.Model): # This class is messing up the file, no idea why
+    __tablename__ = "Squad"
+    Squad_ID = db.Column(db.String(35), unique = False, nullable = False, primary_key = True)
+    Team_Code = db.Column(db.String(35), unique = False, nullable = False)
+    Squad_Name = db.Column(db.String(50), unique = False, nullable = False)
+
+    def __init__(self, teamCode: str, squadName: str) -> None:
+       self.Squad_ID = gen_primary_key()
+       self.Team_Code = teamCode
+       self.Squad_Name = squadName

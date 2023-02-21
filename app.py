@@ -6,6 +6,7 @@ from login_api.login_peronsa import LoggedInPersona
 from web_pages.content_api import content_api  
 import json
 import re
+from utils_api.utils_api import utils_api
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret key'
@@ -13,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
 app.register_blueprint(content_api)
-    
+app.register_blueprint(utils_api)   
 db.init_app(app)
 # builds database if not existing
 with app.app_context():
@@ -67,13 +68,11 @@ def loginAttempt():
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+    
 
-<<<<<<< Updated upstream
+
 
 @app.route('/account/createuser', methods = ['POST'])
-=======
-@app.route('/account/create/user', methods = ['POST'])
->>>>>>> Stashed changes
 def register():
     
     
