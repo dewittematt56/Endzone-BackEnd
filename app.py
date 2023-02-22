@@ -5,7 +5,7 @@ from database.models import *
 from login_api.login_persona import LoggedInPersona
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
-from profile import profile_app
+from profile_api.profile_api import profile_api
 import json
 import re
 
@@ -16,6 +16,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
 app.register_blueprint(content_api)
 app.register_blueprint(utils_api)
+app.register_blueprint(profile_api)
     
 db.init_app(app)
 # builds database if not existing
@@ -32,7 +33,7 @@ def load_user(email: str):
     # To-Do get Team Codes for user
 
     if len(query_response) == 1:
-        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email)
+        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number)
         return loaded_user
     else:
         return
@@ -80,12 +81,10 @@ def register():
         params = ["first", "last", "email", "password1", "password2", "phone", "join_action"]
         if request.method == "POST":
             data = json.loads(request.get_data())
-        
             # Make sure all fields are filled in
             for param in params:
                 if param not in data.keys():
                     return Response("Please provide a " + param, status = 400)
-            
             first = data["first"]
             last = data["last"]
             email = data["email"]
@@ -101,7 +100,6 @@ def register():
             pass_has_letter = any(map(str.isalpha,password1))
             pass_has_number = any(map(str.isdigit, password1)) # contains if the passwords have a number in them
             special_char = re.compile('[\'@_!#$%^&*()<>?/\\|}{~:]') # compiles the special characters to check for them in password
-            
             # Make sure there isn't already an account with this email
             if len(db.session.query(User).filter(User.Email == email).all()) != 0:
                 return Response("There is an account already associated with this email", status = 403)
@@ -126,7 +124,6 @@ def register():
                 return Response("Password needs at least 1 letter")
             elif " " in password1:
                 return Response("Spaces are not allowed in the password field", status = 403)
-            
             if join_team:
                 team_code = data["team_code"] 
                 if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
@@ -222,13 +219,6 @@ def createTeam():
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-@app.route('/account/user/profile', methods = ['GET'])
-def getProfileInfo(): 
-    try:
-        response = profile_app.handle(user, db)
-        return(response)
-    except Exception as e:
-        print(e)
 
 if __name__ == "__main__":
     app.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)
