@@ -2,6 +2,13 @@ from database.db import db
 import uuid
 from sqlalchemy.dialects.postgresql import BYTEA
 import decimal, datetime
+from flask_login import current_user
+import datetime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import DateTime
+
+
+
 
 # Creates a team key
 def gen_primary_key():
@@ -151,6 +158,8 @@ class Play(db.Model):
     Result_Lon = db.Column(db.String(35), nullable = False) # ask mater
     Play_Lat = db.Column(db.String(35), nullable = False) # ask mater
     Play_Lon = db.Column(db.String(35), nullable = False) # ask mater
+    Creator = db.Column(db.String(36), nullable = False)
+    Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
 
     def __init__(self, gameId : str, playNumber  : int, possession : str, yard : int, hash : str, down : int, distance : int, quarter : int, dFormation : str, 
                  oFormation : str, formationStrength : str, playType : str, play : str, playTypeDir : str, passZone : str, coverage : str, pressureLeft : str, 
@@ -182,12 +191,13 @@ class Play(db.Model):
         self.Result_Lon = resultLon
         self.Play_Lat = playLat
         self.Play_Lon = playLon
-
+        self.Creator = current_user.id
+        self.Creation_Date = datetime.datetime.utcnow()
 
         def get_id(self) -> str:
             return self.ID
         
-class Squad(db.Model): # This class is messing up the file, no idea why
+class Squad(db.Model):
     __tablename__ = "Squad"
     Squad_ID = db.Column(db.String(35), unique = False, nullable = False, primary_key = True)
     Team_Code = db.Column(db.String(35), unique = False, nullable = False)
@@ -197,3 +207,23 @@ class Squad(db.Model): # This class is messing up the file, no idea why
        self.Squad_ID = gen_primary_key()
        self.Team_Code = teamCode
        self.Squad_Name = squadName
+
+class Game(db.Model):
+    __tablename__ = "Game"
+    ID = db.Column(db.Integer, autoincrement = True, primary_key= True)
+    Home_Team = db.Column(db.String(36), unique = False, nullable = False)
+    Away_Team = db.Column(db.String(36), unique = False, nullable = False)
+    Game_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
+    Game_Type = db.Column(db.String(10), unique = False, nullable = False)
+    Squad_Code = db.Column(db.String(36), unique = False, nullable = False)
+    Creator = db.Column(db.String(36), unique = False, nullable = False)
+    Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
+
+    def __init__(self, home_team: str, away_team: str, game_date: datetime.datetime, type: str) -> None:
+        self.Home_Team = home_team
+        self.Away_Team = away_team
+        self.Game_Date = game_date
+        self.Game_Type = type
+        self.Squad_Code = current_user.Squad_Code
+        self.Creator = current_user.id
+        self.Creation_Date = datetime.datetime.utcnow()

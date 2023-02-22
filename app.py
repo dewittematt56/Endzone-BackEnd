@@ -5,6 +5,7 @@ from database.models import *
 from login_api.login_persona import LoggedInPersona
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
+from data_api.data_api import data_api
 import json
 import re
 
@@ -15,6 +16,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
 app.register_blueprint(content_api)
 app.register_blueprint(utils_api)
+app.register_blueprint(data_api)
     
 db.init_app(app)
 # builds database if not existing
