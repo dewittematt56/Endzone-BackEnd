@@ -29,7 +29,11 @@ def formationAdd():
             
             image = None
             if "image" in data.keys():
-                image = bytes(data["image"], "ascii")
+                try:
+                    image = bytes(data["image"], "ascii")
+                # To-DO: Catch Encoding Error
+                except Exception as e:
+                    image = None
             teamCode = current_user.Team_Code
             squadCode = "test"
  

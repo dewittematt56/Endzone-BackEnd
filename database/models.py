@@ -113,6 +113,8 @@ class Formations(db.Model):
     Image = db.Column(db.LargeBinary, nullable = True) # Confused on how to do the blob thing
     Team_Code = db.Column(db.String(36), nullable = False)
     Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False)
+    Creator = db.Column(db.String(36), unique = False, nullable = False)
+    Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
 
     def __init__(self, formation: str, wideReceivers: int, tightEnds: int, runningBacks: int, image: str, teamCode: str, squadCode: str)-> None:
         self.Formation = formation
@@ -120,8 +122,10 @@ class Formations(db.Model):
         self.tightEnds = tightEnds
         self.runningBacks = runningBacks
         self.Image = image
-        self.Team_Code = teamCode
-        self.Squad_Code = squadCode
+        self.Team_Code = current_user.Team_Code
+        self.Squad_Code = current_user.Squad_Code
+        self.Creator = current_user.id
+        self.Creation_Date = datetime.datetime.utcnow()
 
     def get_id(self) -> str:
         return self.ID

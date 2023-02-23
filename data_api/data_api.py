@@ -1,9 +1,14 @@
-from flask import Blueprint, Response, request, jsonify
+from flask import Blueprint, Response, request, jsonify, render_template
 from flask_login import login_required, current_user
 from database.models import *
 import json
 
-data_api = Blueprint("data_api", __name__, template_folder="pages", static_folder="pages")
+data_api = Blueprint("data_api", __name__, template_folder="data-pages", static_folder="data-pages")
+
+@login_required
+@data_api.route("/endzone/data/game")
+def GamePage():
+    return render_template("/create-game/create-game.html")
 
 @login_required
 @data_api.route("/endzone/data/game/create", methods = ["POST"])

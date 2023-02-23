@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/data-pages/create-game/static/css/main.e425337e.css",
+    "main.js": "/data-pages/create-game/static/js/main.26d5cc6c.js",
+    "static/js/787.942d2aa2.chunk.js": "/data-pages/create-game/static/js/787.942d2aa2.chunk.js",
+    "static/media/auto-player.jpg": "/data-pages/create-game/static/media/auto-player.64cfec634cb01117db77.jpg",
+    "static/media/manual-player.jpg": "/data-pages/create-game/static/media/manual-player.eb1c7568191eaa20a701.jpg",
+    "static/media/EndzoneMainLogo.png": "/data-pages/create-game/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "index.html": "/data-pages/create-game/index.html",
+    "main.e425337e.css.map": "/data-pages/create-game/static/css/main.e425337e.css.map",
+    "main.26d5cc6c.js.map": "/data-pages/create-game/static/js/main.26d5cc6c.js.map",
+    "787.942d2aa2.chunk.js.map": "/data-pages/create-game/static/js/787.942d2aa2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e425337e.css",
+    "static/js/main.26d5cc6c.js"
+  ]
+}
