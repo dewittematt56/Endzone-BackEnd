@@ -42,3 +42,8 @@ def accountTeam():
 @login_required
 def hub():
     return render_template("/hub/hub.html")
+
+@content_api.route("/endzone/account/profile", methods = ["GET"])
+@login_required
+def profile():
+    return render_template("/profile/display_profile.html")
