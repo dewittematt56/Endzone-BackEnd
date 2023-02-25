@@ -1,25 +1,13 @@
 from database.db import db
 import uuid
-from sqlalchemy.dialects.postgresql import BYTEA
-import decimal, datetime
+import datetime
 from flask_login import current_user
 import datetime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import DateTime
-
-
-
 
 # Creates a team key
 def gen_primary_key():
     return str(uuid.uuid4())
-
-def alchemyencoder(obj):
-    """JSON encoder function for SQLAlchemy special classes."""
-    if isinstance(obj, datetime.date):
-        return obj.isoformat()
-    elif isinstance(obj, decimal.Decimal):
-        return float(obj)
 
 class User(db.Model):
     """ Class representation of the User table in the Endzone database
@@ -137,7 +125,7 @@ class Play(db.Model):
     __tablename__ = "Play"
     ID = db.Column(db.Integer, autoincrement = True, primary_key = True)
     Game_ID = db.Column(db.String(36), unique = False, nullable = False)
-    Play_Number = db.Column(db.Integer, autoincrement = True, nullable = False) # autoincrement here?
+    Play_Number = db.Column(db.Integer, autoincrement = True, nullable = False) # autoincrement here? #NO!
     Possession = db.Column(db.String(100), nullable = True)
     Yard = db.Column(db.Integer, nullable = False)
     Hash = db.Column(db.String, nullable = False) # make this left right or middle
@@ -158,10 +146,10 @@ class Play(db.Model):
     Ball_Carrier = db.Column(db.String(35), nullable = False) # ask mater
     Event = db.Column(db.String(35), nullable = False) # see options for this in trello
     Result = db.Column(db.String(35), nullable = False) # ask mater
-    Result_Lat = db.Column(db.String(35), nullable = False) # ask mater
-    Result_Lon = db.Column(db.String(35), nullable = False) # ask mater
-    Play_Lat = db.Column(db.String(35), nullable = False) # ask mater
-    Play_Lon = db.Column(db.String(35), nullable = False) # ask mater
+    Result_Lat = db.Column(db.String(35), nullable = False) # ask mater -> x
+    Result_Lon = db.Column(db.String(35), nullable = False) # ask mater -> y
+    Play_Lat = db.Column(db.String(35), nullable = False) # ask mater -> x
+    Play_Lon = db.Column(db.String(35), nullable = False) # ask mater -> y
     Creator = db.Column(db.String(36), nullable = False)
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
 
@@ -214,7 +202,7 @@ class Squad(db.Model):
 
 class Game(db.Model):
     __tablename__ = "Game"
-    ID = db.Column(db.Integer, autoincrement = True, primary_key= True)
+    ID = db.Column(db.Integer, autoincrement = True, primary_key= True) # Update to unique key!
     Home_Team = db.Column(db.String(36), unique = False, nullable = False)
     Away_Team = db.Column(db.String(36), unique = False, nullable = False)
     Game_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
