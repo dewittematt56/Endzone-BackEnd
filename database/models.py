@@ -3,10 +3,10 @@ import uuid
 
 # Creates a team key
 def gen_primary_key():
-    return str(uuid.uuid4)
+    return str(uuid.uuid4())
 
 class User(db.Model):
-    """ Class representation of the User table in the Endzone database
+    """ Class representation of the Use"testr table in the Endzone database
     Args:
         db (_type_): Model of Database
     """
@@ -114,37 +114,38 @@ class Formations(db.Model):
 
 class plays(db.Model):
     __tablename__ = "plays"
-    ID = db.Column(db.Integer, autoincrement = True, primary_key = True)
+    ID = db.Column(db.String(36), primary_key = True)
     Game_ID = db.Column(db.String(36), unique = False, nullable = False)
-    Play_Number = db.Column(db.Integer, autoincrement = True, nullable = False) # autoincrement here?
-    Possession = db.Column(db.String(100), nullable = True)
-    Yard = db.Column(db.Integer, nullable = False)
-    Hash = db.Column(db.String, nullable = False) # make this left right or middle
-    Down = db.Column(db.Integer, nullable = False)
-    Distance = db.Column(db.Integer, nullable = False) # make restrictions to keep the number in between 0 and 100
-    Quarter = db.Column(db.Integer, nullable = False) # make this between 1 and 4
+    Play_Number = db.Column(db.Integer, autoincrement = True, nullable = False) # 0-999*
+    Possession = db.Column(db.String(100), nullable = False)
+    Yard = db.Column(db.Integer, nullable = False) # 1-100*
+    Hash = db.Column(db.String, nullable = False) # make this left right or middle*
+    Down = db.Column(db.Integer, nullable = False) # 1,2,3,4*
+    Distance = db.Column(db.Integer, nullable = False) # between 1-100*
+    Quarter = db.Column(db.Integer, nullable = False) # make this between 1 and 5 *
     D_Formation = db.Column(db.String(25), nullable = False)
     O_Formation = db.Column(db.String(25), nullable = False)
-    Formation_Strength = db.Column(db.String(10), nullable = False) # make this either left, right or balanced
-    Play_Type = db.Column(db.String(35), nullable = False) # went with 35 characters here (wasnt specified like the rest) [inside run, outside run, pass, boot pass, option]
-    Play = db.Column(db.String(100), nullable = False, unique = True)
-    Play_Type_Dir = db.Column(db.String(35), nullable = False) # [left, right, unknown]
-    Pass_Zone = db.Column(db.String(35), nullable = False) # see options for this in the trello
-    Coverage = db.Column(db.String(35), nullable = False) # see options for this in the trello
-    Pressure_Left = db.Column(db.String(35), nullable = False) # ask mater
-    Pressure_Middle = db.Column(db.String(35), nullable = False) # ask mater
-    Pressure_Right = db.Column(db.String(35), nullable = False) # ask mater
-    Ball_Carrier = db.Column(db.String(35), nullable = False) # ask mater
-    Event = db.Column(db.String(35), nullable = False) # see options for this in trello
-    Result = db.Column(db.String(35), nullable = False) # ask mater
-    Result_Lat = db.Column(db.String(35), nullable = False) # ask mater
-    Result_Lon = db.Column(db.String(35), nullable = False) # ask mater
-    Play_Lat = db.Column(db.String(35), nullable = False) # ask mater
-    Play_Lon = db.Column(db.String(35), nullable = False) # ask mater
+    Formation_Strength = db.Column(db.String(10), nullable = False) # make this either left, right or balanced, unknown*
+    Play_Type = db.Column(db.String(35), nullable = False) # [Inside Run, Outside Run, Pass, Boot Pass, Option, Unknown]*
+    Play = db.Column(db.String(100), nullable = False)
+    Play_Type_Dir = db.Column(db.String(35), nullable = False) # [left, right, unknown]*
+    Pass_Zone = db.Column(db.String(35), nullable = False) # [Screen Left, Screen Right, Flat Left, Flat Right, Middle Left, Middle Middle Middle Right, Deep Left, Deep Right]*
+    Coverage = db.Column(db.String(35), nullable = False) # [Man 0, Man 1, Man 2, Man 3, Cover 2, Cover 3, Cover 4, Prevent]*
+    Pressure_Left = db.Column(db.Boolean(35), nullable = False) # ask mater*
+    Pressure_Middle = db.Column(db.Boolean(35), nullable = False) # ask mater*
+    Pressure_Right = db.Column(db.Boolean(35), nullable = False) # ask mater*
+    Ball_Carrier = db.Column(db.String(2), nullable = False) # 0-99
+    Event = db.Column(db.String(35), nullable = False) # Penalty, Interception, Touchdown, Fumble, Field Goal, Saftey
+    Result = db.Column(db.Integer, nullable = False) # -99-99
+    Result_X = db.Column(db.Float(35), nullable = False) # Switch Name -> Result_X | Float {1, 3} RETURN ("Invalid Geometry")
+    Result_Y = db.Column(db.Float(35), nullable = False) # Float {0, 10} RETURN ("Invalid Geometry")
+    Play_X = db.Column(db.Float(35), nullable = False) # Switch Name -> Result_X | Float {1, 3} RETURN ("Invalid Geometry")
+    Play_Y = db.Column(db.Float(35), nullable = False) # Float {0, 10} RETURN ("Invalid Geometry")
+    
 
     def __init__(self, gameId : str, playNumber  : int, possession : str, yard : int, hash : str, down : int, distance : int, quarter : int, dFormation : str, 
                  oFormation : str, formationStrength : str, playType : str, play : str, playTypeDir : str, passZone : str, coverage : str, pressureLeft : str, 
-                 pressureMiddle : str, pressureRight : str, ballCarrier : str, event : str, result : str, resultLat : str, resultLon : str, playLat: str, playLon: str) -> None:
+                 pressureMiddle : str, pressureRight : str, ballCarrier : str, event : str, result : str, resultX : str, resultY : str, playX: str, playY: str) -> None:
         self.ID = gen_primary_key()
         self.Game_ID = gameId
         self.Play_Number = playNumber
@@ -168,10 +169,10 @@ class plays(db.Model):
         self.Ball_Carrier = ballCarrier
         self.Event = event
         self.Result = result
-        self.Result_Lat = resultLat
-        self.Result_Lon = resultLon
-        self.Play_Lat = playLat
-        self.Play_Lon = playLon
+        self.Result_X = resultX
+        self.Result_Y = resultY
+        self.Play_X = playX
+        self.Play_Y = playY
 
 
         def get_id(self) -> str:
