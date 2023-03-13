@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/pages/home/static/css/main.78a932b4.css",
+    "main.js": "/pages/home/static/js/main.76b39d05.js",
+    "static/js/787.942d2aa2.chunk.js": "/pages/home/static/js/787.942d2aa2.chunk.js",
+    "static/media/JoinEndzoneBackground.jpg": "/pages/home/static/media/JoinEndzoneBackground.75c5ba0817503c83d2f1.jpg",
+    "static/media/LogInEndzoneBackground.jpg": "/pages/home/static/media/LogInEndzoneBackground.66b7d79bb91d0ca882b8.jpg",
+    "static/media/EndzoneDemo_large.jpg": "/pages/home/static/media/EndzoneDemo_large.f1d3d9c76d28882a60de.jpg",
+    "static/media/EndzoneLogo_large.png": "/pages/home/static/media/EndzoneLogo_large.192188cc4dd719d59738.png",
+    "static/media/output-onlinepngtools.png": "/pages/home/static/media/output-onlinepngtools.e6c6eabea79f30e02dbd.png",
+    "index.html": "/pages/home/index.html",
+    "main.78a932b4.css.map": "/pages/home/static/css/main.78a932b4.css.map",
+    "main.76b39d05.js.map": "/pages/home/static/js/main.76b39d05.js.map",
+    "787.942d2aa2.chunk.js.map": "/pages/home/static/js/787.942d2aa2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.78a932b4.css",
+    "static/js/main.76b39d05.js"
+  ]
+}
