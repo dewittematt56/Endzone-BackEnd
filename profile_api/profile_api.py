@@ -17,9 +17,9 @@ def getProfile():
         db_user = db.session.query(User.ID == current_user.id)
 
         tempList = []
-        for squad in current_user.squads:
-            tempList.append({"text": squad, "value": squad})
-        response = jsonify({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "email": current_user.Email, "phone": current_user.Phone, "squads": current_user.squads, "curSquad": current_user.Cur_Squad, "squadsList": tempList})
+        # for squad in current_user.squads:
+        #     tempList.append({"text": squad, "value": squad})
+        response = jsonify({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "email": current_user.Email, "phone": current_user.Phone, "squads": ["current_user.squads"], "curSquad": current_user.Cur_Squad, "squadsList": tempList})
         return make_response(response, 200)
     except Exception as e:
         print(e)
