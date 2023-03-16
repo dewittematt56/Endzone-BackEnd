@@ -47,30 +47,6 @@ class User(db.Model):
         return self.Phone_Number
 
 
-class Team_Member(db.Model):
-    """_summary_
-
-    Args:
-        db (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-
-    __tablename__ = "Team_Member"
-    ID = db.Column(db.Integer, primary_key= True, autoincrement = True)
-    Team_Code = db.Column(db.String(36))
-    User_ID = db.Column(db.String(36))
-    Role = db.Column(db.String(25), default = "Coach")
-
-    def __init__(self, team_code, user_id, role) -> None:
-        self.Team_Code = team_code
-        self.User_ID = user_id
-        self.Role = role
-
-    def get_id(self) -> str:
-        return self.ID
-
 class Team(db.Model):
     """_summary_
 
@@ -96,6 +72,80 @@ class Team(db.Model):
         self.Zip = zip
         self.City = city
         self.Competition_Level = comp_level
+
+    def get_id(self) -> str:
+        return self.ID
+    
+
+class Team_Member(db.Model):
+    """_summary_
+
+    Args:
+        db (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    __tablename__ = "Team_Member"
+    Team_Code = db.Column(db.String(36), primary_key= True)
+    User_ID = db.Column(db.String(36), primary_key= True)
+    Role = db.Column(db.String(25), default = "Coach")
+
+    def __init__(self, team_code, user_id, role) -> None:
+        self.Team_Code = team_code
+        self.User_ID = user_id
+        self.Role = role
+
+    def get_id(self) -> str:
+        return self.ID
+    
+
+class Squad(db.Model):
+    """_summary_
+
+    Args:
+        db (_type_): _description_
+    """
+
+    __tablename__ = "Squad"
+    Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
+    Squad_Name = db.Column(db.String(50), unique= False, nullable = False)
+    Competition_Level = db.Column(db.String(50), nullable = True)
+    Team_Code = db.Column(db.String(50), unique= False, nullable = False)
+    Team_Name = db.Column(db.String(50), unique= False, nullable = False)
+    
+    
+    def __init__(self, squad_code: str, squad_name: str, comp_level: str, team_code: str, team_name: str) -> None:
+        self.Squad_Code = gen_primary_key()
+        self.Squad_Name = squad_name
+        self.Competition_Level = comp_level
+        self.Team_Code = team_code
+        self.Team_Name = team_name
+
+    def get_id(self) -> str:
+        return self.ID
+
+
+class Squad_Member(db.Model):
+    """_summary_
+
+    Args:
+        db (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    __tablename__ = "Squad_Member"
+    Squad_Code = db.Column(db.String(36), primary_key = True)
+    User_ID = db.Column(db.String(36), primary_key = True)
+    Role = db.Column(db.String(25), default = "Owner")
+
+    def __init__(self, squad_code, user_id, role) -> None:
+        self.Squad_Code = squad_code
+        self.User_ID = user_id
+        self.Role = role
 
     def get_id(self) -> str:
         return self.ID

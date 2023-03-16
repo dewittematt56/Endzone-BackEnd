@@ -14,12 +14,17 @@ profile_api = Blueprint("profile_api", __name__, template_folder="pages", static
 @profile_api.route('/endzone/account/user/profile', methods = ['GET'])
 def getProfile(): 
     try:
-        db_user = db.session.query(User.ID == current_user.id)
-
-        tempList = []
-        for squad in current_user.squads:
-            tempList.append({"text": squad, "value": squad})
-        response = jsonify({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "email": current_user.Email, "phone": current_user.Phone, "squads": current_user.squads, "curSquad": current_user.Cur_Squad, "squadsList": tempList})
+        squads = []
+        dbSquads = db.session.query(Squad_Member).filter(Squad_Member.User_ID == current_user.id).all()
+        print(dbSquads[0])
+        for squad in dbSquads:
+            squadName = db.session.query(Squad).filter(Squad.Squad_Code == squad.Squad_Code).first().Squad_Name
+            squads.append(squadName)
+            
+        squadsList = []
+        for squad in squads:
+            squadsList.append({"text": squad, "value": squad})
+        response = jsonify({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "email": current_user.Email, "phone": current_user.Phone, "squads": squads, "curSquad": squads[0], "squadsList": squadsList})
         return make_response(response, 200)
     except Exception as e:
         print(e)
