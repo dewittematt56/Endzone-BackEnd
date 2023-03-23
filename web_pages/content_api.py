@@ -8,15 +8,15 @@ def home():
 
 @content_api.route("/contact", methods = ["GET"])
 def contactUs():
-    return render_template("/public/contact-us/contact-us.html")
+    return render_template("/public/contact/contact.html")
 
 @content_api.route("/pricing", methods = ["GET"])
 def pricing():
-    return render_template("/pricing/pricing.html")
+    return render_template("/public/pricing/pricing.html")
 
-@content_api.route("/products", methods = ["GET"])
+@content_api.route("/product", methods = ["GET"])
 def product():
-    return render_template("/public/products/products.html")
+    return render_template("/public/product/product.html")
 
 @content_api.route("/login", methods = ["GET"])
 def login():
@@ -24,7 +24,7 @@ def login():
 
 @content_api.route("/about", methods = ["GET"])
 def aboutUs():
-    return render_template("/public/about/about-us.html")
+    return render_template("/public/about/about.html")
 
 @content_api.route("/account/create", methods = ["GET"])
 def frontOffice():
