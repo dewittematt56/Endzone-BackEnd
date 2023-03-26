@@ -33,7 +33,7 @@ def load_user(email: str):
     # To-Do get Team Codes for user
 
     if len(query_response) == 1:
-        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number)
+        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number, query_response[0].Current_Squad)
         return loaded_user
     else:
         return
@@ -129,7 +129,7 @@ def register():
                 if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
                     return Response("Invalid team code, please try again", status = 403)
                 else:
-                    new_user = User(first, last, email, phone, password1, "Complete")
+                    new_user = User(first, last, email, phone, password1, "null", "Complete")
                     db.session.add(new_user)
                     db.session.commit()
                     userId = new_user.get_id()
@@ -141,7 +141,7 @@ def register():
                     return redirect("/endzone/hub")
 
             else:
-                new_user = User(first, last, email, phone, password1, "Creating Team")
+                new_user = User(first, last, email, phone, password1, "null", "Creating Team")
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(load_user(new_user.Email))

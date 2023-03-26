@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/pages/profile/static/css/main.e0def16c.css",
-    "main.js": "/pages/profile/static/js/main.fe11e0c9.js",
+    "main.css": "/pages/profile/static/css/main.81e07a20.css",
+    "main.js": "/pages/profile/static/js/main.956f9781.js",
     "static/js/787.942d2aa2.chunk.js": "/pages/profile/static/js/787.942d2aa2.chunk.js",
     "static/media/EndzoneMainLogo.png": "/pages/profile/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
     "index.html": "/pages/profile/index.html",
-    "main.e0def16c.css.map": "/pages/profile/static/css/main.e0def16c.css.map",
-    "main.fe11e0c9.js.map": "/pages/profile/static/js/main.fe11e0c9.js.map",
+    "main.81e07a20.css.map": "/pages/profile/static/css/main.81e07a20.css.map",
+    "main.956f9781.js.map": "/pages/profile/static/js/main.956f9781.js.map",
     "787.942d2aa2.chunk.js.map": "/pages/profile/static/js/787.942d2aa2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e0def16c.css",
-    "static/js/main.fe11e0c9.js"
+    "static/css/main.81e07a20.css",
+    "static/js/main.956f9781.js"
   ]
 }

@@ -18,35 +18,19 @@ class User(db.Model):
     Phone_Number =  db.Column(db.String(15), unique = False, nullable = False)
     First_Name = db.Column(db.String(50), unique = False, nullable = False)
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
-    curSquad = db.Column(db.String(50), unique = False, nullable = True)
-    ## squads = db.Column(db.List(), unique = False, nullable = False)
+    Current_Squad = db.Column(db.String(50), unique = False, nullable = True)
     Stage = db.Column(db.String(25), unique = False, nullable = False)
     # To-Do add join date
 
-    def __init__(self, first_name, last_name, email, phone_number, password, stage) -> None:
+    def __init__(self, first_name, last_name, email, phone_number, password, Current_Squad, stage) -> None:
         self.ID = gen_primary_key()
         self.First_Name = first_name
         self.Last_Name = last_name
         self.Password = password 
         self.Email = email
         self.Phone_Number = phone_number
+        self.Current_Squad = Current_Squad
         self.Stage = stage
-        
-        
-    def get_id(self) -> str:
-        return self.ID
-
-    def get_first_name(self) -> str:
-        return self.First_Name
-
-    def get_last_name(self) -> str:
-        return self.Last_Name
-
-    def get_email(self) -> str:
-        return self.Email
-
-    def get_phone(self) -> str:
-        return self.Phone_Number
 
 
 class Team(db.Model):
