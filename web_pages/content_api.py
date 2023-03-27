@@ -46,4 +46,4 @@ def hub():
 @content_api.route("/endzone/account/profile", methods = ["GET"])
 @login_required
 def profile():
-    return render_template("/profile/display_profile.html")
+    return render_template("/profile/index.html")

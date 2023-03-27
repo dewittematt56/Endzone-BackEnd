@@ -30,7 +30,6 @@ def getProfile():
             db.session.query(User).filter(User.ID == current_user.id).update({"Current_Squad": squads[0]})
             db.session.commit()
 
-
         response = jsonify({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "email": current_user.Email, "phone": current_user.Phone, 
                             "squads": squads, "curSquad": current_user.Current_Squad, "squadsList": squadsList})
         return make_response(response, 200)
@@ -44,22 +43,19 @@ def setProfile():
     if request.method != 'PUT':
         return make_response("Error: Incorrect request method", 405)
     data = json.loads(request.get_data())
-    print(data)
-    user_db = db.session.query(User.ID == current_user.id)
 
     if 'first_name' in data and 'last_name' in data:
         try:
             db.session.query(User).filter(User.ID == current_user.id).update({"First_Name": data['first_name'], "Last_Name": data['last_name']})
             db.session.commit()
-            return make_response("Success: user's name updated.", 200)
+            return make_response("Success: user's name has been updated.", 200)
         except Exception as e:
-            print(e)
             return make_response("Error: failed to update 'first name' and/or 'last name' in database.", 500)
     elif 'email' in data:
         try:
             db.session.query(User).filter(User.ID == current_user.id).update({"Email": data['email']})
             db.session.commit()
-            return make_response("Success: user's email updated.", 200)
+            return make_response("Success: user's email has been updated.", 200)
         except Exception as e:
             print(e)
             return make_response("Error: failed to update 'email' in database.", 500)
@@ -67,7 +63,7 @@ def setProfile():
         try:
             db.session.query(User).filter(User.ID == current_user.id).update({"Phone_Number": data['phone']})
             db.session.commit()
-            return make_response("Success: user's phone updated.", 200)
+            return make_response("Success: user's phone number has been updated.", 200)
         except Exception as e:
             print(e)
             return make_response("Error: failed to update 'phone' in database.", 500)
@@ -75,7 +71,7 @@ def setProfile():
         try:
             db.session.query(User).filter(User.ID == current_user.id).update({"Current_Squad": data['curSquad']})
             db.session.commit()
-            return make_response("Success: user updated.", 200)
+            return make_response("Success: user's current squad has been updated.", 200)
         except Exception as e:
             print(e)
             return make_response("Error: failed to update 'current squad' in database.", 500)
