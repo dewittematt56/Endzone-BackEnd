@@ -115,13 +115,19 @@ def updateFormation():
             data = json.loads(request.get_data())
 
             id = data["id"]            
-            formation = data["Formation"]
-            wr = data["wr"]
-            te = data["te"]
-            rb = data["rb"]
-            image = data["image"]
-            teamCode = data["teamCode"]
-            squadCode = data["squadCode"]
+            formation = data["formation"]
+            wr = data["wideRecievers"]
+            te = data["tightEnds"]
+            rb = data["runningBacks"]
+
+            if "image" in data.keys():
+                try:
+                    image = bytes(data["image"], "ascii")
+                except Exception as e:
+                    image = None
+                
+            teamCode = current_user.Team_Code
+            squadCode = "test"
 
             query = db.session.query(Team).filter(Team.Team_Code == teamCode)
             query_response = query.all()
@@ -132,23 +138,27 @@ def updateFormation():
             if hasLetter(formation) == False and hasNumber(formation) == False:
                 return Response("Formation needs to include at least one letter or number", status = 404)
             
-            if wr > 5:
+            if int(wr) > 5:
                 return Response("You can have a maximum of 5 wide recievers in a formation",status = 404)
-            elif wr < 0:
+            elif int(wr) < 0:
                 return Response("Negative numbers are not allowed",status = 404)
             
-            if te > 3:
+            if int(te) > 3:
                 return Response("You can have a maximum of 3 tight ends in a formation", status = 404)
-            elif te < 0:
+            elif int(te) < 0:
                 return Response("Negative numbers are not allowed",status = 404)
             
-            if rb > 2:
+            if int(rb) > 2:
                 return Response("A maximum of two running backs are allowed in a formation",status = 404)
-            elif rb < 0:
+            elif int(rb) < 0:
                 return Response("Negative numbers are not allowed",status = 404)
             
-            db.session.query(Formations).filter(Formations.ID == id).update({"Formation": data['Formation'],"wideRecievers":data["wr"],"tightEnds":data["te"],"runningBacks":data["rb"],"Image":data["image"],
+            if image:
+                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation,"wideRecievers": wr,"tightEnds": te,"runningBacks": rb,"Image": image,
                                                                             "Team_Code":data["teamCode"],"Squad_Code":data["squadCode"]})
+            else:
+                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation, "wideRecievers": wr,"tightEnds": te,"runningBacks": rb,
+                                                                            "Team_Code": teamCode,"Squad_Code": squadCode})
             db.session.commit()
     
     except Exception as e:

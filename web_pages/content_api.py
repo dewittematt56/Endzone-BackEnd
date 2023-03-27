@@ -14,9 +14,9 @@ def contactUs():
 def pricing():
     return render_template("/public/pricing/pricing.html")
 
-@content_api.route("/product", methods = ["GET"])
+@content_api.route("/products", methods = ["GET"])
 def product():
-    return render_template("/public/product/product.html")
+    return render_template("/public/products/products.html")
 
 @content_api.route("/login", methods = ["GET"])
 def login():
