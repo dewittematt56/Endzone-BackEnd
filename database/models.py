@@ -7,7 +7,7 @@ from sqlalchemy import DateTime
 
 # Creates a team key
 def gen_primary_key():
-    return str(uuid.uuid4)
+    return str(uuid.uuid4())
 
 class User(db.Model):
     """ Class representation of the User table in the Endzone database
@@ -121,47 +121,59 @@ class Play(db.Model):
     __tablename__ = "Play"
     ID = db.Column(db.String(36), primary_key = True)
     Game_ID = db.Column(db.String(36), unique = False, nullable = False)
-    Play_Number = db.Column(db.Integer, autoincrement = True, nullable = False) 
+    Play_Number = db.Column(db.Integer, autoincrement = True, nullable = False)
+    Drive = db.Column(db.Integer, nullable = False) 
     Possession = db.Column(db.String(100), nullable = False)
     Yard = db.Column(db.Integer, nullable = False) 
     Hash = db.Column(db.String, nullable = False) 
     Down = db.Column(db.Integer, nullable = False)
     Distance = db.Column(db.Integer, nullable = False)
     Quarter = db.Column(db.Integer, nullable = False)
+    Motion = db.Column(db.String(25), nullable = False, default = "None")
     D_Formation = db.Column(db.String(25), nullable = False)
     O_Formation = db.Column(db.String(25), nullable = False)
     Formation_Strength = db.Column(db.String(10), nullable = False) 
+    Home_Score = db.Column(db.Integer, nullable = False, default = 0)
+    Away_Score = db.Column(db.Integer, nullable = False, default = 0)
     Play_Type = db.Column(db.String(35), nullable = False)
-    Play = db.Column(db.String(100), nullable = False)
+    Play = db.Column(db.String(100), nullable = True, default = "Unknown")
     Play_Type_Dir = db.Column(db.String(35), nullable = False)
-    Pass_Zone = db.Column(db.String(35), nullable = False)
-    Pressure_Left = db.Column(db.Boolean(35), nullable = False) 
-    Pressure_Middle = db.Column(db.Boolean(35), nullable = False)
-    Pressure_Right = db.Column(db.Boolean(35), nullable = False)
-    Ball_Carrier = db.Column(db.String(2), nullable = False)
-    Event = db.Column(db.String(35), nullable = False) 
+    Pass_Zone = db.Column(db.String(35), nullable = True, default = "Non Passing Play")
+    Coverage = db.Column(db.String(35), nullable = False)
+    Pressure_Left = db.Column(db.Boolean(35), nullable = False, default = False) 
+    Pressure_Middle = db.Column(db.Boolean(35), nullable = False, default = False)
+    Pressure_Right = db.Column(db.Boolean(35), nullable = False, default = False)
+    Ball_Carrier = db.Column(db.Integer, nullable = False, default = -99)
+    Event = db.Column(db.String(35), nullable = False, default = "None") 
     Result = db.Column(db.Integer, nullable = False) 
     Result_X = db.Column(db.Float(35), nullable = False) 
     Result_Y = db.Column(db.Float(35), nullable = False) 
     Play_X = db.Column(db.Float(35), nullable = False) 
-    Play_Y = db.Column(db.Float(35), nullable = False) 
+    Play_Y = db.Column(db.Float(35), nullable = False)
+    Pass_X = db.Column(db.Float(35), nullable = True, default = 0) 
+    Pass_Y = db.Column(db.Float(35), nullable = True, default = 0)  
+    Creator = db.Column(db.String(36), unique = False, nullable = False)
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
 
-    def __init__(self, gameId : str, playNumber  : int, possession : str, yard : int, hash : str, down : int, distance : int, quarter : int, dFormation : str, 
-                 oFormation : str, formationStrength : str, playType : str, play : str, playTypeDir : str, passZone : str, coverage : str, pressureLeft : str, 
-                 pressureMiddle : str, pressureRight : str, ballCarrier : str, event : str, result : str, resultX : str, resultY : str, playX: str, playY: str) -> None:
+    def __init__(self, gameId : str, playNumber: int, drive: int, possession : str, yard : int, hash : str, down : int, distance : int, quarter : int, motion: str, dFormation : str, 
+                 oFormation : str, formationStrength : str, homeScore: int, awayScore: int, playType : str, play : str, playTypeDir : str, passZone : str, coverage : str, pressureLeft : bool, 
+                 pressureMiddle : bool, pressureRight : bool, ballCarrier : str, event : str, result : str, resultX : str, resultY : str, playX: float, playY: float, passX: float, passY: float) -> None:
         self.ID = gen_primary_key()
         self.Game_ID = gameId
         self.Play_Number = playNumber
+        self.Drive = drive
         self.Possession = possession
         self.Yard = yard
         self.Hash = hash
         self.Down = down
         self.Distance = distance
         self.Quarter = quarter
+        self.Motion = motion
         self.D_Formation = dFormation
         self.O_Formation = oFormation
         self.Formation_Strength = formationStrength
+        self.Home_Score = homeScore
+        self.Away_Score = awayScore
         self.Play_Type = playType
         self.Play = play
         self.Play_Type_Dir = playTypeDir
@@ -177,6 +189,9 @@ class Play(db.Model):
         self.Result_Y = resultY
         self.Play_X = playX
         self.Play_Y = playY
+        self.Pass_X = passX
+        self.Pass_Y = passY
+        self.Creator = current_user.id
         self.Creation_Date = datetime.datetime.utcnow()
 
     def get_id(self) -> str:
@@ -195,7 +210,7 @@ class Squad(db.Model):
 
 class Game(db.Model):
     __tablename__ = "Game"
-    ID = db.Column(db.Integer, autoincrement = True, primary_key= True) # Update to unique key!
+    Game_ID = db.Column(db.String(36), primary_key = True)
     Home_Team = db.Column(db.String(36), unique = False, nullable = False)
     Away_Team = db.Column(db.String(36), unique = False, nullable = False)
     Game_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
@@ -205,6 +220,7 @@ class Game(db.Model):
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
 
     def __init__(self, home_team: str, away_team: str, game_date: datetime.datetime, type: str) -> None:
+        self.Game_ID = gen_primary_key()
         self.Home_Team = home_team
         self.Away_Team = away_team
         self.Game_Date = game_date
