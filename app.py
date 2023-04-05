@@ -1,24 +1,37 @@
-from flask import Flask, request, Response, redirect
+from flask import Flask, request, Response, redirect, jsonify
 from flask_login import login_manager, LoginManager, login_user, current_user
+
 from database.db import db, db_uri
 from database.models import *
 from login_api.login_persona import LoggedInPersona
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
+from reports_api.reports_api import report_api, report_executor
+from flask_executor import Executor
+
 import json
 import re
+import time
 
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = 'secret key'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    
+app.config['EXECUTOR_TYPE'] = 'thread'
+app.config['EXECUTOR_MAX_WORKERS'] = 5
+
 app.register_blueprint(content_api)
 app.register_blueprint(utils_api)
 app.register_blueprint(data_api)
-    
+app.register_blueprint(report_api)
+
+# Executors
+report_executor.init_app(app)
+
 db.init_app(app)
+
 # builds database if not existing
 with app.app_context():
     db.create_all()
@@ -154,7 +167,6 @@ def register():
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-
 @app.route('/account/team/create', methods = ['POST'])
 def createTeam():
     try:
@@ -222,6 +234,28 @@ def createTeam():
     except Exception as e:
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+
+@report_executor.job
+def GenerateReport():
+    time.sleep(10)
+    return "Success"
+
+
+@app.route("/report", methods = ['GET'])
+def Report():
+    id = uuid.uuid4()
+    GenerateReport.submit_stored(str(id))
+    return jsonify({'status': 'success', 'task_id': id}), 202
+
+@app.route("/report/<task_id>", methods = ['GET'])
+def GetReport(task_id):
+    print(task_id)
+    print(executor.futures.done(str(task_id)))
+    if not executor.futures.done(task_id):
+        return jsonify({'status': executor.futures._state(task_id)}), 202
+    
+    future = executor.futures.pop(task_id)
+    return jsonify({'status': 'done', 'result': future.result()})
 
 if __name__ == "__main__":
     app.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)
