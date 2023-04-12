@@ -72,15 +72,17 @@ class Team(db.Model):
     Team_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
     Team_Name = db.Column(db.String(50), unique= False, nullable = False)
     State = db.Column(db.String(2), nullable = False)
+    City = db.Column(db.String(100), nullable = False)
     Address = db.Column(db.String(320), nullable = False)
     Zip = db.Column(db.String(5), nullable = False)
     Competition_Level = db.Column(db.String(50), nullable = True)
     
-    def __init__(self, team_name: str, state: str, address: str, zip: str, comp_level: str) -> None:
+    def __init__(self, team_name: str, state: str, address: str, zip: str, city: str, comp_level: str) -> None:
         self.Team_Code = gen_primary_key()
         self.Team_Name = team_name
         self.State = state
         self.Address = address
+        self.City = city
         self.Zip = zip
         self.Competition_Level = comp_level
 
@@ -91,20 +93,20 @@ class Formations(db.Model):
     __tablename__ = "Formation"
     ID = db.Column(db.Integer, autoincrement = True, primary_key= True)
     Formation = db.Column(db.String(50), unique = False, nullable = False)
-    wideReceivers = db.Column(db.Integer, nullable = False)
-    tightEnds = db.Column(db.Integer, nullable = False)
-    runningBacks = db.Column(db.Integer, nullable = False)
+    Wide_Receivers = db.Column(db.Integer, nullable = False)
+    Tight_Ends = db.Column(db.Integer, nullable = False)
+    Running_Backs = db.Column(db.Integer, nullable = False)
     Image = db.Column(db.LargeBinary, nullable = True) # Confused on how to do the blob thing
     Team_Code = db.Column(db.String(36), nullable = False)
     Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False)
     Creator = db.Column(db.String(36), unique = False, nullable = False)
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
 
-    def __init__(self, formation: str, wideReceivers: int, tightEnds: int, runningBacks: int, image: str, teamCode: str, squadCode: str)-> None:
+    def __init__(self, formation: str, wideReceivers: int, tightEnds: int, runningBacks: int, image: str)-> None:
         self.Formation = formation
-        self.wideReceivers = wideReceivers
-        self.tightEnds = tightEnds
-        self.runningBacks = runningBacks
+        self.Wide_Receivers = wideReceivers
+        self.Tight_Ends = tightEnds
+        self.Running_Backs = runningBacks
         self.Image = image
         self.Team_Code = current_user.Team_Code
         self.Squad_Code = current_user.Squad_Code

@@ -28,17 +28,17 @@ def getUser():
 @utils_api.route("/endzone/utils/formation/add", methods = ["POST"])
 def formationAdd():
     try:
-        params = ["formation", "wideRecievers", "tightEnds", "runningBacks"]
+        params = ["Formation", "WideRecievers", "TightEnds", "RunningBacks"]
         if request.method == "POST":
             data = json.loads(request.get_data())
             
             for param in params:
                 if param not in data.keys():
                     return Response('Please Provide a ' + param, status = 400)
-            formation = data["formation"]
-            wr = int(data["wideRecievers"])
-            te = int(data["tightEnds"])
-            rb = int(data["runningBacks"])
+            formation = data["Formation"]
+            wr = int(data["WideRecievers"])
+            te = int(data["TightEnds"])
+            rb = int(data["RunningBacks"])
             image = None
 
             if "image" in data.keys():
@@ -48,26 +48,23 @@ def formationAdd():
                     image = None
             else:
                 image = None
-            teamCode = current_user.Team_Code
-            squadCode = "test"
- 
             if len(formation) == 0:
                 return Response("Formation needs to include at least one letter or number", status = 400)
 
             if wr > 5:
-                return Response("You can have a maximum of 5 wide recievers in a formation", status = 400)
+                return Response("You can have a maximum of 5 Wide Recievers in a formation", status = 400)
             elif wr < 0:
                 return Response("Negative numbers are not allowed", status = 400)
             if te > 3:
-                return Response("You can have a maximum of 3 tight ends in a formation", status = 400)
+                return Response("You can have a maximum of 3 Tight Ends in a formation", status = 400)
             elif te < 0:
                 return Response("Negative numbers are not allowed", status = 400)
             if rb > 3:
-                return Response("A maximum of 3 running backs are allowed in a formation",status = 400)
+                return Response("A maximum of 3 Running Backs are allowed in a formation",status = 400)
             elif rb < 0:
                 return Response("Negative numbers are not allowed", status = 400)
             
-            new_formation = Formations(formation, wr, te, rb, image, teamCode, squadCode) 
+            new_formation = Formations(formation, wr, te, rb, image) 
             db.session.add(new_formation)
             db.session.commit() # this is not working
             return "Success"
@@ -130,7 +127,6 @@ def updateFormation():
                     image = None
                 
             teamCode = current_user.Team_Code
-            squadCode = "test"
 
             query = db.session.query(Team).filter(Team.Team_Code == teamCode)
             query_response = query.all()
@@ -157,11 +153,9 @@ def updateFormation():
                 return Response("Negative numbers are not allowed in a formation",status = 400)
             
             if image:
-                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation,"wideRecievers": wr,"tightEnds": te,"runningBacks": rb,"Image": image,
-                                                                            "Team_Code":data["teamCode"],"Squad_Code":data["squadCode"]})
+                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation,"wideRecievers": wr,"tightEnds": te,"runningBacks": rb,"Image": image})
             else:
-                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation, "wideRecievers": wr,"tightEnds": te,"runningBacks": rb,
-                                                                            "Team_Code": teamCode,"Squad_Code": squadCode})
+                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation, "wideRecievers": wr,"tightEnds": te,"runningBacks": rb})
             db.session.commit()
     
     except Exception as e:
@@ -222,26 +216,26 @@ def addPlay():
             # Validation
             formationStrengths = ["Left", "Right", "Balanced", "Unknown"]
             playTypes = ["Inside Run", "Outside Run", "Pass", "Boot Pass", "Option", "Unknown"]
-            passZones = ["Flat-Left", "Flat-Right", "Middle-Left", "Middle-Middle", "Middle-Right", "Deep-Left", "Deep-Right", "Unknown", "Non Passing Play", "Not Thrown"]
+            passZones = ["Flats-Left", "Flats-Right", "Middle-Left", "Middle-Middle", "Middle-Right", "Deep-Left", "Deep-Right", "Unknown", "Non Passing Play", "Not Thrown"]
             coverages = ["Man 0", "Man 1", "Man 2", "Man 3", "Zone 2", "Zone 3", "Zone 4", "Prevent", "Unknown"]
             events = ["Penalty", "Interception", "Touchdown", "Fumble", "Field Goal", "Safety", "None"]
 
-            if playNumber not in range(0,1000):
+            if int(playNumber) not in range(0,1000):
                 return Response("Play number must be in the range of 0 to 999", status = 400)
             
-            if yard not in range(1,101):
+            if int(yard) not in range(1,101):
                 return Response("The yardage must be in range of 1 to 100", status = 400)
             
             if hash != "Left" and hash != "Right" and hash != "Middle":
                 return Response("Hash must be either Left, Right, or Middle", status = 400)
             
-            if down not in range(1,5):
+            if int(down) not in range(1,5):
                 return Response("Down must be in range from 1 to 4", status = 400)
             
-            if distance not in range(1,101):
+            if int(distance) not in range(1,101):
                 return Response("Distance must be in range from 1 to 100", status = 400)
             
-            if quarter not in range(1,6):
+            if int(quarter) not in range(1,6):
                 return Response("Quarter must be in range from 1 to 5", status = 400)
             
             if formationStrength not in formationStrengths:
@@ -291,7 +285,6 @@ def addPlay():
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-# To-Do: Add Motion
 @login_required
 @utils_api.route("/endzone/utils/play/update", methods = ["POST"])
 def updatePlay():
@@ -353,8 +346,8 @@ def updatePlay():
             if distance not in range(1,101):
                 return Response("Distance must be in range from 1 to 100", status = 404)
             
-            if quarter not in range(1,6):
-                return Response("Quarter must be in range from 1 to 5", status = 404)
+            # if quarter not in range(1,6):
+            #     return Response("Quarter must be in range from 1 to 5", status = 404)
             
             if formationStrength not in formationStrengths:
                 return Response("Formation Strength must be either Left, Right, Balanced, or Unknown", status = 404)
