@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+            }
+            .title-div {
+                width: 100%;
+                display: inline-block;
+                text-align: center;
+            }
+            .title-div h2{
+                font-size: 25px;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: underline;
+            }
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                width: 100%;
+                
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 20px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+                font-size: 15px;
+            }
+
+            .bad-td {
+                background-color: #FF5252;
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .good-td {
+                background-color: #4CAF50;
+            }
+            p {
+                text-align: left;
+            }
+            .piechart {
+                height: 400px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "title-div">
+            <h2>{{ team }} Offensive Overview</h2>
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                <tr>
+                    <th>Offensive Efficiencies</th>
+                    <th>Efficiency</th>
+                    <th>Plays Observed</th>
+                </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td>Overall Efficiency</td>
+                            <td class="{% if efficiency_data.EfficiencyOverall[0] >= 65 %}good-td{% elif efficiency_data.EfficiencyOverall[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.EfficiencyOverall[0] }}%</td>
+                            <td>{{ efficiency_data.EfficiencyOverall[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - 1st Down</td>
+                            <td class="{% if efficiency_data.EfficiencyFirst[0] > 65 %}good-td{% elif efficiency_data.EfficiencyFirst[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.EfficiencyFirst[0] }}%</td>
+                            <td>{{ efficiency_data.EfficiencyFirst[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - 2nd Down</td>
+                            <td class="{% if efficiency_data.EfficiencySecond[0] >= 65 %}good-td{% elif efficiency_data.EfficiencySecond[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.EfficiencySecond[0] }}%</td>
+                            <td>{{ efficiency_data.EfficiencySecond[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - 3rd Down</td>
+                            <td class="{% if efficiency_data.EfficiencyThird[0] >= 65 %}good-td{% elif efficiency_data.EfficiencyThird[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.EfficiencyThird[0] }}%</td>
+                            <td>{{ efficiency_data.EfficiencyThird[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - Pressure</td>
+                            <td class="{% if efficiency_data.EfficiencyPressure[0] >= 65 %}good-td{% elif efficiency_data.EfficiencyPressure[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.EfficiencyPressure[0] }}%</td>
+                            <td>{{ efficiency_data.EfficiencyPressure[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - Edge Pressure</td>
+                            <td class="{% if efficiency_data.EfficiencyPressureEdge[0] >= 65 %}good-td{% elif efficiency_data.EfficiencyPressureEdge[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.EfficiencyPressureEdge[0] }}%</td>
+                            <td>{{ efficiency_data.EfficiencyPressureEdge[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - Middle Pressure</td>
+                            <td class="{% if efficiency_data.EfficiencyPressureMiddle[0] >= 65 %}good-td{% elif efficiency_data.EfficiencyPressureMiddle[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.EfficiencyPressureMiddle[0] }}%</td>
+                            <td>{{ efficiency_data.EfficiencyPressureMiddle[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - Inside Runs</td>
+                            <td class="{% if efficiency_data.InsideRunsEfficiency[0] >= 65 %}good-td{% elif efficiency_data.InsideRunsEfficiency[0] > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.InsideRunsEfficiency[0] }}%</td>
+                            <td>{{ efficiency_data.InsideRunsEfficiency[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - Outside Runs</td>
+                            <td class="{% if efficiency_data.OutsideRunsEfficiency[0] >= 65 %}good-td{% elif efficiency_data.OutsideRunsEfficiency[0]  > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.OutsideRunsEfficiency[0] }}%</td>
+                            <td>{{ efficiency_data.OutsideRunsEfficiency[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency - Pass</td>
+                            <td class="{% if efficiency_data.PassEfficiency[0]  >= 65  %}good-td{% elif efficiency_data.PassEfficiency[0]  > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.PassEfficiency[0] }}%</td>
+                            <td>{{ efficiency_data.PassEfficiency[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Overall NFL Efficiency</td>
+                            <td class="{% if efficiency_data.NFLEfficiencyOverall[0]  >= 65  %}good-td{% elif efficiency_data.NFLEfficiencyOverall[0]  > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.NFLEfficiencyOverall[0] }}%</td>
+                            <td>{{ efficiency_data.NFLEfficiencyOverall[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>NFL Efficiency - 1st Down</td>
+                            <td class="{% if efficiency_data.NFLEfficiencyFirst[0]  >= 65  %}good-td{% elif efficiency_data.NFLEfficiencyFirst[0]  > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.NFLEfficiencyFirst[0] }}%</td>
+                            <td>{{ efficiency_data.NFLEfficiencyFirst[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>NFL Efficiency - 2nd Down</td>
+                            <td class="{% if efficiency_data.NFLEfficiencySecond[0]  >= 65  %}good-td{% elif efficiency_data.NFLEfficiencySecond[0]  > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.NFLEfficiencySecond[0] }}%</td>
+                            <td>{{ efficiency_data.NFLEfficiencySecond[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Third Down Conversion Rate</td>
+                            <td class="{% if efficiency_data.ThirdDownConversionRate[0] >= 65 %}good-td{% elif efficiency_data.ThirdDownConversionRate[0]  > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.ThirdDownConversionRate[0] }}%</td>
+                            <td>{{ efficiency_data.ThirdDownConversionRate[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Fourth Down Conversion Rate</td>
+                            <td class="{% if efficiency_data.FourthDownConversionRate[0] >= 65 %}good-td{% elif efficiency_data.FourthDownConversionRate[0]  > 35  %}netural-td{% else %}bad-td{% endif %}">{{ efficiency_data.FourthDownConversionRate[0] }}%</td>
+                            <td>{{ efficiency_data.FourthDownConversionRate[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Explosive Play Rate</td>
+                            <td>{{ efficiency_data.explosivePlayRate[0] }}%</td>
+                            <td>{{ efficiency_data.explosivePlayRate[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Negative Play Rate</td>
+                            <td>{{ efficiency_data.negativePlayRate[0] }}%</td>
+                            <td>{{ efficiency_data.negativePlayRate[1] }}</td>
+                        </tr>
+
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                <tr>
+                    <th>{{ Team }} Offensive Yardage</th>
+                    <th>Total</th>
+                    <th>Per Game</th>
+                    <th>Per Play</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Yards</td>
+                        <td>{{ yardage_data.totalYards[0] }}</td>
+                        <td>{{ yardage_data.totalYards[1] }}</td>
+                        <td>{{ yardage_data.totalYards[2] }}</td>
+                    </tr> 
+                    <tr>
+                        <td>Inside Run Yards</td>
+                        <td>{{ yardage_data.insideRunYards[0] }}</td>
+                        <td>{{ yardage_data.insideRunYards[1] }}</td>
+                        <td>{{ yardage_data.insideRunYards[2] }}</td>
+                    </tr> 
+                    <tr>
+                        <td>Outside Run Yards</td>
+                        <td>{{ yardage_data.outsideRunYards[0] }}</td>
+                        <td>{{ yardage_data.outsideRunYards[1] }}</td>
+                        <td>{{ yardage_data.outsideRunYards[2] }}</td>
+                    </tr> 
+                    <tr>
+                        <td>Passing Yards</td>
+                        <td>{{ yardage_data.passingYards[0] }}</td>
+                        <td>{{ yardage_data.passingYards[1] }}</td>
+                        <td>{{ yardage_data.passingYards[2] }}</td>
+                    </tr> 
+                </tbody>
+            </table>
+            <div>
+                <img src="data:image/png;base64, {{ play_type_chart }}" alt="Play Type Pie Chart" class="piechart">
+                <ul>
+                    <li><p><u>Efficency:</u> Any play resulting in a gain of 3 or more yards <b>or</b> a first down</p></li>
+                    <li><p><u>NFL Efficency:</u>  First Down Gain must be 30% the Distance, Second Down 60% and Third and Fourth 100%</p></li>
+                    <li><p><u>Explosive Play:</u>  Rush of 10+ yards, Pass of 20+ yards</p></li>
+                </ul>
+            </div>
+
+
+        </div>
+    </body>
+</html>

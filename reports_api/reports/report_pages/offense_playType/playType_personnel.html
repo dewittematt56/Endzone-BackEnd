@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+            }
+            .title-div {
+                width: 100%;
+                display: inline-block;
+                text-align: center;
+            }
+            .title-div h2{
+                font-size: 25px;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: underline;
+            }
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                width: 100%;
+                
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 20px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+                font-size: 15px;
+            }
+
+            .bad-td {
+                background-color: #74b9ff
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .good-td {
+                background-color: #FF5252;
+            }
+            .piechart {
+                height: 300px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+            }
+            .barchart {
+                border: 0px;
+                z-index: -1;
+                width: 600px;
+                margin-top: 5px;
+            }
+
+            .chart-div {
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "title-div">
+            <h2>{{ team }} Play Type - Personnel & Formation</h2>
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in personnel_playType.columns %}
+                            <th> {{ column }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in personnel_playType.iterrows() %}
+                        <tr>
+                            {% for column in personnel_playType.columns %}
+                                {% if column == "Personnel" %}
+                                <td><b>{{ row[column] }}</b></td>
+                                {% else %}
+                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in formation_playType.columns %}
+                            <th> {{ column }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in formation_playType.iterrows() %}
+                        <tr>
+                            {% for column in formation_playType.columns %}
+                                {% if column == "Formation" %}
+                                <td><b>{{ row[column] }}</b></td>
+                                {% else %}
+                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ personnel_chart }}" alt="Personnel Pie Chart" class="piechart">
+            <img src="data:image/png;base64, {{ formation_chart }}" alt="Formation Pie Chart" class="piechart">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ bar_plot }}" alt="Bar Graph of Play Type by Formation" class="barchart">
+            <p>Play Type by Formation</p>
+        </div>
+    </body>
+</html>

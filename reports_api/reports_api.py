@@ -14,8 +14,7 @@ report_api = Blueprint("report_api", __name__)
 #@report_executor.job
 def TestReport():
     report = PregameReport()
-    
-    pdf = report.title_page()
+    pdf = report.combine_reports()
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
