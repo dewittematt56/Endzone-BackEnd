@@ -1,55 +1,4 @@
---
--- PostgreSQL database dump
---
 
--- Dumped from database version 14.1
--- Dumped by pg_dump version 14.1
-
--- Started on 2023-04-11 21:27:45
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-DROP DATABASE "Endzone-Test";
---
--- TOC entry 3332 (class 1262 OID 156799)
--- Name: Endzone-Test; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE "Endzone-Test" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'English_United States.1252';
-
-
-ALTER DATABASE "Endzone-Test" OWNER TO postgres;
-
-\connect -reuse-previous=on "dbname='Endzone-Test'"
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
---
--- TOC entry 216 (class 1259 OID 189885)
--- Name: Play; Type: TABLE; Schema: public; Owner: Endzone
---
 
 CREATE TABLE public."Play" (
     "ID" character varying(36) NOT NULL,
@@ -89,14 +38,6 @@ CREATE TABLE public."Play" (
     "Creation_Date" timestamp without time zone
 );
 
-
-ALTER TABLE public."Play" OWNER TO "Endzone";
-
---
--- TOC entry 3326 (class 0 OID 189885)
--- Dependencies: 216
--- Data for Name: Play; Type: TABLE DATA; Schema: public; Owner: Endzone
---
 
 INSERT INTO public."Play" ("ID", "Game_ID", "Play_Number", "Drive", "Possession", "Yard", "Hash", "Down", "Distance", "Quarter", "Motion", "D_Formation", "O_Formation", "Formation_Strength", "Home_Score", "Away_Score", "Play_Type", "Play", "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result", "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Creator", "Creation_Date") VALUES ('3240', '4f9da333-e1b5-4e81-83d3-e630b44d9b87', 33, 19, 'Burnsville', 65, 'Right', 2, 5, 4, 'Unknown', '3-4', 'Double Wide', 'Left', 0, 0, 'Outside Run', NULL, 'Left', 'Non-Passing-Play', 'Zone 4', false, false, false, 2, 'Turnover', 24, 8.85672996129329, 5.931039241194341, 6.461807247892547, 5.898282310919432, 0, 0, 'Endzone-System', '2022-01-01 00:00:00');
 INSERT INTO public."Play" ("ID", "Game_ID", "Play_Number", "Drive", "Possession", "Yard", "Hash", "Down", "Distance", "Quarter", "Motion", "D_Formation", "O_Formation", "Formation_Strength", "Home_Score", "Away_Score", "Play_Type", "Play", "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result", "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Creator", "Creation_Date") VALUES ('3208', '4f9da333-e1b5-4e81-83d3-e630b44d9b87', 1, 1, 'Burnsville', 20, 'Middle', 1, 10, 1, 'Unknown', '3-4', 'Spread', 'Right', 0, 0, 'Inside Run', NULL, 'Right', 'Non-Passing-Play', 'Zone 4', false, false, false, 24, 'None', 1, 2.129406808495282, 5.001047203121441, 2, 5, 0, 0, 'Endzone-System', '2022-01-01 00:00:00');
@@ -4117,29 +4058,3 @@ INSERT INTO public."Play" ("ID", "Game_ID", "Play_Number", "Drive", "Possession"
 INSERT INTO public."Play" ("ID", "Game_ID", "Play_Number", "Drive", "Possession", "Yard", "Hash", "Down", "Distance", "Quarter", "Motion", "D_Formation", "O_Formation", "Formation_Strength", "Home_Score", "Away_Score", "Play_Type", "Play", "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result", "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Creator", "Creation_Date") VALUES ('2161', '13a26304-bb8c-4cbe-8efa-059dbefe6249', 67, 12, 'Woodbury', 96, 'Middle', 1, 10, 1, 'Unknown', '4-3', 'Tray', 'Left', 0, 0, 'Inside Run', NULL, 'Left', 'Non-Passing-Play', 'Man 1', false, true, false, -99, 'Touchdown', 4, 10, 5.045, 9.6, 4, 0, 0, 'Endzone-System', '2022-01-01 00:00:00');
 INSERT INTO public."Play" ("ID", "Game_ID", "Play_Number", "Drive", "Possession", "Yard", "Hash", "Down", "Distance", "Quarter", "Motion", "D_Formation", "O_Formation", "Formation_Strength", "Home_Score", "Away_Score", "Play_Type", "Play", "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result", "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Creator", "Creation_Date") VALUES ('2119', '13a26304-bb8c-4cbe-8efa-059dbefe6249', 25, 2, 'White-Bear-Lake', 98, 'Left', 2, 7, 1, 'Unknown', '4-3', 'Wing', 'Right', 0, 0, 'Inside Run', NULL, 'Left', 'Non-Passing-Play', 'Man 0', false, true, false, -99, 'Touchdown', 2, 10, 5.045, 9.8, 5.045, 0, 0, 'Endzone-System', '2022-01-01 00:00:00');
 INSERT INTO public."Play" ("ID", "Game_ID", "Play_Number", "Drive", "Possession", "Yard", "Hash", "Down", "Distance", "Quarter", "Motion", "D_Formation", "O_Formation", "Formation_Strength", "Home_Score", "Away_Score", "Play_Type", "Play", "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result", "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Creator", "Creation_Date") VALUES ('2174', '13a26304-bb8c-4cbe-8efa-059dbefe6249', 80, 14, 'Woodbury', 99, 'Middle', 1, 1, 1, 'Unknown', '4-3', 'Twins', 'Right', 0, 0, 'Inside Run', NULL, 'Right', 'Non-Passing-Play', 'Man 0', true, true, false, -99, 'Touchdown', 1, 10, 5.045, 9.9, 4, 0, 0, 'Endzone-System', '2022-01-01 00:00:00');
-
-
---
--- TOC entry 3186 (class 2606 OID 189891)
--- Name: Play Play_pkey; Type: CONSTRAINT; Schema: public; Owner: Endzone
---
-
-ALTER TABLE ONLY public."Play"
-    ADD CONSTRAINT "Play_pkey" PRIMARY KEY ("ID");
-
-
---
--- TOC entry 3333 (class 0 OID 0)
--- Dependencies: 3332
--- Name: DATABASE "Endzone-Test"; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT ALL ON DATABASE "Endzone-Test" TO "Endzone";
-
-
--- Completed on 2023-04-11 21:27:45
-
---
--- PostgreSQL database dump complete
---
-
