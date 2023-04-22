@@ -1,16 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/coaches-corner/hub/static/css/main.2b4a8511.css",
-    "main.js": "/pages/coaches-corner/hub/static/js/main.f4ad8125.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/coaches-corner/hub/static/js/787.942d2aa2.chunk.js",
+    "main.css": "/pages/coaches-corner/hub/static/css/main.65a191dc.css",
+    "main.js": "/pages/coaches-corner/hub/static/js/main.cba48f4f.js",
     "static/media/EndzoneMainLogo.png": "/pages/coaches-corner/hub/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
     "index.html": "/pages/coaches-corner/hub/index.html",
-    "main.2b4a8511.css.map": "/pages/coaches-corner/hub/static/css/main.2b4a8511.css.map",
-    "main.f4ad8125.js.map": "/pages/coaches-corner/hub/static/js/main.f4ad8125.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/coaches-corner/hub/static/js/787.942d2aa2.chunk.js.map"
+    "main.65a191dc.css.map": "/pages/coaches-corner/hub/static/css/main.65a191dc.css.map",
+    "main.cba48f4f.js.map": "/pages/coaches-corner/hub/static/js/main.cba48f4f.js.map"
   },
   "entrypoints": [
-    "static/css/main.2b4a8511.css",
-    "static/js/main.f4ad8125.js"
+    "static/css/main.65a191dc.css",
+    "static/js/main.cba48f4f.js"
   ]
 }

@@ -7,9 +7,9 @@ def load_formation_json(formations: "list[Formations]") -> "list[dict]":
             json.append({
                 "id": formation.ID,
                 "Formation": formation.Formation,
-                "RunningBacks": formation.runningBacks,
-                "TightEnds": formation.tightEnds,
-                "WideReceivers": formation.wideReceivers
+                "RunningBacks": formation.Running_Backs,
+                "TightEnds": formation.Tight_Ends,
+                "WideReceivers": formation.Wide_Receivers
             })
         return json
     

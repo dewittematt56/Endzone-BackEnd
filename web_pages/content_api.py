@@ -76,7 +76,11 @@ def CreateGame():
 @content_api.route("/endzone/data/game/manual")
 def ManualGame():
     return render_template("/data/manual-game/manual-game.html")
-    return render_template("/hub/hub.html")
+
+@login_required
+@content_api.route("/endzone/data/manage")
+def ManageData():
+    return render_template("/data/manage-data/manage-data.html")
 
 @content_api.route("/endzone/account/profile", methods = ["GET"])
 @login_required
