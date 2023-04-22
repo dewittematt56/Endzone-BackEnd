@@ -39,7 +39,7 @@ login_manager.init_app(app)
 def load_user(email: str):
     query = db.session.query(User).filter(User.Email == email)
     query_response = query.all()
-    # To-Do get Team Codes for user
+    # To-Do get org Codes for user
 
     if len(query_response) == 1:
         loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number, query_response[0].Current_Squad)
@@ -100,9 +100,9 @@ def register():
             password1 = data["password1"]
             password2 = data["password2"]
             phone = data["phone"]
-            join_team = data["join_action"] # True/False
-            if join_team == True:
-                team_code = data["team_code"]
+            join_org = data["join_action"] # True/False
+            if join_org == True:
+                org_code = data["org_code"]
             
             first_has_number = any(map(str.isdigit,first))
             last_has_number = any(map(str.isdigit,last))
@@ -133,42 +133,42 @@ def register():
                 return Response("Password needs at least 1 letter")
             elif " " in password1:
                 return Response("Spaces are not allowed in the password field", status = 403)
-            if join_team:
-                team_code = data["team_code"] 
-                if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
-                    return Response("Invalid team code, please try again", status = 403)
+            if join_org:
+                org_code = data["org_code"] 
+                if len(db.session.query(Org).filter(Org.Org_Code == org_code).all()) == 0:
+                    return Response("Invalid org code, please try again", status = 403)
                 else:
                     new_user = User(first, last, email, phone, password1, "null", "Complete")
                     db.session.add(new_user)
                     db.session.commit()
                     userId = new_user.get_id()
-                    new_teamMember = Team_Member(team_code, userId, "Coach")
-                    db.session.add(new_teamMember)
+                    new_orgMember = Org_Member(org_code, userId, "Coach")
+                    db.session.add(new_orgMember)
                     db.session.commit()
                     
                     login_user(load_user(new_user.Email))
                     return redirect("/endzone/hub")
 
             else:
-                new_user = User(first, last, email, phone, password1, "null", "Creating Team")
+                new_user = User(first, last, email, phone, password1, "null", "Creating Org")
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(load_user(new_user.Email))
-                return redirect("/account/team")
+                return redirect("/account/org")
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-@app.route('/account/team/create', methods = ['POST'])
-def createTeam():
+@app.route('/account/org/create', methods = ['POST'])
+def createOrg():
     try:
-        params = ['teamName', 'competitionLevel', 'state', 'address', 'zipCode', "city"]
+        params = ['orgName', 'competitionLevel', 'state', 'address', 'zipCode', "city"]
         if request.method == 'POST':
             data = json.loads(request.get_data())
             for param in params:
                 if param not in data.keys():
                     return Response('Please provide a ' + param, status = 404)
-        teamName = data["teamName"]
+        orgName = data["orgName"]
         competitionLevel = data["competitionLevel"]
         state = data["state"]
         address = data["address"]
@@ -214,15 +214,15 @@ def createTeam():
             return Response("City field cannot include numbers", status = 404)
         
        
-        new_team = Team(teamName, state, address, zipCode, city, competitionLevel)
+        new_org = Org(orgName, state, address, zipCode, city, competitionLevel)
         updated_user = db.session.query(User.ID == current_user.id)
         updated_user.Stage = "Complete"
 
-        team_owner = Team_Member(new_team.Team_Code, current_user.id, "Owner")
-        db.session.add(new_team)
-        db.session.add(team_owner)
+        org_owner = Org_Member(new_org.Org_Code, current_user.id, "Owner")
+        db.session.add(new_org)
+        db.session.add(org_owner)
         db.session.commit()
-        return Response("Successfully Created Team", 200)
+        return Response("Successfully Created Org", 200)
     except Exception as e:
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)

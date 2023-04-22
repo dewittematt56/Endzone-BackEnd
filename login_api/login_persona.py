@@ -6,7 +6,7 @@ class LoggedInPersona(UserMixin):
         self.Email = email
         self.First_Name = first_name
         self.Last_Name = last_name
-        self.Team_Code = "test"
+        self.Org_Code = "test"
         self.Squad_Code = "test"
         self.Phone = phone
         self.Current_Squad = curSquad

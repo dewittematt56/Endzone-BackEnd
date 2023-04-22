@@ -22,7 +22,7 @@ def hasLetter(parameter):
 @login_required
 @utils_api.route("/getuser", methods = ["GET"])
 def getUser():
-    return json.dumps({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "Team_Code": current_user.Team_Code})
+    return json.dumps({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "Org_Code": current_user.Org_Code})
 
 @login_required
 @utils_api.route("/endzone/utils/formation/add", methods = ["POST"])
@@ -88,7 +88,7 @@ def formationImage(imageId):
 @login_required
 @utils_api.route("/endzone/utils/formation/get", methods = ["GET"])
 def getFormation():
-    query = db.session.query(Formations).filter(Formations.Team_Code == current_user.Team_Code) .\
+    query = db.session.query(Formations).filter(Formations.Org_Code == current_user.Org_Code) .\
         filter(Formations.Squad_Code == current_user.Squad_Code)
     
     return jsonify(load_formation_json(query.all()))
@@ -126,13 +126,13 @@ def updateFormation():
                 except Exception as e:
                     image = None
                 
-            teamCode = current_user.Team_Code
+            orgCode = current_user.Org_Code
 
-            query = db.session.query(Team).filter(Team.Team_Code == teamCode)
+            query = db.session.query(Org).filter(Org.Org_Code == orgCode)
             query_response = query.all()
             
             if len(query_response) == 0:
-                return Response("No team is associated with this team code", status = 400)
+                return Response("No org is associated with this org code", status = 400)
         
             if hasLetter(formation) == False and hasNumber(formation) == False:
                 return Response("Formation needs to include at least one letter or number", status = 400)
