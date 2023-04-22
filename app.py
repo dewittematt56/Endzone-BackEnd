@@ -1,6 +1,5 @@
 from flask import Flask, request, Response, redirect, jsonify
 from flask_login import login_manager, LoginManager, login_user, current_user
-
 from database.db import db, db_uri
 from database.models import *
 from login_api.login_persona import LoggedInPersona
@@ -8,13 +7,8 @@ from web_pages.content_api import content_api
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
 from reports_api.reports_api import report_api, report_executor
-from flask_executor import Executor
-
-
-
 import json
 import re
-import time
 
 app = Flask(__name__)
 
@@ -48,7 +42,7 @@ def load_user(email: str):
     # To-Do get Team Codes for user
 
     if len(query_response) == 1:
-        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email)
+        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number, query_response[0].Current_Squad)
         return loaded_user
     else:
         return
@@ -96,12 +90,10 @@ def register():
         params = ["first", "last", "email", "password1", "password2", "phone", "join_action"]
         if request.method == "POST":
             data = json.loads(request.get_data())
-
             # Make sure all fields are filled in
             for param in params:
                 if param not in data.keys():
                     return Response("Please provide a " + param, status = 400)
-            
             first = data["first"]
             last = data["last"]
             email = data["email"]
@@ -117,8 +109,7 @@ def register():
             pass_has_letter = any(map(str.isalpha,password1))
             pass_has_number = any(map(str.isdigit, password1)) # contains if the passwords have a number in them
             special_char = re.compile('[\'@_!#$%^&*()<>?/\\|}{~:]') # compiles the special characters to check for them in password
-
-            # Make sure there is'nt already an account with this email
+            # Make sure there isn't already an account with this email
             if len(db.session.query(User).filter(User.Email == email).all()) != 0:
                 return Response("There is an account already associated with this email", status = 403)
             
@@ -142,13 +133,12 @@ def register():
                 return Response("Password needs at least 1 letter")
             elif " " in password1:
                 return Response("Spaces are not allowed in the password field", status = 403)
-            
             if join_team:
                 team_code = data["team_code"] 
                 if len(db.session.query(Team).filter(Team.Team_Code == team_code).all()) == 0:
                     return Response("Invalid team code, please try again", status = 403)
                 else:
-                    new_user = User(first, last, email, phone, password1, "Complete")
+                    new_user = User(first, last, email, phone, password1, "null", "Complete")
                     db.session.add(new_user)
                     db.session.commit()
                     userId = new_user.get_id()
@@ -160,7 +150,7 @@ def register():
                     return redirect("/endzone/hub")
 
             else:
-                new_user = User(first, last, email, phone, password1, "Creating Team")
+                new_user = User(first, last, email, phone, password1, "null", "Creating Team")
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(load_user(new_user.Email))
@@ -236,28 +226,6 @@ def createTeam():
     except Exception as e:
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
-
-@report_executor.job
-def GenerateReport():
-    time.sleep(10)
-    return "Success"
-
-
-@app.route("/report", methods = ['GET'])
-def Report():
-    id = uuid.uuid4()
-    GenerateReport.submit_stored(str(id))
-    return jsonify({'status': 'success', 'task_id': id}), 202
-
-@app.route("/report/<task_id>", methods = ['GET'])
-def GetReport(task_id):
-    print(task_id)
-    print(executor.futures.done(str(task_id)))
-    if not executor.futures.done(task_id):
-        return jsonify({'status': executor.futures._state(task_id)}), 202
-    
-    future = executor.futures.pop(task_id)
-    return jsonify({'status': 'done', 'result': future.result()})
 
 if __name__ == "__main__":
     app.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)
