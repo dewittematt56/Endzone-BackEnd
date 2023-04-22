@@ -5,7 +5,7 @@ from flask_login import current_user
 import datetime
 from sqlalchemy import DateTime
 
-# Creates a team key
+# Creates a org key
 def gen_primary_key():
     return str(uuid.uuid4())
 
@@ -22,24 +22,24 @@ class User(db.Model):
     Phone_Number =  db.Column(db.String(15), unique = False, nullable = False)
     First_Name = db.Column(db.String(50), unique = False, nullable = False)
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
-    Current_Squad = db.Column(db.String(50), unique = False, nullable = True)
+    Current_Team = db.Column(db.String(50), unique = False, nullable = True)
     Stage = db.Column(db.String(25), unique = False, nullable = False)
     # To-Do add join date
 
-    def __init__(self, first_name, last_name, email, phone_number, password, Current_Squad, stage) -> None:
+    def __init__(self, first_name, last_name, email, phone_number, password, Current_Team, stage) -> None:
         self.ID = gen_primary_key()
         self.First_Name = first_name
         self.Last_Name = last_name
         self.Password = password 
         self.Email = email
         self.Phone_Number = phone_number
-        self.Current_Squad = Current_Squad
+        self.Current_Team = Current_Team
         self.Stage = stage
         
     def get_id(self) -> str:
         return self.ID
 
-class Team_Member(db.Model):
+class Org_Member(db.Model):
     """_summary_
 
     Args:
@@ -48,41 +48,42 @@ class Team_Member(db.Model):
     Returns:
         _type_: _description_
     """
-
-    __tablename__ = "Team_Member"
+    
+    __tablename__ = "Org_Member"
     ID = db.Column(db.String(36), primary_key= True)
-    Team_Code = db.Column(db.String(36))
+    Org_Code = db.Column(db.String(36))
     User_ID = db.Column(db.String(36))
     Role = db.Column(db.String(25), default = "Coach")
 
-    def __init__(self, team_code, user_id, role) -> None:
+    def __init__(self, org_code, user_id, role) -> None:
         self.ID = gen_primary_key()
-        self.Team_Code = team_code
+        self.Org_Code = org_code
+
         self.User_ID = user_id
         self.Role = role
 
     def get_id(self) -> str:
         return self.ID
 
-class Team(db.Model):
+class Org(db.Model):
     """_summary_
 
     Args:
         db (_type_): _description_
     """
 
-    __tablename__ = "Team"
-    Team_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
-    Team_Name = db.Column(db.String(50), unique= False, nullable = False)
+    __tablename__ = "Org"
+    Org_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
+    Org_Name = db.Column(db.String(50), unique= False, nullable = False)
     State = db.Column(db.String(2), nullable = False)
     City = db.Column(db.String(100), nullable = False)
     Address = db.Column(db.String(320), nullable = False)
     Zip = db.Column(db.String(5), nullable = False)
     Competition_Level = db.Column(db.String(50), nullable = True)
     
-    def __init__(self, team_name: str, state: str, address: str, zip: str, city: str, comp_level: str) -> None:
-        self.Team_Code = gen_primary_key()
-        self.Team_Name = team_name
+    def __init__(self, org_name: str, state: str, address: str, zip: str, city: str, comp_level: str) -> None:
+        self.Org_Code = gen_primary_key()
+        self.Org_Name = org_name
         self.State = state
         self.Address = address
         self.City = city
@@ -100,8 +101,8 @@ class Formations(db.Model):
     Tight_Ends = db.Column(db.Integer, nullable = False)
     Running_Backs = db.Column(db.Integer, nullable = False)
     Image = db.Column(db.LargeBinary, nullable = True) # Confused on how to do the blob thing
-    Team_Code = db.Column(db.String(36), nullable = False)
-    Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False)
+    Org_Code = db.Column(db.String(36), nullable = False)
+    Team_Code = db.Column(db.String(36), primary_key= True, nullable = False)
     Creator = db.Column(db.String(36), unique = False, nullable = False)
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
 
@@ -111,8 +112,8 @@ class Formations(db.Model):
         self.Tight_Ends = tightEnds
         self.Running_Backs = runningBacks
         self.Image = image
+        self.Org_Code = current_user.Org_Code
         self.Team_Code = current_user.Team_Code
-        self.Squad_Code = current_user.Squad_Code
         self.Creator = current_user.id
         self.Creation_Date = datetime.datetime.utcnow()
 
@@ -202,28 +203,29 @@ class Play(db.Model):
     def get_id(self) -> str:
         return self.ID
     
-class Squad(db.Model):
+class Team(db.Model):
     """_summary_
 
     Args:
         db (_type_): _description_
     """
 
-    __tablename__ = "Squad"
-    Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
-    Squad_Name = db.Column(db.String(50), unique= False, nullable = False)
-    Team_Code = db.Column(db.String(50), unique= False, nullable = False)
+
+    __tablename__ = "Team"
+    Team_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
+    Team_Name = db.Column(db.String(50), unique= False, nullable = False)
+    Org_Code = db.Column(db.String(50), unique= False, nullable = False)
     
     
-    def __init__(self, squad_name: str, team_code: str) -> None:
-        self.Squad_Code = gen_primary_key()
-        self.Squad_Name = squad_name
-        self.Team_Code = team_code
+    def __init__(self, team_code: str, team_name: str, org_code: str) -> None:
+        self.Team_Code = gen_primary_key()
+        self.Team_Name = team_name
+        self.Org_Code = org_code
 
     def get_id(self) -> str:
         return self.ID
 
-class Squad_Member(db.Model):
+class Team_Member(db.Model):
     """_summary_
 
     Args:
@@ -233,13 +235,13 @@ class Squad_Member(db.Model):
         _type_: _description_
     """
 
-    __tablename__ = "Squad_Member"
-    Squad_Code = db.Column(db.String(36), primary_key = True)
+    __tablename__ = "Team_Member"
+    Team_Code = db.Column(db.String(36), primary_key = True)
     User_ID = db.Column(db.String(36), primary_key = True)
     Role = db.Column(db.String(25), default = "Owner")
 
-    def __init__(self, squad_code, user_id, role) -> None:
-        self.Squad_Code = squad_code
+    def __init__(self, team_code, user_id, role) -> None:
+        self.Team_Code = team_code
         self.User_ID = user_id
         self.Role = role
 
@@ -253,7 +255,7 @@ class Game(db.Model):
     Away_Team = db.Column(db.String(36), unique = False, nullable = False)
     Game_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
     Game_Type = db.Column(db.String(10), unique = False, nullable = False)
-    Squad_Code = db.Column(db.String(36), unique = False, nullable = False)
+    Team_Code = db.Column(db.String(36), unique = False, nullable = False)
     Creator = db.Column(db.String(36), unique = False, nullable = False)
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
 
@@ -263,6 +265,6 @@ class Game(db.Model):
         self.Away_Team = away_team
         self.Game_Date = game_date
         self.Game_Type = type
-        self.Squad_Code = current_user.Squad_Code
+        self.Team_Code = current_user.Team_Code
         self.Creator = current_user.id
         self.Creation_Date = datetime.datetime.utcnow()

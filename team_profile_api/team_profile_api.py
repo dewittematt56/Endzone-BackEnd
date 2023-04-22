@@ -8,35 +8,35 @@ from flask_login import current_user
 import json
 from flask_login import login_required, current_user
 
-team_profile_api = Blueprint("team_profile_api", __name__, template_folder="pages", static_folder="pages")
+org_profile_api = Blueprint("org_profile_api", __name__, template_folder="pages", static_folder="pages")
 
 @login_required
-@team_profile_api.route('/endzone/team/profile/info', methods = ['GET'])
-def getTeamProfile(): 
+@org_profile_api.route('/endzone/org/profile/info', methods = ['GET'])
+def getOrgProfile(): 
     try:
-        dbSquads = db.session.query(Team_Member).filter((Team_Member.User_ID == current_user.id) and (Team_Member.Role == "Admin" or Team_Member.Role == "Owner")).all()
-        if len(dbSquads) == 0:
-            return make_response("You are not an admin or owner of any team", 400)
+        dbTeams = db.session.query(Org_Member).filter((Org_Member.User_ID == current_user.id) and (Org_Member.Role == "Admin" or Org_Member.Role == "Owner")).all()
+        if len(dbTeams) == 0:
+            return make_response("You are not an admin or owner of any org", 400)
             
-        team_member = dbSquads[0]
-        team = db.session.query(Team).filter(Team.Team_Code == team_member.Team_Code).all()
+        org_member = dbTeams[0]
+        org = db.session.query(Org).filter(Org.Org_Code == org_member.Org_Code).all()
 
 
-        squads = db.session.query(Squad).filter(Squad.Team_Code == team.Team_Code).all()
-        squadsList = []
-        for squad in squads:
-            squadsList.append({"text": squad, "value": squad})
+        teams = db.session.query(Team).filter(Team.Org_Code == org.Org_Code).all()
+        teamsList = []
+        for team in teams:
+            teamsList.append({"text": team, "value": team})
 
-        response = jsonify({"teamName": team.Team_Name, "address": team.Address, "city": team.City, "zip": team.Zip, 
-                            "state": team.State, "compLevel": team.Competition_Level, "squadsList": squadsList})
+        response = jsonify({"orgName": org.Org_Name, "address": org.Address, "city": org.City, "zip": org.Zip, 
+                            "state": org.State, "compLevel": org.Competition_Level, "teamsList": teamsList})
         return make_response(response, 200)
     except Exception as e:
         print(e)
         return make_response("Error: Failed to get user profile info", 500)
 
 @login_required
-@team_profile_api.route('/endzone/team/profile/info/update', methods = ['PUT'])
-def setTeamProfile():
+@org_profile_api.route('/endzone/org/profile/info/update', methods = ['PUT'])
+def setOrgProfile():
     if request.method != 'PUT':
         return make_response("Error: Incorrect request method", 405)
     data = json.loads(request.get_data())
@@ -64,13 +64,13 @@ def setTeamProfile():
         except Exception as e:
             print(e)
             return make_response("Error: failed to update 'phone' in database.", 500)
-    elif 'curSquad' in data:
+    elif 'curTeam' in data:
         try:
-            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Squad": data['curSquad']})
+            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Team": data['curTeam']})
             db.session.commit()
-            return make_response("Success: user's current squad has been updated.", 200)
+            return make_response("Success: user's current team has been updated.", 200)
         except Exception as e:
             print(e)
-            return make_response("Error: failed to update 'current squad' in database.", 500)
+            return make_response("Error: failed to update 'current team' in database.", 500)
     else:
         return make_response("Error: No user fields supplied.", 422)

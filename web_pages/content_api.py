@@ -38,9 +38,9 @@ def accountTermsServices():
 def accountUser():
     return render_template("/public/user-create/user-create.html")
 
-@content_api.route("/account/team", methods = ["GET"])
-def accountTeam():
-    return render_template("/public/team-create/team-create.html")
+@content_api.route("/account/org", methods = ["GET"])
+def accountOrg():
+    return render_template("/public/org-create/org-create.html")
 
 @content_api.route("/endzone/hub", methods = ["GET"])
 @login_required

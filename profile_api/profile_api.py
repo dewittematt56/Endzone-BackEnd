@@ -14,24 +14,24 @@ profile_api = Blueprint("profile_api", __name__, template_folder="pages", static
 @profile_api.route('/endzone/account/user/profile', methods = ['GET'])
 def getProfile(): 
     try:
-        squads = []
-        dbSquads = db.session.query(Squad_Member).filter(Squad_Member.User_ID == current_user.id).all()
-        print(dbSquads[0])
-        for squad in dbSquads:
-            squadName = db.session.query(Squad).filter(Squad.Squad_Code == squad.Squad_Code).first().Squad_Name
-            squads.append(squadName)
+        teams = []
+        dbTeams = db.session.query(Team_Member).filter(Team_Member.User_ID == current_user.id).all()
+        print(dbTeams[0])
+        for team in dbTeams:
+            teamName = db.session.query(Team).filter(Team.Team_Code == team.Team_Code).first().Team_Name
+            teams.append(teamName)
             
-        squadsList = []
-        for squad in squads:
-            squadsList.append({"text": squad, "value": squad})
+        teamsList = []
+        for team in teams:
+            teamsList.append({"text": team, "value": team})
 
-        if current_user.Current_Squad == None:
-            current_user.Current_Squad = squads[0]
-            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Squad": squads[0]})
+        if current_user.Current_Team == None:
+            current_user.Current_Team = teams[0]
+            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Team": teams[0]})
             db.session.commit()
 
         response = jsonify({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "email": current_user.Email, "phone": current_user.Phone, 
-                            "squads": squads, "curSquad": current_user.Current_Squad, "squadsList": squadsList})
+                            "teams": teams, "curTeam": current_user.Current_Team, "teamsList": teamsList})
         return make_response(response, 200)
     except Exception as e:
         print(e)
@@ -67,13 +67,13 @@ def setProfile():
         except Exception as e:
             print(e)
             return make_response("Error: failed to update 'phone' in database.", 500)
-    elif 'curSquad' in data:
+    elif 'curTeam' in data:
         try:
-            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Squad": data['curSquad']})
+            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Team": data['curTeam']})
             db.session.commit()
-            return make_response("Success: user's current squad has been updated.", 200)
+            return make_response("Success: user's current team has been updated.", 200)
         except Exception as e:
             print(e)
-            return make_response("Error: failed to update 'current squad' in database.", 500)
+            return make_response("Error: failed to update 'current team' in database.", 500)
     else:
         return make_response("Error: No user fields supplied.", 422)

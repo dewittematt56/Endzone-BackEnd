@@ -1,15 +1,15 @@
 from flask_login import UserMixin
 
 class LoggedInPersona(UserMixin):
-    def __init__(self, id, first_name, last_name, email, phone, curSquad):
+    def __init__(self, id, first_name, last_name, email, phone, curTeam):
         self.id = id
         self.Email = email
         self.First_Name = first_name
         self.Last_Name = last_name
+        self.Org_Code = "test"
         self.Team_Code = "test"
-        self.Squad_Code = "test"
         self.Phone = phone
-        self.Current_Squad = curSquad
+        self.Current_Team = curTeam
         
 
     def is_active(self):

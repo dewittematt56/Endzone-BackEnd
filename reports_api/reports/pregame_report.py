@@ -22,7 +22,7 @@ class PregameReport():
     def __init__(self) -> None:
         self.pdfs = []
         self.team_of_interest = "Eastview"
-        self.squad_code = "Endzone-System"
+        self.team_code = "Endzone-System"
         self.game_ids = ["54751ec7-176a-4604-94f9-1d4bf6023fa4"]
         self.pages = ["Overview", "Play Type Personnel", "Play Type Down", "Play Type Field"]
         self.pdf_write = PyPDF2.PdfWriter()
@@ -114,11 +114,11 @@ class PregameReport():
         db_engine = create_engine(db_uri)
         Session = sessionmaker(db_engine)
         session = Session()
-        self.game_data = pd.read_sql(session.query(Game).filter(Game.Squad_Code == self.squad_code).filter(Game.Game_ID.in_(self.game_ids)).statement, db_engine)
+        self.game_data = pd.read_sql(session.query(Game).filter(Game.Team_Code == self.team_code).filter(Game.Game_ID.in_(self.game_ids)).statement, db_engine)
         self.game_data['Game_Date'] = self.game_data['Game_Date'].dt.strftime('%A, %d %B %Y')
-        # Squad Code is linked via team_code
+        # Team Code is linked via team_code
         df_plays = pd.read_sql(session.query(Play).filter(Play.Game_ID.in_(self.game_ids)).statement, db_engine)
-        df_forms = pd.read_sql(session.query(Formations).filter(Formations.Squad_Code == self.squad_code).statement, db_engine)
+        df_forms = pd.read_sql(session.query(Formations).filter(Formations.Team_Code == self.team_code).statement, db_engine)
         df_plays = pd.merge(df_plays, df_forms, left_on='O_Formation', right_on="Formation", how='inner')
         self.play_data = pd.merge(df_plays, self.game_data, on='Game_ID', how='inner')
         
