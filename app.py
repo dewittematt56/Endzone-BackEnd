@@ -42,7 +42,7 @@ def load_user(email: str):
     # To-Do get org Codes for user
 
     if len(query_response) == 1:
-        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number, query_response[0].Current_Squad)
+        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number, query_response[0].Current_Team)
         return loaded_user
     else:
         return

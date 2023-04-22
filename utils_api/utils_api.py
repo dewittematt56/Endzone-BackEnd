@@ -89,7 +89,7 @@ def formationImage(imageId):
 @utils_api.route("/endzone/utils/formation/get", methods = ["GET"])
 def getFormation():
     query = db.session.query(Formations).filter(Formations.Org_Code == current_user.Org_Code) .\
-        filter(Formations.Squad_Code == current_user.Squad_Code)
+        filter(Formations.Team_Code == current_user.Team_Code)
     
     return jsonify(load_formation_json(query.all()))
 
