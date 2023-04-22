@@ -1,12 +1,15 @@
 from flask import Flask, request, Response, redirect, jsonify
-from flask_login import login_manager, LoginManager, login_user, current_user
+from flask_login import login_manager, LoginManager, login_user, current_user, logout_user, login_required
 from database.db import db, db_uri
 from database.models import *
 from login_api.login_persona import LoggedInPersona
+
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
 from reports_api.reports_api import report_api, report_executor
+from profile_api.profile_api import profile_api
+
 import json
 import re
 
@@ -22,6 +25,7 @@ app.register_blueprint(content_api)
 app.register_blueprint(utils_api)
 app.register_blueprint(data_api)
 app.register_blueprint(report_api)
+app.register_blueprint(profile_api)
 
 # Executors
 report_executor.init_app(app)
@@ -83,6 +87,12 @@ def loginAttempt():
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 @app.route('/account/user/create', methods = ['POST'])
 def register():    
@@ -215,12 +225,17 @@ def createTeam():
         
        
         new_team = Team(teamName, state, address, zipCode, city, competitionLevel)
+        new_squad = Squad(teamName, new_team.Team_Code)
+
         updated_user = db.session.query(User.ID == current_user.id)
         updated_user.Stage = "Complete"
 
         team_owner = Team_Member(new_team.Team_Code, current_user.id, "Owner")
+        squad_owner = Squad_Member(new_squad.Squad_Code, current_user.id, "Owner")
         db.session.add(new_team)
+        db.session.add(new_squad)
         db.session.add(team_owner)
+        db.session.add(squad_owner)
         db.session.commit()
         return Response("Successfully Created Team", 200)
     except Exception as e:

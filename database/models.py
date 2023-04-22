@@ -50,12 +50,13 @@ class Team_Member(db.Model):
     """
 
     __tablename__ = "Team_Member"
-    ID = db.Column(db.Integer, primary_key= True, autoincrement = True)
+    ID = db.Column(db.String(36), primary_key= True)
     Team_Code = db.Column(db.String(36))
-    User_ID = db.Column(db.Integer)
+    User_ID = db.Column(db.String(36))
     Role = db.Column(db.String(25), default = "Coach")
 
     def __init__(self, team_code, user_id, role) -> None:
+        self.ID = gen_primary_key()
         self.Team_Code = team_code
         self.User_ID = user_id
         self.Role = role
@@ -211,17 +212,13 @@ class Squad(db.Model):
     __tablename__ = "Squad"
     Squad_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
     Squad_Name = db.Column(db.String(50), unique= False, nullable = False)
-    Competition_Level = db.Column(db.String(50), nullable = True)
     Team_Code = db.Column(db.String(50), unique= False, nullable = False)
-    Team_Name = db.Column(db.String(50), unique= False, nullable = False)
     
     
-    def __init__(self, squad_code: str, squad_name: str, comp_level: str, team_code: str, team_name: str) -> None:
+    def __init__(self, squad_name: str, team_code: str) -> None:
         self.Squad_Code = gen_primary_key()
         self.Squad_Name = squad_name
-        self.Competition_Level = comp_level
         self.Team_Code = team_code
-        self.Team_Name = team_name
 
     def get_id(self) -> str:
         return self.ID
