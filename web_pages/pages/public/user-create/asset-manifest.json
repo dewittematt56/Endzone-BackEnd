@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/pages/user-create/static/css/main.3669dc92.css",
-    "main.js": "/pages/user-create/static/js/main.ee670a5c.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/user-create/static/js/787.942d2aa2.chunk.js",
-    "index.html": "/pages/user-create/index.html",
-    "main.3669dc92.css.map": "/pages/user-create/static/css/main.3669dc92.css.map",
-    "main.ee670a5c.js.map": "/pages/user-create/static/js/main.ee670a5c.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/user-create/static/js/787.942d2aa2.chunk.js.map"
+    "main.css": "/pages/public/user-create/static/css/main.5a34c8c9.css",
+    "main.js": "/pages/public/user-create/static/js/main.7d23dfd7.js",
+    "static/js/787.942d2aa2.chunk.js": "/pages/public/user-create/static/js/787.942d2aa2.chunk.js",
+    "static/media/Endzone_Shield.png": "/pages/public/user-create/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
+    "index.html": "/pages/public/user-create/index.html",
+    "main.5a34c8c9.css.map": "/pages/public/user-create/static/css/main.5a34c8c9.css.map",
+    "main.7d23dfd7.js.map": "/pages/public/user-create/static/js/main.7d23dfd7.js.map",
+    "787.942d2aa2.chunk.js.map": "/pages/public/user-create/static/js/787.942d2aa2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.3669dc92.css",
-    "static/js/main.ee670a5c.js"
+    "static/css/main.5a34c8c9.css",
+    "static/js/main.7d23dfd7.js"
   ]
 }

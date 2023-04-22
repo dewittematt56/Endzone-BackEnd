@@ -30,13 +30,14 @@ def gameCreate():
                 return Response(str(e) + param, status = 500)
             
             game_type = data["game_type"]
-            if game_type not in ["AI", "Manual"]:
+            if game_type not in ["ai", "manual"]:
                 return Response("Not a valid game type, must be 'AI' or  'Manual'", status = 403)
 
             new_game = Game(home_team, away_team, game_date, game_type) 
+            print(new_game)
             db.session.add(new_game)
             db.session.commit()
-            return Response("Success", status = 200)
+            return new_game.Game_ID
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)

@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/pages/pricing/static/css/main.73fb9365.css",
-    "main.js": "/pages/pricing/static/js/main.14e2dd96.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/pricing/static/js/787.942d2aa2.chunk.js",
-    "static/media/output-onlinepngtools.png": "/pages/pricing/static/media/output-onlinepngtools.e6c6eabea79f30e02dbd.png",
-    "index.html": "/pages/pricing/index.html",
-    "main.73fb9365.css.map": "/pages/pricing/static/css/main.73fb9365.css.map",
-    "main.14e2dd96.js.map": "/pages/pricing/static/js/main.14e2dd96.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/pricing/static/js/787.942d2aa2.chunk.js.map"
+    "main.css": "/pages/public/product/static/css/main.31909df3.css",
+    "main.js": "/pages/public/product/static/js/main.24b2a33c.js",
+    "static/js/787.942d2aa2.chunk.js": "/pages/public/product/static/js/787.942d2aa2.chunk.js",
+    "static/media/EndzoneMainLogo.png": "/pages/public/product/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "index.html": "/pages/public/product/index.html",
+    "main.31909df3.css.map": "/pages/public/product/static/css/main.31909df3.css.map",
+    "main.24b2a33c.js.map": "/pages/public/product/static/js/main.24b2a33c.js.map",
+    "787.942d2aa2.chunk.js.map": "/pages/public/product/static/js/787.942d2aa2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.73fb9365.css",
-    "static/js/main.14e2dd96.js"
+    "static/css/main.31909df3.css",
+    "static/js/main.24b2a33c.js"
   ]
 }

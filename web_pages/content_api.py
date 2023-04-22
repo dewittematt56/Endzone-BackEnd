@@ -8,11 +8,11 @@ def home():
 
 @content_api.route("/contact", methods = ["GET"])
 def contactUs():
-    return render_template("/public/contact-us/contact-us.html")
+    return render_template("/public/contact/contact.html")
 
 @content_api.route("/pricing", methods = ["GET"])
 def pricing():
-    return render_template("/pricing/pricing.html")
+    return render_template("/public/pricing/pricing.html")
 
 @content_api.route("/products", methods = ["GET"])
 def product():
@@ -24,7 +24,7 @@ def login():
 
 @content_api.route("/about", methods = ["GET"])
 def aboutUs():
-    return render_template("/public/about/about-us.html")
+    return render_template("/public/about/about.html")
 
 @content_api.route("/account/create", methods = ["GET"])
 def frontOffice():
@@ -71,3 +71,14 @@ def GamePage():
 @content_api.route("/endzone/data/game")
 def CreateGame():
     return render_template("/data/create-game/create-game.html")
+
+@login_required
+@content_api.route("/endzone/data/game/manual")
+def ManualGame():
+    return render_template("/data/manual-game/manual-game.html")
+    return render_template("/hub/hub.html")
+
+@content_api.route("/endzone/account/profile", methods = ["GET"])
+@login_required
+def profile():
+    return render_template("/profile/index.html")

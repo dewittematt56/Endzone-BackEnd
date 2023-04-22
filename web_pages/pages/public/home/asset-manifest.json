@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/pages/public/home/static/css/main.22a8fddf.css",
-    "main.js": "/pages/public/home/static/js/main.47af4786.js",
+    "main.css": "/pages/public/home/static/css/main.c5fc6748.css",
+    "main.js": "/pages/public/home/static/js/main.8a9005cb.js",
     "static/js/787.942d2aa2.chunk.js": "/pages/public/home/static/js/787.942d2aa2.chunk.js",
     "static/media/JoinEndzoneBackground.jpg": "/pages/public/home/static/media/JoinEndzoneBackground.75c5ba0817503c83d2f1.jpg",
     "static/media/LogInEndzoneBackground.jpg": "/pages/public/home/static/media/LogInEndzoneBackground.66b7d79bb91d0ca882b8.jpg",
@@ -10,12 +10,12 @@
     "static/media/blog1.PNG": "/pages/public/home/static/media/blog1.b7fb00465dc7e7003cf8.PNG",
     "static/media/EndzoneMainLogo.png": "/pages/public/home/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
     "index.html": "/pages/public/home/index.html",
-    "main.22a8fddf.css.map": "/pages/public/home/static/css/main.22a8fddf.css.map",
-    "main.47af4786.js.map": "/pages/public/home/static/js/main.47af4786.js.map",
+    "main.c5fc6748.css.map": "/pages/public/home/static/css/main.c5fc6748.css.map",
+    "main.8a9005cb.js.map": "/pages/public/home/static/js/main.8a9005cb.js.map",
     "787.942d2aa2.chunk.js.map": "/pages/public/home/static/js/787.942d2aa2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.22a8fddf.css",
-    "static/js/main.47af4786.js"
+    "static/css/main.c5fc6748.css",
+    "static/js/main.8a9005cb.js"
   ]
 }
