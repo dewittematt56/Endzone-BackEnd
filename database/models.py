@@ -217,7 +217,7 @@ class Team(db.Model):
     Org_Code = db.Column(db.String(50), unique= False, nullable = False)
     
     
-    def __init__(self, team_code: str, team_name: str, org_code: str) -> None:
+    def __init__(self, team_name: str, org_code: str) -> None:
         self.Team_Code = gen_primary_key()
         self.Team_Name = team_name
         self.Org_Code = org_code
