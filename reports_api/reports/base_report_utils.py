@@ -292,14 +292,15 @@ def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, unique
     ax.legend(title=title, labels=[col[1] for col in grouped_df.columns])
     return __save_matPlot__(plt)
 
-def create_field_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str) -> None:
+def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str) -> None:
     # Currently Broken
     # Background Image
     fig, ax = plt.subplots()
-    palette = sns.color_palette("hls", len(df[categorical_col].unique()))
     img = mpimg.imread('reports_api\\reports\\static\\other\\FootballField.png')
-    plt.imshow(img, extent=[0, 1.25, 0, 0.7])
-    sns.scatterplot(data=df, x=x_spatial_col, y=y_spatial_col, hue=categorical_col, palette=palette)
+    sns.relplot(x="Yard", y="Hash", hue="Play_Type", size="Result",
+            sizes=(40, 400), alpha=.5, palette="muted",
+            height=6, data=df)
+    plt.show()
 
     #ax.set_xticks([])
     #ax.set_yticks([])
