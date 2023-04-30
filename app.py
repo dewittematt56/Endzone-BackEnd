@@ -13,32 +13,32 @@ from profile_api.profile_api import profile_api
 import json
 import re
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'secret key'
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config['EXECUTOR_TYPE'] = 'thread'
-app.config['EXECUTOR_MAX_WORKERS'] = 5
+application.config['SECRET_KEY'] = 'secret key'
+application.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+application.config['EXECUTOR_TYPE'] = 'thread'
+application.config['EXECUTOR_MAX_WORKERS'] = 5
 
-app.register_blueprint(content_api)
-app.register_blueprint(utils_api)
-app.register_blueprint(data_api)
-app.register_blueprint(report_api)
-app.register_blueprint(profile_api)
+application.register_blueprint(content_api)
+application.register_blueprint(utils_api)
+application.register_blueprint(data_api)
+application.register_blueprint(report_api)
+application.register_blueprint(profile_api)
 
 # Executors
-report_executor.init_app(app)
+report_executor.init_app(application)
 
-db.init_app(app)
+db.init_app(application)
 
 # builds database if not existing
-with app.app_context():
+with application.app_context():
     db.create_all()
 
 # set up login system
 login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager.init_app(application)
 @login_manager.user_loader
 def load_user(email: str):
     query = db.session.query(User).filter(User.Email == email)
@@ -55,7 +55,7 @@ def load_user(email: str):
 def no_login_redirect():
     return redirect("/login")
 
-@app.route('/login/attempt', methods = ['POST'])
+@application.route('/login/attempt', methods = ['POST'])
 def loginAttempt(): 
     try:
         params = ["email","password"]  
@@ -88,13 +88,13 @@ def loginAttempt():
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-@app.route('/logout')
+@application.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect("/")
 
-@app.route('/account/user/create', methods = ['POST'])
+@application.route('/account/user/create', methods = ['POST'])
 def register():    
     try:
         params = ["first", "last", "email", "password1", "password2", "phone", "join_action"]
@@ -169,7 +169,7 @@ def register():
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-@app.route('/account/org/create', methods = ['POST'])
+@application.route('/account/org/create', methods = ['POST'])
 def createOrg():
     try:
         params = ['orgName', 'competitionLevel', 'state', 'address', 'zipCode', "city"]
@@ -244,7 +244,7 @@ def createOrg():
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
 if __name__ == "__main__":
-    app.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)
+    application.run(use_reloader = True, host = "0.0.0.0", debug=True, port = 80)
 
     
 
