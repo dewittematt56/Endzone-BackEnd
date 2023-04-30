@@ -1,16 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/public/team-create/static/css/main.2ea492d6.css",
-    "main.js": "/pages/public/team-create/static/js/main.e87d7e7d.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/public/team-create/static/js/787.942d2aa2.chunk.js",
-    "static/media/Endzone_Shield.png": "/pages/public/team-create/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
-    "index.html": "/pages/public/team-create/index.html",
-    "main.2ea492d6.css.map": "/pages/public/team-create/static/css/main.2ea492d6.css.map",
-    "main.e87d7e7d.js.map": "/pages/public/team-create/static/js/main.e87d7e7d.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/public/team-create/static/js/787.942d2aa2.chunk.js.map"
+    "main.css": "/pages/public/org-create/static/css/main.3b5f52f1.css",
+    "main.js": "/pages/public/org-create/static/js/main.f03a6076.js",
+    "static/media/Endzone_Shield.png": "/pages/public/org-create/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
+    "index.html": "/pages/public/org-create/index.html",
+    "main.3b5f52f1.css.map": "/pages/public/org-create/static/css/main.3b5f52f1.css.map",
+    "main.f03a6076.js.map": "/pages/public/org-create/static/js/main.f03a6076.js.map"
   },
   "entrypoints": [
-    "static/css/main.2ea492d6.css",
-    "static/js/main.e87d7e7d.js"
+    "static/css/main.3b5f52f1.css",
+    "static/js/main.f03a6076.js"
   ]
 }
