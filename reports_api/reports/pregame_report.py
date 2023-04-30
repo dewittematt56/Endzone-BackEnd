@@ -29,11 +29,11 @@ class PregameReport():
         # Get game-based & play-based data from database.
         self.get_data()
         self.split_data()
-        self.title_page()
-        self.overview_page()
-        self.offense_overview(self.offensive_data)
-        self.play_type_personnel_page(self.offensive_data)
-        self.play_type_downDistance_page(self.offensive_data)
+        # self.title_page()
+        # self.overview_page()
+        # self.offense_overview(self.offensive_data)
+        # self.play_type_personnel_page(self.offensive_data)
+        # self.play_type_downDistance_page(self.offensive_data)
         self.play_type_field_page(self.offensive_data)
 
     def template_to_pdf(self, html) -> None:
@@ -103,7 +103,7 @@ class PregameReport():
         self.template_to_pdf(html)
 
     def play_type_field_page(self, data: pd.DataFrame) -> None:
-        play_type_map = create_field_map(data, "Result_X", "Result_Y", "Play_Type")
+        play_type_map = create_xy_map(data, "Play_X", "Play_Y", "Play_Type")
 
         offense_overview_page = env.get_template('report_pages/offense_playType/playType_field.html')
         html = offense_overview_page.render(team = self.team_of_interest, play_type_map = play_type_map)
