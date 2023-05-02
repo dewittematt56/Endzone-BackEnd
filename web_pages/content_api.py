@@ -86,3 +86,8 @@ def ManageData():
 @login_required
 def profile():
     return render_template("/profile/index.html")
+
+@content_api.route("/endzone/org/profile", methods = ["GET"])
+@login_required
+def OMProfile():
+    return render_template("/org/om_profile/om_profile.html")
