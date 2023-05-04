@@ -87,7 +87,7 @@ def ManageData():
 def profile():
     return render_template("/profile/index.html")
 
-@content_api.route("/endzone/data/viewer", methods = ["GET"])
+@content_api.route("/endzone/data/view", methods = ["GET"])
 @login_required
 def DataViewer():
     return render_template("/data/data-viewer/data-viewer.html")

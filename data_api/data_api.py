@@ -2,6 +2,7 @@ from flask import Blueprint, Response, request, jsonify, render_template
 from flask_login import login_required, current_user
 from database.models import *
 import json
+from data_api.utils import *
 
 data_api = Blueprint("data_api", __name__)
 
@@ -45,6 +46,6 @@ def gameCreate():
 @data_api.route("/endzone/data/game/get", methods = ['GET'])
 def getGame():
     print(current_user.__dict__)
-    squadCode = current_user.Squad_Code
-    query = db.session.query(Game).filter(Game.Squad_Code == squadCode)
+    teamCode = current_user.Team_Code
+    query = db.session.query(Game).filter(Game.Team_Code == teamCode)
     return jsonify(load_game_json(query.all()))
