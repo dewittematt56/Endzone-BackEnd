@@ -41,3 +41,10 @@ def gameCreate():
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+
+@data_api.route("/endzone/data/game/get", methods = ['GET'])
+def getGame():
+    print(current_user.__dict__)
+    squadCode = current_user.Squad_Code
+    query = db.session.query(Game).filter(Game.Squad_Code == squadCode)
+    return jsonify(load_game_json(query.all()))
