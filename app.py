@@ -10,6 +10,7 @@ from data_api.data_api import data_api
 from reports_api.reports_api import report_api, report_executor
 from profile_api.profile_api import profile_api
 from org_api.om_profile_api import om_profile_api
+from org_api.om_members_api import om_members_api
 
 import json
 import re
@@ -28,6 +29,7 @@ application.register_blueprint(data_api)
 application.register_blueprint(report_api)
 application.register_blueprint(profile_api)
 application.register_blueprint(om_profile_api)
+application.register_blueprint(om_members_api)
 
 # Executors
 report_executor.init_app(application)

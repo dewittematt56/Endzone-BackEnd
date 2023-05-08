@@ -33,6 +33,8 @@ def getOrgProfile():
 
         response = jsonify({"orgName": org.Org_Name, "address": org.Address, "city": org.City, "zip": org.Zip, 
                             "state": org.State, "compLevel": org.Competition_Level, "teamsList": teamsList})
+        print({"orgName": org.Org_Name, "address": org.Address, "city": org.City, "zip": org.Zip, 
+                            "state": org.State, "compLevel": org.Competition_Level, "teamsList": teamsList})
         return make_response(response, 200)
     except Exception as e:
         print(e)
