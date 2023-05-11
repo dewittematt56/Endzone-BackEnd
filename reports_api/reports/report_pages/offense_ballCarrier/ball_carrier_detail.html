@@ -22,83 +22,89 @@
                 text-decoration: underline;
             }
             .table-div {
-                display: inline-block;
+                display: inline-flex;
+                justify-content: center;
                 text-align: center;
                 width: 100%;
-                
+                border-bottom: 1px solid black;
+                padding-bottom: 5px;
             }
 
             .table-div table {
+                width: auto;
                 position: relative;
                 border: 1px solid black;                
-                padding: 5px;
+                padding: 1px;
                 margin: auto;
-                margin-top: 20px;
-                
+                margin-top: 10px;
             }
             .table-div th {
                 border: 1px solid black;
                 padding: 3px;
-                font-size: 20px;
+                font-size: 15px;
             }
 
             .table-div td {
                 border: 1px solid black;
                 margin: 2px;
-                font-size: 15px;
             }
 
-            .bad-td {
-                background-color: #74b9ff
+            .good-td {
+                background-color: #4CAF50
             }
             .netural-td {
                 background-color: transparent;
             }
-            .good-td {
+            .bad-td {
                 background-color: #FF5252;
             }
-            .piechart {
-                height: 300px;
-                width: auto;
-                margin: 0px;
-                padding: 0px;
-            }
-            .barchart {
-                border: 0px;
-                z-index: -1;
-                width: 600px;
-                margin-top: 5px;
-            }
-
             .chart-div {
                 display: inline-flex;
                 justify-content: space-evenly;
                 border-bottom: 1px solid black;
                 text-align: center;
             }
+            .ridgechart {
+                border: 0px;
+                z-index: -1;
+                background-color: red;
+                width: auto;
+                width: 500px;
+                margin-top: 10px;
+                margin-right: 50px;
+            }
+            p {
+                margin: 1px;
+                padding: 0;
+            }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Offense: Play Type - Personnel & Formation</h2>
+            <h2>{{team}} Offense: Ball Carrier Detail</h2>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ ball_carrier_distance_ridge_plot }}" alt="Strength Pie Chart" class="ridgechart">
+            <p style="text-align: center;">Ball Carrier Frequency by Distance to First Down</p>
         </div>
         <div class="table-div">
             <table>
+                <p>Ball Carrier by Down</p>
                 <thead>
                     <tr>
-                        {% for column in personnel_playType.columns %}
-                            <th> {{ column }} </th>
+                        {% for column in ball_carrier_by_down.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in personnel_playType.iterrows() %}
+                    {% for index, row in ball_carrier_by_down.iterrows() %}
                         <tr>
-                            {% for column in personnel_playType.columns %}
-                                {% if column == "Personnel" %}
-                                <td><b>{{ row[column] }}</b></td>
+                            {% for column in ball_carrier_by_down.columns %}
+                                {% if column == "Ball_Carrier" %}
+                                <td><b>#{{ row[column] | replace(".0", "") }}</b></td>
                                 {% else %}
-                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
+                                    <td class="{% if row[column]  >= 50  %}good-td{% elif row[column]  > 15  %}netural-td{% else %}bad-td{% endif %}">
                                         {{ row[column] | round(2) }}%
                                     </td>
                                 {% endif %}
@@ -108,21 +114,22 @@
                 </tbody>
             </table>
             <table>
+                <p>Ball Carrier by Hash</p>
                 <thead>
                     <tr>
-                        {% for column in formation_playType.columns %}
-                            <th> {{ column }} </th>
+                        {% for column in ball_carrier_by_hash.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in formation_playType.iterrows() %}
+                    {% for index, row in ball_carrier_by_hash.iterrows() %}
                         <tr>
-                            {% for column in formation_playType.columns %}
-                                {% if column == "Formation" %}
-                                <td><b>{{ row[column] }}</b></td>
+                            {% for column in ball_carrier_by_hash.columns %}
+                                {% if column == "Ball_Carrier" %}
+                                <td><b>#{{ row[column] | replace(".0", "") }}</b></td>
                                 {% else %}
-                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
+                                    <td class="{% if row[column]  >= 66  %}good-td{% elif row[column]  > 33  %}netural-td{% else %}bad-td{% endif %}">
                                         {{ row[column] | round(2) }}%
                                     </td>
                                 {% endif %}
@@ -132,13 +139,10 @@
                 </tbody>
             </table>
         </div>
+
         <div class="chart-div">
-            <img src="data:image/png;base64, {{ personnel_chart }}" alt="Personnel Pie Chart" class="piechart">
-            <img src="data:image/png;base64, {{ formation_chart }}" alt="Formation Pie Chart" class="piechart">
-        </div>
-        <div class="chart-div">
-            <img src="data:image/png;base64, {{ bar_plot }}" alt="Bar Graph of Play Type by Formation" class="barchart">
-            <p>Play Type by Formation</p>
+            <img src="data:image/png;base64, {{ ball_carrier_field_position_ridge_plot }}" alt="Strength Pie Chart" class="ridgechart">
+            <p style="text-align: center;">Ball Carrier Frequency by Field Position</p>
         </div>
     </body>
 </html>

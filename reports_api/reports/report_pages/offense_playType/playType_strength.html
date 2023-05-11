@@ -21,6 +21,33 @@
                 margin: 0;
                 text-decoration: underline;
             }
+
+            .chart-div {
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                text-align: center;
+            }
+
+            .piechart {
+                height: 300px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+            }
+
+            .barchart {
+                border: 0px;
+                z-index: -1;
+                width: 500px;
+                margin-top: 25px;
+            }
+            .barchart-slim {
+                border: 0px;
+                z-index: -1;
+                width: 400px;
+                margin-top: 25px;
+            }
             .table-div {
                 display: inline-block;
                 text-align: center;
@@ -47,59 +74,44 @@
                 margin: 2px;
                 font-size: 15px;
             }
-
-            .bad-td {
-                background-color: #74b9ff
-            }
-            .netural-td {
-                background-color: transparent;
-            }
-            .good-td {
-                background-color: #FF5252;
-            }
-            .piechart {
-                height: 300px;
-                width: auto;
-                margin: 0px;
-                padding: 0px;
-            }
-            .barchart {
-                border: 0px;
-                z-index: -1;
-                width: 600px;
-                margin-top: 5px;
-            }
-
-            .chart-div {
-                display: inline-flex;
-                justify-content: space-evenly;
-                border-bottom: 1px solid black;
-                text-align: center;
-            }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Offense: Play Type - Personnel & Formation</h2>
+            <h2>{{ team }} Offense: Formation Strength Analysis</h2>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ strength_chart }}" alt="Strength Pie Chart" class="piechart">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ strength_form_bar_plot }}" alt="Strength Pie Chart" class="barchart-slim">
+            <img src="data:image/png;base64, {{ strength_personnel_bar_plot }}" alt="Strength Pie Chart" class="barchart-slim">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ strength_playType_bar_plot }}" alt="Strength Pie Chart" class="barchart">
         </div>
         <div class="table-div">
             <table>
                 <thead>
                     <tr>
-                        {% for column in personnel_playType.columns %}
-                            <th> {{ column }} </th>
+                        {% for column in pressure_into_strength.columns %}
+                            {% if column == "Pressure_Into_Strength" %}
+                                <th> Pressure into Strength of Formation </th>
+                            {% else %}
+                                <th> {{ column | replace("_", "") }} </th>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in personnel_playType.iterrows() %}
+                    {% for index, row in pressure_into_strength.iterrows() %}
                         <tr>
-                            {% for column in personnel_playType.columns %}
-                                {% if column == "Personnel" %}
+                            {% for column in pressure_into_strength.columns %}
+                                {% if column == "Pressure_Into_Strength" %}
                                 <td><b>{{ row[column] }}</b></td>
                                 {% else %}
                                     <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
-                                        {{ row[column] | round(2) }}%
+                                        {{ row[column] | round(2) }}
                                     </td>
                                 {% endif %}
                             {% endfor %}
@@ -110,20 +122,24 @@
             <table>
                 <thead>
                     <tr>
-                        {% for column in formation_playType.columns %}
-                            <th> {{ column }} </th>
+                        {% for column in pressure_away_strength.columns %}
+                            {% if column == "Pressure_Away_Strength" %}
+                                <th> Pressure away from Strength of Formation </th>
+                            {% else %}
+                                <th> {{ column | replace("_", "") }} </th>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in formation_playType.iterrows() %}
+                    {% for index, row in pressure_away_strength.iterrows() %}
                         <tr>
-                            {% for column in formation_playType.columns %}
-                                {% if column == "Formation" %}
+                            {% for column in pressure_away_strength.columns %}
+                                {% if column == "Pressure_Away_Strength" %}
                                 <td><b>{{ row[column] }}</b></td>
                                 {% else %}
                                     <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
-                                        {{ row[column] | round(2) }}%
+                                        {{ row[column] | round(2) }}
                                     </td>
                                 {% endif %}
                             {% endfor %}
@@ -131,14 +147,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <p>Average Yards Gained by Formation</p>
         </div>
-        <div class="chart-div">
-            <img src="data:image/png;base64, {{ personnel_chart }}" alt="Personnel Pie Chart" class="piechart">
-            <img src="data:image/png;base64, {{ formation_chart }}" alt="Formation Pie Chart" class="piechart">
-        </div>
-        <div class="chart-div">
-            <img src="data:image/png;base64, {{ bar_plot }}" alt="Bar Graph of Play Type by Formation" class="barchart">
-            <p>Play Type by Formation</p>
-        </div>
+        
     </body>
 </html>

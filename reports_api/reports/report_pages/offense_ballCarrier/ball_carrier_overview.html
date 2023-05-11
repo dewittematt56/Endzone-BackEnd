@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+            }
+            .title-div {
+                width: 100%;
+                display: inline-block;
+                text-align: center;
+            }
+            .title-div h2{
+                font-size: 25px;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: underline;
+            }
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                width: 100%;
+                border-bottom: 1px solid black;
+                padding-bottom: 5px;
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 20px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+            }
+
+            .good-td {
+                background-color: #4CAF50
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .bad-td {
+                background-color: #FF5252;
+            }
+            .chart-div {
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                text-align: center;
+            }
+            .barchart {
+                border: 0px;
+                z-index: -1;
+                width: 700px;
+                margin-top: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "title-div">
+            <h2>{{team}} Offense: Ball Carrier Overview</h2>
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ball Carrier</th>
+                        {% for column in ball_carrier_data.columns %}
+                            <th> {{ column | replace("_", "") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in ball_carrier_data.iterrows() %}
+                        <tr>
+                            <td><b>#{{ index | replace(".0", "") }}</b></td>
+                            {% for column in ball_carrier_data.columns %}
+                                {% if column == "Total Yards" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% elif column == "Carries" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% elif column == "Touchdowns" %}
+                                    <td class="{% if row[column]  >= 2  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | int }}</td>
+                                {% elif column == "Fumbles" %}
+                                    <td class="{% if row[column]  == 0  %}good-td{% elif row[column]  > 2  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | int }}</td>
+                                {% elif column == "Fumble Frequency" %}
+                                    <td class="{% if row[column]  == 0  %}good-td{% elif row[column]  > 5  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Average Result" %}
+                                    <td class="{% if row[column]  >= 5  %}good-td{% elif row[column]  > 1  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Median Result" %}
+                                    <td class="{% if row[column]  >= 5  %}good-td{% elif row[column]  > 1  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Difference from Team Average" %}
+                                    <td class="{% if row[column]  >= 3  %}good-td{% elif row[column]  > -3  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Efficient Carries" %}
+                                 <td class="{% if row[column]  >= 66  %}good-td{% elif row[column]  > 33  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}%</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ formation_ball_carrier_bar_plot }}" alt="Ball Carrier Formation Bar Chart" class="barchart">
+            <img src="data:image/png;base64, {{ personnel_ball_carrier_bar_plot }}" alt="Ball Carrier Personnel Pie Chart" class="barchart">
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in ball_Carrier_playType.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in ball_Carrier_playType.iterrows() %}
+                        <tr>
+                            {% for column in ball_Carrier_playType.columns %}
+                                {% if column == "Ball_Carrier" %}
+                                <td><b>#{{ row[column] | replace(".0", "") }}</b></td>
+                                {% else %}
+                                    <td class="{% if row[column]  >= 50  %}good-td{% elif row[column]  > 15  %}netural-td{% else %}bad-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p style="text-align: center;">A Ball Carrier with the number -99 is Unknown.</p>
+    </body>
+</html>
