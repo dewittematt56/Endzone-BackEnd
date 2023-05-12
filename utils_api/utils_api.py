@@ -28,14 +28,14 @@ def getUser():
 @utils_api.route("/endzone/utils/formation/add", methods = ["POST"])
 def formationAdd():
     try:
-        params = ["Formation", "WideRecievers", "TightEnds", "RunningBacks"]
+        params = ["formation", "WideRecievers", "TightEnds", "RunningBacks"]
         if request.method == "POST":
             data = json.loads(request.get_data())
             
             for param in params:
                 if param not in data.keys():
                     return Response('Please Provide a ' + param, status = 400)
-            formation = data["Formation"]
+            formation = data["formation"]
             wr = int(data["WideRecievers"])
             te = int(data["TightEnds"])
             rb = int(data["RunningBacks"])

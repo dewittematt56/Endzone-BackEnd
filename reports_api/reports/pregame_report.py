@@ -217,13 +217,30 @@ class PregameReport():
         pass_zone_distance_ridge_plot = create_ridge_plot(data, "Pass_Zone", "Distance", "Pass_Zone")
 
         data_slim = data[~data["Pass_Zone"].isin(['Unknown', 'Not Thrown'])]
-        pass_zone_map = create_xy_map(data, "Yard", "Hash", "Pass_Zone", "Result")
+        pass_zone_map = create_xy_map(data_slim, "Yard", "Hash", "Pass_Zone", "Result")
         scramble_chart_data = group_by_df(data, "Non_Passing_Play")
         scramble_chart = categorical_pieChart("Frequency of Quarterback Scrambles", scramble_chart_data)
 
         passing_detail_page = env.get_template('report_pages/offense_passing/offense_passing_detail.html')
         html = passing_detail_page.render(team = self.team_of_interest, pass_zone_distance_ridge_plot = pass_zone_distance_ridge_plot, pass_zone_map = pass_zone_map)
         self.template_to_pdf(html)
+
+    def passing_targets_page(self, data: pd.DataFrame):
+        data = data[data["Play_Type"].isin(['Pocket Pass', 'Boot Pass'])]
+        data['Pass_Zone'] = data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
+        data['Did_Scramble'] = (data['Pass_Zone'].isin(['Non-Passing-Play'])) & (data["Result"] > 0)
+        data['Non_Passing_Play'] = data['Did_Scramble'].map({True: 'Scramble', False: 'Sack'})
+
+        pass_zone_distance_ridge_plot = create_ridge_plot(data, "Pass_Zone", "Distance", "Pass_Zone")
+
+        data_slim = data[~data["Pass_Zone"].isin(['Unknown', 'Not Thrown'])]
+        pass_zone_map = create_xy_map(data_slim, "Yard", "Hash", "Pass_Zone", "Result")
+        scramble_chart_data = group_by_df(data, "Non_Passing_Play")
+        scramble_chart = categorical_pieChart("Frequency of Quarterback Scrambles", scramble_chart_data)
+
+        passing_detail_page = env.get_template('report_pages/offense_passing/offense_passing_passZone_targets.html')
+        html = passing_detail_page.render(team = self.team_of_interest)
+        self.template_to_pdf(html)        
 
     def get_data(self) -> None:
         db_engine = create_engine(db_uri)
