@@ -28,7 +28,7 @@ def getUser():
 @utils_api.route("/endzone/utils/formation/add", methods = ["POST"])
 def formationAdd():
     try:
-        params = ["formation", "WideRecievers", "TightEnds", "RunningBacks"]
+        params = ["formation", "wideRecievers", "tightEnds", "runningBacks"]
         if request.method == "POST":
             data = json.loads(request.get_data())
             
@@ -36,9 +36,9 @@ def formationAdd():
                 if param not in data.keys():
                     return Response('Please Provide a ' + param, status = 400)
             formation = data["formation"]
-            wr = int(data["WideRecievers"])
-            te = int(data["TightEnds"])
-            rb = int(data["RunningBacks"])
+            wr = int(data["wideRecievers"])
+            te = int(data["tightEnds"])
+            rb = int(data["runningBacks"])
             image = None
 
             if "image" in data.keys():
