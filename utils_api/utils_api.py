@@ -66,9 +66,8 @@ def formationAdd():
             
             new_formation = Formations(formation, wr, te, rb, image) 
             db.session.add(new_formation)
-            db.session.commit() # this is not working
-            return "Success"
-        
+            db.session.commit()            
+            return jsonify(load_formation_json([new_formation]))
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
@@ -79,11 +78,11 @@ def formationImage(imageId):
     query = db.session.query(Formations).filter(Formations.ID == str(imageId)).all()
     if len(query) == 1:
         if query[0].Image == None:
-            return Response("Formation Image Not Found", status=404)
+            return Response("Formation Image Not Found", status=400)
         else:
             return query[0].Image
     else:
-        return Response("Formation Image Not Found", status=404)
+        return Response("Formation Image Not Found", status=400)
 
 @login_required
 @utils_api.route("/endzone/utils/formation/get", methods = ["GET"])
@@ -324,54 +323,54 @@ def updatePlay():
             
             # To - Do Write as Function to match with Play-Add Code
             if playNumber not in range(0,1000):
-                return Response("Play number must be in the range of 0 to 999", status = 404)
+                return Response("Play number must be in the range of 0 to 999", status = 400)
             
             if yard not in range(1,101):
-                return Response("The yardage must be in range of 1 to 100", status = 404)
+                return Response("The yardage must be in range of 1 to 100", status = 400)
             
             if hash != "Left" and hash != "Right" and hash != "Middle":
-                return Response("Hash must be either Left, Right, or Middle", status = 404)
+                return Response("Hash must be either Left, Right, or Middle", status = 400)
             
             if down not in range(1,5):
-                return Response("Down must be in range from 1 to 4", status = 404)
+                return Response("Down must be in range from 1 to 4", status = 400)
             
             if distance not in range(1,101):
-                return Response("Distance must be in range from 1 to 100", status = 404)
+                return Response("Distance must be in range from 1 to 100", status = 400)
             
             # if quarter not in range(1,6):
-            #     return Response("Quarter must be in range from 1 to 5", status = 404)
+            #     return Response("Quarter must be in range from 1 to 5", status = 400)
             
             if formationStrength not in formationStrengths:
-                return Response("Formation Strength must be either Left, Right, Balanced, or Unknown", status = 404)
+                return Response("Formation Strength must be either Left, Right, Balanced, or Unknown", status = 400)
             
             if playType not in playTypes:
-                return Response("Play type must be in list {}".format(playTypes), status = 404)
+                return Response("Play type must be in list {}".format(playTypes), status = 400)
             
             if playTypeDir != "Left" and playTypeDir != "Right" and playTypeDir != "Unknown":
-                return Response("PlayTypeDir must be either Left, Right, or Unknown", status = 404)
+                return Response("PlayTypeDir must be either Left, Right, or Unknown", status = 400)
             
             if passZone not in passZones:
-                return Response("Pass zone must be in list {}".format(passZones), status = 404)
+                return Response("Pass zone must be in list {}".format(passZones), status = 400)
             
             if coverage not in coverages:
-                return Response("Coverage must be in list {}".format(coverages),status = 404)
+                return Response("Coverage must be in list {}".format(coverages),status = 400)
             
             if ballCarrier.isdigit() == False:
-                return Response("Ball carrier must be a number from 0,99", status = 404)
+                return Response("Ball carrier must be a number from 0,99", status = 400)
             
             if event not in events:
                 return Response("Event must be in list {}".format(events))
             
             if result not in range(-99,100):
-                return Response("Result must be a number from -99 to 99", status = 404)
+                return Response("Result must be a number from -99 to 99", status = 400)
             if resultX not in range(1,4):
-                return Response("Invalid Geometry", status = 404)
+                return Response("Invalid Geometry", status = 400)
             if resultY not in range(0,11):
-                return Response("Invalid Geometry", status = 404)
+                return Response("Invalid Geometry", status = 400)
             if playX not in range(1,4):
-                return Response("Invalid Geometry", status = 404)
+                return Response("Invalid Geometry", status = 400)
             if playY not in range(0,11):
-                return Response("Invalid Geometry", status = 404)
+                return Response("Invalid Geometry", status = 400)
         
             db.session.query(Play).filter(Play.ID == id).update({"Game_ID": data['gameID'],"Play_Number":data["playNumber"],"Possession":data["possession"],
                                                                    "Yard":data["yard"],"Hash":data["hash"], "Down":data["down"], "Distance" : data["distance"],

@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, redirect, jsonify, make_response
+from flask import Flask, request, Response, redirect, jsonify, make_response, render_template
 from flask_login import login_manager, LoginManager, login_user, current_user, logout_user, login_required
 from database.db import db, db_uri
 from database.models import *
@@ -19,8 +19,7 @@ import json
 import re
 
 
-
-application = Flask(__name__)
+application = Flask(__name__, template_folder="web_pages/pages")
 
 application.config['SECRET_KEY'] = 'secret key'
 application.config['SQLALCHEMY_DATABASE_URI'] = db_uri
@@ -71,6 +70,10 @@ def load_user(email: str):
 @login_manager.unauthorized_handler
 def no_login_redirect():
     return redirect("/login")
+
+@application.errorhandler(404)
+def page_not_found(e):
+    return render_template('/public/page_not_found/index.html')
 
 @application.route('/login/attempt', methods = ['POST'])
 def loginAttempt(): 
@@ -212,21 +215,21 @@ def createOrg():
             special_char = re.compile('[\'@_!#$%^&*()<>?/\\|}{~:]')
             # state conditionals 
             if state not in states:
-                return Response("State must be the uppercase two letter abbreviation of the state", status = 404)
+                return Response("State must be the uppercase two letter abbreviation of the state", status = 400)
             elif any(map(str.isdigit,state)) == True:
-                return Response("No numbers in the state field", status = 404)
+                return Response("No numbers in the state field", status = 400)
             elif " " in state:
-                return Response("State should be comprised of 2 letters", status = 404)
+                return Response("State should be comprised of 2 letters", status = 400)
             
             # Conditional for competition levels
             if competitionLevel not in comp_levels:
-                return Response("Please input either Youth, High School, College, or Professional", status = 404)
+                return Response("Please input either Youth, High School, College, or Professional", status = 400)
             
             # Zip code conditionals
             if len(zipCode) != 5:
-                return Response("Please input 5 number zip code", status = 404)
+                return Response("Please input 5 number zip code", status = 400)
             elif any(map(str.isalpha,zipCode)):
-                return Response("Zip code can only be comprised of numbers", status = 404)
+                return Response("Zip code can only be comprised of numbers", status = 400)
             elif special_char.search(zipCode) != None:
                 return Response("Zip code can only be comprised of numbers")
             elif " " in zipCode:
@@ -234,13 +237,13 @@ def createOrg():
             
             # Address Conditionals
             if any(map(str.isalpha, address)) == False:
-                return Response("Address needs to have letters included", status = 404)
+                return Response("Address needs to have letters included", status = 400)
             elif any(map(str.isdigit, address)) == False:
-                return Response("Address needs to have numbers included", status = 404)
+                return Response("Address needs to have numbers included", status = 400)
 
             # City conditional
             if any(map(str.isdigit, city)):
-                return Response("City field cannot include numbers", status = 404)
+                return Response("City field cannot include numbers", status = 400)
             
             updated_user = db.session.query(User).get(current_user.id)
 

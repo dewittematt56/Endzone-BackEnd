@@ -15,13 +15,13 @@ def gameCreate():
             params = ["home_team", "away_team", "game_date", "game_type"]
             for param in params:
                 if param not in data.keys():
-                    return Response('Please Provide a ' + param, status = 403)
+                    return Response('Please Provide a ' + param, status = 400)
             
             
             home_team = data["home_team"]
             away_team = data["away_team"]
             if len(home_team) >= 36 or len(away_team) >= 36:
-                return Response('A Home or Away team must be less than 36 characters.' + param, status = 403)
+                return Response('A Home or Away team must be less than 36 characters.' + param, status = 400)
             
             try:
                 game_date = data["game_date"]
@@ -31,7 +31,7 @@ def gameCreate():
             
             game_type = data["game_type"]
             if game_type not in ["ai", "manual"]:
-                return Response("Not a valid game type, must be 'AI' or  'Manual'", status = 403)
+                return Response("Not a valid game type, must be 'AI' or  'Manual'", status = 400)
 
             new_game = Game(home_team, away_team, game_date, game_type) 
             db.session.add(new_game)

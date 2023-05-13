@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/pages/coaches-corner/formation/static/css/main.0dad5fcd.css",
-    "main.js": "/pages/coaches-corner/formation/static/js/main.ec3ae847.js",
+    "main.css": "/pages/coaches-corner/formation/static/css/main.ea5744ab.css",
+    "main.js": "/pages/coaches-corner/formation/static/js/main.ca42456e.js",
     "static/media/EndzoneMainLogo.png": "/pages/coaches-corner/formation/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
     "static/media/Endzone_Shield.png": "/pages/coaches-corner/formation/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
     "index.html": "/pages/coaches-corner/formation/index.html",
-    "main.0dad5fcd.css.map": "/pages/coaches-corner/formation/static/css/main.0dad5fcd.css.map",
-    "main.ec3ae847.js.map": "/pages/coaches-corner/formation/static/js/main.ec3ae847.js.map"
+    "main.ea5744ab.css.map": "/pages/coaches-corner/formation/static/css/main.ea5744ab.css.map",
+    "main.ca42456e.js.map": "/pages/coaches-corner/formation/static/js/main.ca42456e.js.map"
   },
   "entrypoints": [
-    "static/css/main.0dad5fcd.css",
-    "static/js/main.ec3ae847.js"
+    "static/css/main.ea5744ab.css",
+    "static/js/main.ca42456e.js"
   ]
 }
