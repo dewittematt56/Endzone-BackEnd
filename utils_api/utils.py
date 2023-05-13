@@ -13,7 +13,6 @@ def load_formation_json(formations: "list[Formations]") -> "list[dict]":
             })
         return json
     
-
 def load_play_json(plays: "list[Play]") -> "list[dict]":
         json = []
         for play in plays:

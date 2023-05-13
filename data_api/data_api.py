@@ -1,5 +1,5 @@
 from flask import Blueprint, Response, request, jsonify, render_template
-from flask_login import login_required, current_user
+from flask_login import login_required
 from database.models import *
 import json
 
@@ -34,7 +34,6 @@ def gameCreate():
                 return Response("Not a valid game type, must be 'AI' or  'Manual'", status = 403)
 
             new_game = Game(home_team, away_team, game_date, game_type) 
-            print(new_game)
             db.session.add(new_game)
             db.session.commit()
             return new_game.Game_ID

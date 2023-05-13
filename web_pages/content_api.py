@@ -28,7 +28,7 @@ def aboutUs():
 
 @content_api.route("/account/create", methods = ["GET"])
 def frontOffice():
-    return render_template("/public/front-office/front-office.html")
+    return render_template("/public/account-start/account-start.html")
 
 @content_api.route("/account/terms", methods = ["GET"])
 def accountTermsServices():

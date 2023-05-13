@@ -89,7 +89,7 @@ def formationImage(imageId):
 @utils_api.route("/endzone/utils/formation/get", methods = ["GET"])
 def getFormation():
     query = db.session.query(Formations).filter(Formations.Org_Code == current_user.Org_Code) .\
-        filter(Formations.Team_Code == current_user.Team_Code)
+        filter(Formations.Team_Code == current_user.Current_Team)
     
     return jsonify(load_formation_json(query.all()))
 
@@ -153,11 +153,11 @@ def updateFormation():
                 return Response("Negative numbers are not allowed in a formation",status = 400)
             
             if image:
-                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation,"wideRecievers": wr,"tightEnds": te,"runningBacks": rb,"Image": image})
+                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation,"Wide_Receivers": wr,"Tight_Ends": te,"Running_Backs": rb,"Image": image})
             else:
-                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation, "wideRecievers": wr,"tightEnds": te,"runningBacks": rb})
+                db.session.query(Formations).filter(Formations.ID == id).update({"Formation": formation, "Wide_Receivers": wr,"Tight_Ends": te,"Running_Backs": rb})
             db.session.commit()
-    
+            return Response("Successfully Updated " + str(formation))
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
@@ -264,20 +264,12 @@ def addPlay():
             
             if int(homeScore) < 0 or int(awayScore) < 0:
                 return Response("Scores must be positive integers", status = 400)
-            # if resultX not in range(0,5):
-            #     return Response("Invalid Geometry", status = 404)
-            # if resultY not in range(0, 5):
-            #     return Response("Invalid Geometry", status = 404)
-            # if playX not in range(0,5):
-            #     return Response("Invalid Geometry", status = 404)
-            # if playY not in range(0,5):
-            #     return Response("Invalid Geometry", status = 404)
             
             # Add to Database
             new_play = Play(gameId, playNumber, drive, possession, yard, hash, down, distance, quarter, motion, dFormation, oFormation, formationStrength, homeScore, awayScore,
                              playType, play, playTypeDir, passZone, coverage, pressureLeft, pressureMiddle, pressureRight, ballCarrier, event,
                               result, resultX, resultY, playX, playY, passX, passY) 
-            print(new_play)
+
             db.session.add(new_play)
             db.session.commit()
             return Response("Successfully created Play")

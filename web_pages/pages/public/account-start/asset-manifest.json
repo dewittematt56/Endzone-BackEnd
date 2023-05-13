@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/pages/public/account-start/static/css/main.8a3b9e0a.css",
+    "main.js": "/pages/public/account-start/static/js/main.1f61f673.js",
+    "static/media/create_team.jpg": "/pages/public/account-start/static/media/create_team.30b84d2979f155980c21.jpg",
+    "static/media/join_team.jpg": "/pages/public/account-start/static/media/join_team.3fc42ead0c5e336882bb.jpg",
+    "static/media/EndzoneMainLogo.png": "/pages/public/account-start/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "index.html": "/pages/public/account-start/index.html",
+    "main.8a3b9e0a.css.map": "/pages/public/account-start/static/css/main.8a3b9e0a.css.map",
+    "main.1f61f673.js.map": "/pages/public/account-start/static/js/main.1f61f673.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8a3b9e0a.css",
+    "static/js/main.1f61f673.js"
+  ]
+}

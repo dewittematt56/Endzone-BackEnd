@@ -4,6 +4,8 @@ from database.db import db, db_uri
 from database.models import *
 from login_api.login_persona import LoggedInPersona
 
+from utils_api import server_utils
+
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
@@ -49,12 +51,19 @@ login_manager = LoginManager()
 login_manager.init_app(application)
 @login_manager.user_loader
 def load_user(email: str):
-    query = db.session.query(User).filter(User.Email == email)
-    query_response = query.all()
-    # To-Do get org Codes for user
+    query_user = db.session.query(User).filter(User.Email == email).all()
 
-    if len(query_response) == 1:
-        loaded_user = LoggedInPersona(query_response[0].ID ,query_response[0].First_Name, query_response[0].Last_Name, query_response[0].Email, query_response[0].Phone_Number, query_response[0].Current_Team)
+    # To-Do get org Codes for user
+    if len(query_user) == 1:
+        current_team = query_user[0].Current_Team
+        # If no Current Team is Set
+        if not current_team:
+            current_team = query_user[0].Default_Team
+        query_team = db.session.query(Team).filter(Team.Team_Code == current_team).all()
+        if len(query_team) == 1:
+            loaded_user = LoggedInPersona(query_user[0].ID ,query_user[0].First_Name, query_user[0].Last_Name, query_user[0].Email, query_user[0].Phone_Number, current_team, query_team[0].Org_Code)
+        else:
+            loaded_user = LoggedInPersona(query_user[0].ID ,query_user[0].First_Name, query_user[0].Last_Name, query_user[0].Email, query_user[0].Phone_Number, current_team, 'Unknown')
         return loaded_user
     else:
         return
@@ -105,13 +114,13 @@ def logout():
 @application.route('/account/user/create', methods = ['POST'])
 def register():    
     try:
-        params = ["first", "last", "email", "password1", "password2", "phone", "join_action"]
         if request.method == "POST":
             data = json.loads(request.get_data())
             # Make sure all fields are filled in
-            for param in params:
-                if param not in data.keys():
-                    return Response("Please provide a " + param, status = 400)
+            param_check = server_utils.check_required_params(["first", "last", "email", "password1", "password2", "phone", "join_action"], data.keys())
+            if param_check: return param_check
+
+            # Get Data from Payload
             first = data["first"]
             last = data["last"]
             email = data["email"]
@@ -119,8 +128,10 @@ def register():
             password2 = data["password2"]
             phone = data["phone"]
             join_org = data["join_action"] # True/False
+
             if join_org == True:
-                org_code = data["org_code"]
+                # WE JOIN ORGANIZATIONS BY TEAM CODE (PARENT -> CHILD)
+                team_code = data["team_code"]
             
             first_has_number = any(map(str.isdigit,first))
             last_has_number = any(map(str.isdigit,last))
@@ -135,8 +146,7 @@ def register():
             if any(map(str.isdigit,first)) or any(map(str.isdigit,last)):
                 return Response("Numbers are not allowed in name fields", status = 403) 
             elif " " in first or " " in last:
-                return Response("Spaces are not allowed in name field", status = 403)
-            
+                return Response("Spaces are not allowed in name field", status = 403)           
             elif first_has_number == True or last_has_number == True:
                 return Response("Numbers not allowed in name fields", status = 403)
 
@@ -152,23 +162,25 @@ def register():
             elif " " in password1:
                 return Response("Spaces are not allowed in the password field", status = 403)
             if join_org:
-                org_code = data["org_code"] 
-                if len(db.session.query(Org).filter(Org.Org_Code == org_code).all()) == 0:
+                team_code = data["team_code"] 
+                team_query = db.session.query(Team).filter(Team.Team_Code == team_code).all()
+                if len(team_query) == 0:
                     return Response("Invalid org code, please try again", status = 403)
+                elif len(team_query == 1):
+                    org_query = db.session.query(Org).filter(Org.Org_Code == team_query[0].Org_Code).all()
+                    if len(org_query) == 1:
+                        db.session.add(Team_Member(team_query[0].Team_Code, new_user.get_id(), "Coach"))
+                        db.session.add(Org_Member(org_query[0].Org_Code, new_user.get_id(), "Coach"))
+                        db.session.add(User(first, last, email, phone, password1, "null", "Complete"))
+                        db.session.commit()
+                        login_user(load_user(new_user.Email))
+                        return redirect("/endzone/hub")
+                    else:
+                        return Response("Odd, The team you specified does not have an organization please contact endzone.analytics@gmail.com", status = 500)
                 else:
-                    new_user = User(first, last, email, phone, password1, "null", "Complete")
-                    db.session.add(new_user)
-                    db.session.commit()
-                    userId = new_user.get_id()
-                    new_orgMember = Org_Member(org_code, userId, "Coach")
-                    db.session.add(new_orgMember)
-                    db.session.commit()
-                    
-                    login_user(load_user(new_user.Email))
-                    return redirect("/endzone/hub")
-
+                    return Response("Odd, There are multiple teams with that team code. please contact endzone.analytics@gmail.com", status = 500)
             else:
-                new_user = User(first, last, email, phone, password1, "null", "Creating Org")
+                new_user = User(first, last, email, phone, password1, "Creating Org", "Creating Org")
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(load_user(new_user.Email))
@@ -180,73 +192,75 @@ def register():
 @application.route('/account/org/create', methods = ['POST'])
 def createOrg():
     try:
-        params = ['orgName', 'competitionLevel', 'state', 'address', 'zipCode', "city"]
         if request.method == 'POST':
             data = json.loads(request.get_data())
-            for param in params:
-                if param not in data.keys():
-                    return Response('Please provide a ' + param, status = 404)
-        orgName = data["orgName"]
-        competitionLevel = data["competitionLevel"]
-        state = data["state"]
-        address = data["address"]
-        zipCode = data["zipCode"]
-        city = data["city"]
-        comp_levels = ["Youth", "High School", "College", "Professional"]
-        states = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
-           'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
-           'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
-           'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
-           'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY']
-        special_char = re.compile('[\'@_!#$%^&*()<>?/\\|}{~:]')
-        # state conditionals 
-        if state not in states:
-            return Response("State must be the uppercase two letter abbreviation of the state", status = 404)
-        elif any(map(str.isdigit,state)) == True:
-            return Response("No numbers in the state field", status = 404)
-        elif " " in state:
-            return Response("State should be comprised of 2 letters", status = 404)
-        
-        # Conditional for competition levels
-        if competitionLevel not in comp_levels:
-            return Response("Please input either Youth, High School, College, or Professional", status = 404)
-        
-        # Zip code conditionals
-        if len(zipCode) != 5:
-            return Response("Please input 5 number zip code", status = 404)
-        elif any(map(str.isalpha,zipCode)):
-            return Response("Zip code can only be comprised of numbers", status = 404)
-        elif special_char.search(zipCode) != None:
-            return Response("Zip code can only be comprised of numbers")
-        elif " " in zipCode:
-            return Response("No spaces are allowed in the zip code field")
-        
-        # Address Conditionals
-        if any(map(str.isalpha, address)) == False:
-            return Response("Address needs to have letters included", status = 404)
-        elif any(map(str.isdigit, address)) == False:
-            return Response("Address needs to have numbers included", status = 404)
+            param_check = server_utils.check_required_params(['orgName', 'competitionLevel', 'state', 'address', 'zipCode', "city"], data.keys())
+            if param_check: return param_check
 
-        # City conditional
-        if any(map(str.isdigit, city)):
-            return Response("City field cannot include numbers", status = 404)
-        
-      
-        new_org = Org(orgName, state, address, zipCode, city, competitionLevel)
-        new_team = Team(orgName, new_org.Org_Code)
-        
-        updated_user = db.session.query(User.ID == current_user.id)
-        updated_user.Stage = "Complete"
+            orgName = data["orgName"]
+            competitionLevel = data["competitionLevel"]
+            state = data["state"]
+            address = data["address"]
+            zipCode = data["zipCode"]
+            city = data["city"]
+            comp_levels = ["Youth", "High School", "College", "Professional"]
+            states = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
+            'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
+            'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
+            'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
+            'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY']
+            special_char = re.compile('[\'@_!#$%^&*()<>?/\\|}{~:]')
+            # state conditionals 
+            if state not in states:
+                return Response("State must be the uppercase two letter abbreviation of the state", status = 404)
+            elif any(map(str.isdigit,state)) == True:
+                return Response("No numbers in the state field", status = 404)
+            elif " " in state:
+                return Response("State should be comprised of 2 letters", status = 404)
+            
+            # Conditional for competition levels
+            if competitionLevel not in comp_levels:
+                return Response("Please input either Youth, High School, College, or Professional", status = 404)
+            
+            # Zip code conditionals
+            if len(zipCode) != 5:
+                return Response("Please input 5 number zip code", status = 404)
+            elif any(map(str.isalpha,zipCode)):
+                return Response("Zip code can only be comprised of numbers", status = 404)
+            elif special_char.search(zipCode) != None:
+                return Response("Zip code can only be comprised of numbers")
+            elif " " in zipCode:
+                return Response("No spaces are allowed in the zip code field")
+            
+            # Address Conditionals
+            if any(map(str.isalpha, address)) == False:
+                return Response("Address needs to have letters included", status = 404)
+            elif any(map(str.isdigit, address)) == False:
+                return Response("Address needs to have numbers included", status = 404)
 
-        org_owner = Org_Member(new_org.Org_Code, current_user.id, "Owner")
-        team_owner = Team_Member(new_team.Team_Code, current_user.id, "Owner")
-        db.session.add(new_org)
-        db.session.add(org_owner)
-        db.session.add(new_team)
-        db.session.add(team_owner)
+            # City conditional
+            if any(map(str.isdigit, city)):
+                return Response("City field cannot include numbers", status = 404)
+            
+            updated_user = db.session.query(User).get(current_user.id)
 
-        db.session.commit()
-        return Response("Successfully Created Org", 200)
+            new_org = Org(orgName, state, address, zipCode, city, competitionLevel)
+            new_team = Team(orgName + ' - ' + competitionLevel, new_org.Org_Code)
+            org_owner = Org_Member(new_org.Org_Code, current_user.id, "Owner")
+            team_owner = Team_Member(new_team.Team_Code, current_user.id, "Owner")
+
+            # Update Some User Props
+            updated_user.Stage = "Complete"
+            updated_user.Current_Team = new_team.Team_Code
+            updated_user.Default_Team = new_team.Team_Code
+            
+            db.session.add(new_org)
+            db.session.add(org_owner)
+            db.session.add(new_team)
+            db.session.add(team_owner)
+
+            db.session.commit()
+            return Response("Successfully Created Org", 200)
     except Exception as e:
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
