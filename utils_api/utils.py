@@ -55,4 +55,40 @@ def load_play_json(plays: "list[Play]") -> "list[dict]":
                 "Away_Team": play.Game.Away_Team
             })
         return json
-    
+
+def load_one_play(play: Play) -> dict:
+    return {
+        "id": play.ID,
+        "Game_ID": play.Game_ID,
+        "Play_Number": play.Play_Number,
+        "Drive": play.Drive,
+        "Possession": play.Possession,
+        "Yard": play.Yard,
+        "Hash": play.Hash,
+        "Down": play.Down,
+        "Distance": play.Distance,
+        "Quarter": play.Quarter,
+        "Motion": play.Motion,
+        "D_Formation": play.D_Formation,
+        "O_Formation": play.O_Formation,
+        "Formation_Strength": play.Formation_Strength,
+        "Home_Score": play.Home_Score,
+        "Away_Score": play.Away_Score,
+        "Play_Type": play.Play_Type,
+        "Play_Type_Dir": play.Play_Type_Dir,
+        "Pass_Zone": play.Pass_Zone,
+        "Coverage": play.Coverage,
+        "Pressure_Left": play.Pressure_Left,
+        "Pressure_Middle": play.Pressure_Middle,
+        "Pressure_Right": play.Pressure_Right,
+        "Ball_Carrier": play.Ball_Carrier,
+        "Event": play.Event,
+        "Result": play.Result,
+        "Result_X": play.Result_X,
+        "Result_Y": play.Result_Y,
+        "Play_X": play.Play_X,
+        "Play_Y": play.Play_Y,
+        "Pass_X": play.Pass_X,
+        "Pass_Y": play.Pass_Y,
+        "Creation_Date": play.Creation_Date,
+    }

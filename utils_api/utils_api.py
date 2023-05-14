@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from database.models import *
 import json
 from utils_api.utils import *
+from utils_api.server_utils import *
 
 utils_api = Blueprint("utils_api", __name__, template_folder="pages", static_folder="pages")
 
@@ -28,13 +29,10 @@ def getUser():
 @utils_api.route("/endzone/utils/formation/add", methods = ["POST"])
 def formationAdd():
     try:
-        params = ["formation", "wideRecievers", "tightEnds", "runningBacks"]
         if request.method == "POST":
             data = json.loads(request.get_data())
-            
-            for param in params:
-                if param not in data.keys():
-                    return Response('Please Provide a ' + param, status = 400)
+            param_check =- check_required_params(["formation", "wideRecievers", "tightEnds", "runningBacks"], data.keys())
+            if param_check: return param_check
             formation = data["formation"]
             wr = int(data["wideRecievers"])
             te = int(data["tightEnds"])
@@ -165,17 +163,14 @@ def updateFormation():
 @login_required
 def addPlay():
     try:
-        params = ["Game_ID", "Play_Number", "Drive", "Possession", "Yard", "Hash", "Down", "Distance", "Quarter", "Motion", "D_Formation", "O_Formation", "Formation_Strength", "Play_Type",
-                  "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result",
-                  "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Home_Score", "Away_Score"]
         if request.method == "POST":
             data = json.loads(request.get_data())
-            print(data)
-
             # ensure parameters are proper.
-            for param in params:
-                if param not in data.keys():
-                    return Response('Please Provide a ' + param, status = 400)
+            param_check = check_required_params(["Game_ID", "Play_Number", "Drive", "Possession", "Yard", "Hash", "Down", "Distance", "Quarter", "Motion", "D_Formation", "O_Formation", "Formation_Strength", "Play_Type",
+                  "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result",
+                  "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Home_Score", "Away_Score"], data.keys())
+            if param_check: return param_check
+
             
             # Parse request
             gameId = data["Game_ID"]
@@ -271,7 +266,7 @@ def addPlay():
 
             db.session.add(new_play)
             db.session.commit()
-            return Response("Successfully created Play")
+            return jsonify(load_one_play(new_play))
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
@@ -403,7 +398,5 @@ def deletePlay():
 def getPlay():
     if request.method == "GET":
         game_id = request.args.get("gameId")
-        print(game_id)
     query = db.session.query(Play, Game).filter(Play.Game_ID == game_id).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
-    print(query.all())
     return jsonify(load_play_json(query.all()))
