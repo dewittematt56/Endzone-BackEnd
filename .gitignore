@@ -19,3 +19,5 @@ web_pages/__pycache__/content_api.cpython-38.pyc
 *.pyc
 reports_api/reports/__pycache__/pregame_report.cpython-38.pyc
 *.pyc
+*.pyc
+*.pyc
