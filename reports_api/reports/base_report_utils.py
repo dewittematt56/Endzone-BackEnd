@@ -179,7 +179,6 @@ def ball_carrier_package(df: pd.DataFrame) -> pd.DataFrame:
 
 def passing_package(df: pd.DataFrame) -> pd.DataFrame:
     df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
-    print(df["Efficiency"])
     third_down_data = df[df['Down'] == 3]
     pressure_play_data = df[df['Pressure_Existence'] == True]
     passing_df = pd.DataFrame({
