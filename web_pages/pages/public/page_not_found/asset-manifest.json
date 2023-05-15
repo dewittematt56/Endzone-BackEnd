@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/pages/public/page_not_found/static/css/main.639a01e5.css",
+    "main.js": "/pages/public/page_not_found/static/js/main.f2867442.js",
+    "static/media/Endzone_Shield.png": "/pages/public/page_not_found/static/media/Endzone_Shield.78290fdf8cf8aa0575f4.png",
+    "index.html": "/pages/public/page_not_found/index.html",
+    "main.639a01e5.css.map": "/pages/public/page_not_found/static/css/main.639a01e5.css.map",
+    "main.f2867442.js.map": "/pages/public/page_not_found/static/js/main.f2867442.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.639a01e5.css",
+    "static/js/main.f2867442.js"
+  ]
+}

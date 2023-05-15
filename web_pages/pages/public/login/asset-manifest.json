@@ -1,16 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/public/login/static/css/main.5140275c.css",
-    "main.js": "/pages/public/login/static/js/main.c2782ef8.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/public/login/static/js/787.942d2aa2.chunk.js",
+    "main.css": "/pages/public/login/static/css/main.f90446c0.css",
+    "main.js": "/pages/public/login/static/js/main.00bd36fb.js",
     "static/media/Endzone_Shield.png": "/pages/public/login/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
     "index.html": "/pages/public/login/index.html",
-    "main.5140275c.css.map": "/pages/public/login/static/css/main.5140275c.css.map",
-    "main.c2782ef8.js.map": "/pages/public/login/static/js/main.c2782ef8.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/public/login/static/js/787.942d2aa2.chunk.js.map"
+    "main.f90446c0.css.map": "/pages/public/login/static/css/main.f90446c0.css.map",
+    "main.00bd36fb.js.map": "/pages/public/login/static/js/main.00bd36fb.js.map"
   },
   "entrypoints": [
-    "static/css/main.5140275c.css",
-    "static/js/main.c2782ef8.js"
+    "static/css/main.f90446c0.css",
+    "static/js/main.00bd36fb.js"
   ]
 }

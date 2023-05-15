@@ -2,6 +2,7 @@ from flask import Flask, Blueprint, Response, render_template
 from flask_login import login_required
 content_api = Blueprint("content_api", __name__, template_folder="pages", static_folder="pages")
 
+
 @content_api.route("/", methods = ["GET"])
 def home():
     return render_template("/public/home/home.html")
@@ -28,7 +29,7 @@ def aboutUs():
 
 @content_api.route("/account/create", methods = ["GET"])
 def frontOffice():
-    return render_template("/public/front-office/front-office.html")
+    return render_template("/public/account-start/account-start.html")
 
 @content_api.route("/account/terms", methods = ["GET"])
 def accountTermsServices():
@@ -85,4 +86,5 @@ def ManageData():
 @content_api.route("/endzone/account/profile", methods = ["GET"])
 @login_required
 def profile():
-    return render_template("/profile/index.html")
+    return render_template("/user/profile/index.html")
+

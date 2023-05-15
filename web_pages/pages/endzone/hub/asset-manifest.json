@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/endzone/hub/static/css/main.3bcb86a8.css",
-    "main.js": "/pages/endzone/hub/static/js/main.b92b14f8.js",
+    "main.css": "/pages/endzone/hub/static/css/main.38e620cc.css",
+    "main.js": "/pages/endzone/hub/static/js/main.b730c59e.js",
     "static/media/EndzoneMainLogo.png": "/pages/endzone/hub/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
     "index.html": "/pages/endzone/hub/index.html",
-    "main.3bcb86a8.css.map": "/pages/endzone/hub/static/css/main.3bcb86a8.css.map",
-    "main.b92b14f8.js.map": "/pages/endzone/hub/static/js/main.b92b14f8.js.map"
+    "main.38e620cc.css.map": "/pages/endzone/hub/static/css/main.38e620cc.css.map",
+    "main.b730c59e.js.map": "/pages/endzone/hub/static/js/main.b730c59e.js.map"
   },
   "entrypoints": [
-    "static/css/main.3bcb86a8.css",
-    "static/js/main.b92b14f8.js"
+    "static/css/main.38e620cc.css",
+    "static/js/main.b730c59e.js"
   ]
 }
