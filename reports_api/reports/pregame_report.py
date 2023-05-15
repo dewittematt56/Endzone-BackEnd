@@ -30,7 +30,7 @@ class PregameReport():
         # Get game-based & play-based data from database.
         self.get_data()
         self.split_data()
-        # self.title_page()
+        self.title_page()
         # self.overview_page()
         # self.offense_overview(self.offensive_data)
         # self.play_type_personnel_page(self.offensive_data)

@@ -16,7 +16,6 @@ def load_formation_json(formations: "list[Formations]") -> "list[dict]":
 def load_play_json(plays: "list[Play]") -> "list[dict]":
         json = []
         for play in plays:
-            print(play)
             json.append({
                 "id": play.Play.ID,
                 "Game_ID": play.Play.Game_ID,
@@ -92,3 +91,4 @@ def load_one_play(play: Play) -> dict:
         "Pass_Y": play.Pass_Y,
         "Creation_Date": play.Creation_Date,
     }
+

@@ -170,7 +170,8 @@ def addPlay():
                   "Play_Type_Dir", "Pass_Zone", "Coverage", "Pressure_Left", "Pressure_Middle", "Pressure_Right", "Ball_Carrier", "Event", "Result",
                   "Result_X", "Result_Y", "Play_X", "Play_Y", "Pass_X", "Pass_Y", "Home_Score", "Away_Score"], data.keys())
             if param_check: return param_check
-
+            validation_check = validate_play_input(data)
+            if validation_check: return validation_check
             
             # Parse request
             gameId = data["Game_ID"]
@@ -206,59 +207,6 @@ def addPlay():
             playY = data["Play_Y"]
             passX = data["Pass_X"]
             passY = data["Pass_Y"]
-
-            # Validation
-            formationStrengths = ["Left", "Right", "Balanced", "Unknown"]
-            playTypes = ["Inside Run", "Outside Run", "Pass", "Boot Pass", "Option", "Unknown"]
-            passZones = ["Flats-Left", "Flats-Right", "Middle-Left", "Middle-Middle", "Middle-Right", "Deep-Left", "Deep-Right", "Unknown", "Non Passing Play", "Not Thrown"]
-            coverages = ["Man 0", "Man 1", "Man 2", "Man 3", "Zone 2", "Zone 3", "Zone 4", "Prevent", "Unknown"]
-            events = ["Penalty", "Interception", "Touchdown", "Fumble", "Field Goal", "Safety", "None"]
-
-            if int(playNumber) not in range(0,1000):
-                return Response("Play number must be in the range of 0 to 999", status = 400)
-            
-            if int(yard) not in range(1,101):
-                return Response("The yardage must be in range of 1 to 100", status = 400)
-            
-            if hash != "Left" and hash != "Right" and hash != "Middle":
-                return Response("Hash must be either Left, Right, or Middle", status = 400)
-            
-            if int(down) not in range(1,5):
-                return Response("Down must be in range from 1 to 4", status = 400)
-            
-            if int(distance) not in range(1,101):
-                return Response("Distance must be in range from 1 to 100", status = 400)
-            
-            if int(quarter) not in range(1,6):
-                return Response("Quarter must be in range from 1 to 5", status = 400)
-            
-            if formationStrength not in formationStrengths:
-                return Response("Formation Strength must be either Left, Right, Balanced, or Unknown", status = 400)
-            
-            if playType not in playTypes:
-                return Response("Play type must be in list {}".format(playTypes), status = 400)
-            
-            if playTypeDir != "Left" and playTypeDir != "Right" and playTypeDir != "Unknown":
-                return Response("PlayTypeDir must be either Left, Right, or Unknown", status = 400)
-            
-            if passZone not in passZones:
-                return Response("Pass zone must be in list {}".format(passZones), status = 400)
-            
-            if coverage not in coverages:
-                return Response("Coverage must be in list {}".format(coverages),status = 400)
-            
-            if not ballCarrier:
-                return Response("Ball carrier needs a number", status = 400)
-            
-            if event not in events:
-                return Response("Event must be in list {}".format(events), status=400)
-            # To-Do update later
-            if result not in range(-99,100):
-                return Response("Result must be a number from -99 to 99", status = 400)
-            
-            if int(homeScore) < 0 or int(awayScore) < 0:
-                return Response("Scores must be positive integers", status = 400)
-            
             # Add to Database
             new_play = Play(gameId, playNumber, drive, possession, yard, hash, down, distance, quarter, motion, dFormation, oFormation, formationStrength, homeScore, awayScore,
                              playType, play, playTypeDir, passZone, coverage, pressureLeft, pressureMiddle, pressureRight, ballCarrier, event,
@@ -277,7 +225,6 @@ def updatePlay():
     try:
         if request.method == "POST":
             data = json.loads(request.get_data())
-
             # Get Data
             id = data["id"]
             gameId = data["gameID"]
