@@ -21,11 +21,127 @@
                 margin: 0;
                 text-decoration: underline;
             }
+
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                width: 100%;
+                border-bottom: 1px solid black;
+                padding-bottom: 5px;
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 20px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+            }
+
+            .good-td {
+                background-color: #4CAF50
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .bad-td {
+                background-color: #FF5252;
+            }
+            .chart-div {
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                text-align: center;
+            }
+            .barchart {
+                border: 0px;
+                z-index: -1;
+                width: 1000px;
+                margin-top: 25px;
+            }
         </style>
     </head>
     <body>
         <div class = "title-div">
             <h2>{{ team }} Offense: Targets Overview</h2>
         </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Receiver</th>
+                        {% for column in receiver_data.columns %}
+                            <th> {{ column | replace("_", "") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in receiver_data.iterrows() %}
+                        <tr>
+                            <td><b>#{{ index | replace(".0", "") }}</b></td>
+                            {% for column in receiver_data.columns %}
+                                {% if column == "Targets" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% elif column == "Receptions" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% elif column == "Total Yards" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% elif column == "Touchdowns" %}
+                                    <td class="{% if row[column]  > 2  %}good-td{% else  %}netural-td{% endif %}">{{ row[column] | int }}</td>
+                                {% elif column == "Yards per Catch" %}
+                                    <td class="{% if row[column]  >= 5  %}good-td{% elif row[column]  > 1  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Median Yards Per Catch" %}
+                                    <td class="{% if row[column]  >= 5  %}good-td{% elif row[column]  > 1  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Difference from Team Average" %}
+                                    <td class="{% if row[column]  >= 3  %}good-td{% elif row[column]  > -3  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Efficient Receptions" %}
+                                 <td class="{% if row[column]  >= 66  %}good-td{% elif row[column]  > 33  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}%</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in receiver_pass_zone.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in receiver_pass_zone.iterrows() %}
+                        <tr>
+                            {% for column in receiver_pass_zone.columns %}
+                                {% if column == "Ball_Carrier" %}
+                                <td><b>#{{ row[column] | replace(".0", "") }}</b></td>
+                                {% else %}
+                                    <td class="{% if row[column]  >= 50  %}good-td{% elif row[column]  > 15  %}netural-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p style="text-align: center;">Ball Carrier by Pass Zone</p>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ personnel_receiver_bar_plot }}" alt="Ball Carrier Formation Bar Chart" class="barchart">
+        </div>
+        <p style="text-align: center;">A Receiver with the number -99 is Unknown.</p>
     </body>
 </html>

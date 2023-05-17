@@ -164,18 +164,35 @@ def ball_carrier_package(df: pd.DataFrame) -> pd.DataFrame:
     median_result = df.groupby('Ball_Carrier')['Result'].median()
     dev_result = df.groupby('Ball_Carrier')['Result'].apply(lambda x: x.mean() - team_average)
     nfl_efficiency_by_call_carrier = df.groupby('Ball_Carrier')['Efficiency'].apply(lambda x: (x.mean() / len(x)) * 100 )
-    ball_carrier_df = pd.DataFrame({
+    return pd.DataFrame({
         'Total Yards': total_yards,
         'Carries': carries_by_ball_carrier,
         'Touchdowns': touchdowns_by_ball_carrier,
         'Fumbles': fumbles_by_ball_carrier,
         'Fumble Frequency': fumble_frequency,
-        'Average Result': average_result,
-        'Median Result': median_result,
+        'Yards per Carry': average_result,
+        'Median Yards Per Carry': median_result,
         'Difference from Team Average': dev_result,
         'Efficient Carries': nfl_efficiency_by_call_carrier,
-    })
-    return ball_carrier_df.fillna(0)
+    }).fillna(0).sort_values('Total Yards', ascending=False)
+
+def receiver_package(df: pd.DataFrame) -> pd.DataFrame:
+    df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
+    df_thrown = df[df["Pass_Zone"] != 'Non-Passing-Play']
+    df_receptions = df_thrown[(df_thrown["Result"]  != 0)]
+    touchdowns_df = df_receptions[df_receptions['Event'] == 'Touchdown']
+    team_average = df_receptions["Result"].mean()
+
+    return pd.DataFrame({
+        'Targets': df_thrown.groupby("Ball_Carrier").size(),
+        'Receptions': df_receptions.groupby('Ball_Carrier').size(),
+        'Total Yards': df_thrown.groupby('Ball_Carrier')['Result'].sum(),
+        'Touchdowns': touchdowns_df.groupby('Ball_Carrier').size(),
+        'Yards per Catch': df_receptions.groupby('Ball_Carrier')['Result'].median(),
+        'Median Yards Per Catch': df_receptions.groupby('Ball_Carrier')['Result'].median(),
+        "Difference from Team Average": df_receptions.groupby('Ball_Carrier')['Result'].apply(lambda x: x.mean() - team_average),
+        "Efficient Receptions": df_thrown.groupby('Ball_Carrier')['Efficiency'].apply(lambda x: (x.mean() / len(x)) * 100 )
+    }).fillna(0).sort_values('Total Yards', ascending=False)
 
 def passing_package(df: pd.DataFrame) -> pd.DataFrame:
     df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
@@ -192,6 +209,12 @@ def passing_package(df: pd.DataFrame) -> pd.DataFrame:
     }, index=[0])
     return passing_df.fillna(0)
 
+def subset_redzone_data(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["Yard"] >= 80]
+    # Define the conditions and corresponding values
+    conditions = [(df['Yard'].between(80, 90, inclusive='both')),(df['Yard'].between(90, 95, inclusive='both')),(df['Yard'] > 95)]
+    df['Redzone_Position'] = np.select(conditions, ['Yard Marker 20-10', 'Yard Marker 10-5', 'Goaline'], default='')
+    return df
 
 def get_nfl_efficiency(df: pd.DataFrame) -> str:
     total_length = len(df)

@@ -16,16 +16,13 @@ from .spatial_utils import *
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports'))
 env.globals.update(static='./reports_api/reports/static')
 
-
-
-
 class PregameReport():
     def __init__(self) -> None:
         self.pdfs = []
-        self.team_of_interest = "Bursnville"
+        self.team_of_interest = "Eastview"
         self.team_code = "Endzone-System"
         self.game_ids = ["f492782c-a04f-43f6-af18-65d51d033803"]
-        self.pages = ["Overview", "Play Type Personnel", "Play Type Down", "Play Type Field", "Strength of Formation", "Ball Carrier Overview", "Ball Carrier Detailed", "Passing Overview", "Passing Detail"]
+        self.pages = ["Overview", "Play Type Personnel", "Play Type Down", "Play Type Field", "Strength of Formation", "Ball Carrier Overview", "Ball Carrier Detailed", "Passing Overview", "Passing Detail", "Passing Targets", "Redzone Situational"]
         self.pdf_write = PyPDF2.PdfWriter()
         # Get game-based & play-based data from database.
         self.get_data()
@@ -42,6 +39,11 @@ class PregameReport():
         self.boundary_page(self.offensive_data)
         self.passing_overview_page(self.offensive_data)
         self.passing_detail_page(self.offensive_data)
+        self.passing_targets_page(self.offensive_data)
+        self.o_redzone_page(self.offensive_data)
+        self.o_down_1_page(self.offensive_data)
+        self.o_down_2_page(self.offensive_data)
+        self.o_down_3_page(self.offensive_data)
 
     def template_to_pdf(self, html) -> None:
         pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='reports_api\wkhtmltopdf.exe'))
@@ -227,20 +229,66 @@ class PregameReport():
 
     def passing_targets_page(self, data: pd.DataFrame):
         data = data[data["Play_Type"].isin(['Pocket Pass', 'Boot Pass'])]
+        receiver_data = receiver_package(data)
         data['Pass_Zone'] = data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
         data['Did_Scramble'] = (data['Pass_Zone'].isin(['Non-Passing-Play'])) & (data["Result"] > 0)
         data['Non_Passing_Play'] = data['Did_Scramble'].map({True: 'Scramble', False: 'Sack'})
 
-        pass_zone_distance_ridge_plot = create_ridge_plot(data, "Pass_Zone", "Distance", "Pass_Zone")
-
         data_slim = data[~data["Pass_Zone"].isin(['Unknown', 'Not Thrown'])]
-        pass_zone_map = create_xy_map(data_slim, "Yard", "Hash", "Pass_Zone", "Result")
-        scramble_chart_data = group_by_df(data, "Non_Passing_Play")
-        scramble_chart = categorical_pieChart("Frequency of Quarterback Scrambles", scramble_chart_data)
+
+        receiver_pass_zone = crossTabQuery(data_slim.Ball_Carrier, data_slim.Pass_Zone)
+        personnel_receiver_bar_plot = groupedBarGraph(data_slim, "Personnel", "Ball_Carrier", "Targeted Receiver by Formation")
 
         passing_detail_page = env.get_template('report_pages/offense_passing/offense_passing_passZone_targets.html')
-        html = passing_detail_page.render(team = self.team_of_interest)
+        html = passing_detail_page.render(team = self.team_of_interest, receiver_data = receiver_data, receiver_pass_zone = receiver_pass_zone, personnel_receiver_bar_plot = personnel_receiver_bar_plot)
         self.template_to_pdf(html)        
+
+    def o_redzone_page(self, data: pd.DataFrame):
+        redzone_data = subset_redzone_data(data)
+        
+        redzone_data_detail_position = crossTabQuery(redzone_data.Redzone_Position, redzone_data.Play_Type)
+        redzone_data_detail_down = crossTabQuery(redzone_data.Down, redzone_data.Play_Type)
+
+        personnel_pie_chart_data = group_by_df(data, "Personnel")
+        personnel_chart = categorical_pieChart("Frequency of Personnel Groups", personnel_pie_chart_data)
+        formation_pie_chart_data = group_by_df(data, "Formation")
+        formation_chart = categorical_pieChart("Frequency of Formations", formation_pie_chart_data)
+
+        redzone_data_detail_formation = crossTabQuery(redzone_data.Formation, redzone_data.Play_Type)
+        redzone_data_detail_personnel = crossTabQuery(redzone_data.Personnel, redzone_data.Play_Type)
+        
+        passing_detail_page = env.get_template('report_pages/offense_situational/offense_redzone.html')
+        html = passing_detail_page.render(team = self.team_of_interest, redzone_data_detail_position = redzone_data_detail_position, redzone_data_detail_down = redzone_data_detail_down, personnel_chart = personnel_chart, formation_chart = formation_chart,redzone_data_detail_formation = redzone_data_detail_formation, redzone_data_detail_personnel= redzone_data_detail_personnel )
+        self.template_to_pdf(html)   
+
+    def o_down_1_page(self, data: pd.DataFrame):
+        data_1 = data[data["Down"] == 1]
+        data_1["Detailed_Field_Group"] = data_1["Field_Group"] + "-" + data_1["Hash"]
+        play_type_by_down_group = crossTabQuery(data_1.Down_Group, data_1.Play_Type)
+        left_strength_boundary_chart = categorical_pieChart_wrapper(data_1, "To_Strength", "Ran Ball to Strength of Formation")
+        right_strength_boundary_chart = categorical_pieChart_wrapper(data_1, "To_Strength", "Ran Ball to Strength of Formation")
+
+
+        # df_inside_run = data[data["Play_Type"] == "Inside Run"]
+        # df_outside_run = data[data["Play_Type"] == "Outside Run"]
+        # df_pass = data[(data["Play_Type"] == "Pocket Pass") | (data["Play_Type"] == "Boot Pass")]
+        # data_inside_run_field_zone = FieldZone(group_by_df(df_inside_run, 'Detailed_Field_Group'), 'Value', number_of_classes=3, title="Field Map: Play Type - Inside Run").create_graph()
+        # data_outside_run_field_zone = FieldZone(group_by_df(df_outside_run, 'Detailed_Field_Group'), 'Value', number_of_classes=3, title="Field Map: Play Type - Outside Run").create_graph()
+        # data_pass_field_zone = FieldZone(group_by_df(df_outside_run, 'Detailed_Field_Group'), 'Value', number_of_classes=3, title="Field Map: Play Type - Outside Run").create_graph()
+
+        passing_detail_page = env.get_template('report_pages/offense_situational/offense_down_1.html')
+        html = passing_detail_page.render(team = self.team_of_interest, play_type_by_down_group = play_type_by_down_group)
+        self.template_to_pdf(html)   
+
+    def o_down_2_page(self, data: pd.DataFrame):
+        passing_detail_page = env.get_template('report_pages/offense_situational/offense_down_2.html')
+        html = passing_detail_page.render(team = self.team_of_interest)
+        self.template_to_pdf(html)   
+
+    def o_down_3_page(self, data: pd.DataFrame):
+        passing_detail_page = env.get_template('report_pages/offense_situational/offense_down_3.html')
+        html = passing_detail_page.render(team = self.team_of_interest)
+        self.template_to_pdf(html)   
 
     def get_data(self) -> None:
         db_engine = create_engine(db_uri)
