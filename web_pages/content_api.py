@@ -88,3 +88,17 @@ def ManageData():
 def profile():
     return render_template("/user/profile/index.html")
 
+@content_api.route("/endzone/org/home", methods = ["GET"])
+@login_required
+def OMHome():
+    return render_template("/org/om_home/om_home.html")
+
+@content_api.route("/endzone/org/profile", methods = ["GET"])
+@login_required
+def OMProfile():
+    return render_template("/org/om_profile/om_profile.html")
+
+@content_api.route("/endzone/org/members", methods = ["GET"])
+@login_required
+def OMMembers():
+    return render_template("/org/om_members/om_members.html")

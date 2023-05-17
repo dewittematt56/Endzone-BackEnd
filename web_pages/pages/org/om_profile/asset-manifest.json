@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/pages/org/om_profile/static/css/main.9ed6f78c.css",
+    "main.js": "/pages/org/om_profile/static/js/main.1718507d.js",
+    "static/media/EndzoneMainLogo.png": "/pages/org/om_profile/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "index.html": "/pages/org/om_profile/index.html",
+    "main.9ed6f78c.css.map": "/pages/org/om_profile/static/css/main.9ed6f78c.css.map",
+    "main.1718507d.js.map": "/pages/org/om_profile/static/js/main.1718507d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9ed6f78c.css",
+    "static/js/main.1718507d.js"
+  ]
+}
