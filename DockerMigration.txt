@@ -1,0 +1,12 @@
+docker build -t endzone-core-image-repo .
+aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 956579061637.dkr.ecr.us-east-2.amazonaws.com
+docker tag endzone-core-image-repo:latest 956579061637.dkr.ecr.us-east-2.amazonaws.com/endzone-core-image-repo:latest
+docker push 956579061637.dkr.ecr.us-east-2.amazonaws.com/endzone-core-image-repo:latest
+
+LOG INTO EC2 via Direct Connect
+
+sudo aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 956579061637.dkr.ecr.us-east-2.amazonaws.com
+docker pull 956579061637.dkr.ecr.us-east-2.amazonaws.com/endzone-core-image-repo:latest
+docker run -d -p 80:5000  956579061637.dkr.ecr.us-east-2.amazonaws.com/endzone-core-image-repo:latest
+
+

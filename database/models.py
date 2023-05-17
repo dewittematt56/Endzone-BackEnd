@@ -23,17 +23,19 @@ class User(db.Model):
     First_Name = db.Column(db.String(50), unique = False, nullable = False)
     Last_Name = db.Column(db.String(50), unique = False, nullable = False)
     Current_Team = db.Column(db.String(50), unique = False, nullable = True)
+    Default_Team = db.Column(db.String(50), unique = False, nullable = True)
     Stage = db.Column(db.String(25), unique = False, nullable = False)
-    # To-Do add join date
+    Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
 
-    def __init__(self, first_name, last_name, email, phone_number, password, Current_Team, stage) -> None:
+    def __init__(self, first_name: str, last_name: str, email: str, phone_number: str, password: str, current_team: str, stage: str) -> None:
         self.ID = gen_primary_key()
         self.First_Name = first_name
         self.Last_Name = last_name
         self.Password = password 
         self.Email = email
         self.Phone_Number = phone_number
-        self.Current_Team = Current_Team
+        self.Current_Team = current_team
+        self.Default_Team = current_team
         self.Stage = stage
         
     def get_id(self) -> str:
@@ -113,7 +115,7 @@ class Formations(db.Model):
         self.Running_Backs = runningBacks
         self.Image = image
         self.Org_Code = current_user.Org_Code
-        self.Team_Code = current_user.Team_Code
+        self.Team_Code = current_user.Current_Team
         self.Creator = current_user.id
         self.Creation_Date = datetime.datetime.utcnow()
 
@@ -265,6 +267,6 @@ class Game(db.Model):
         self.Away_Team = away_team
         self.Game_Date = game_date
         self.Game_Type = type
-        self.Team_Code = current_user.Team_Code
+        self.Team_Code = current_user.Current_Team
         self.Creator = current_user.id
         self.Creation_Date = datetime.datetime.utcnow()

@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import seaborn as sns
 import warnings
+from .utils import __save_matPlot__
 warnings.filterwarnings('ignore')
 
 # Used for encoding binary data
@@ -21,6 +22,24 @@ fontManager.addfont(font_path)
 prop = FontProperties(fname=font_path)
 plt.rcParams['font.family'] = 'Audiowide'
 sns.set(font=prop.get_name())
+
+def get_pressure_away_strength(form_strength: str, pressure_left: bool, pressure_right: bool, pressure_middle: bool) -> bool:
+    if form_strength  != 'Unknown':
+        if form_strength == 'Left' and (pressure_right or pressure_middle): return True
+        elif form_strength == 'Right' and (pressure_left or pressure_middle): return True
+    return False
+
+def get_pressure_into_strength(form_strength: str, pressure_left: bool, pressure_right: bool) -> bool:
+    if form_strength  != 'Unknown':
+        if form_strength == 'Left' and pressure_left: return True
+        elif form_strength == 'Right' and pressure_right: return True
+    return False
+    
+def get_plays_to_strength(form_strength: str, play_type: str, play_type_dir: str) -> bool:
+    if form_strength  != 'Unknown' and play_type_dir != 'Unknown':
+        return form_strength == play_type_dir
+    else:
+        return False
 
 def get_number_rushers(d_formation: str, pressure_left: bool, pressure_right: bool, pressure_middle: bool) -> Union[int, None]:
     if d_formation in ["Nickel", "Dime", "Prevent", "Goal Line"]:
@@ -107,6 +126,9 @@ def enrich_data(df: pd.DataFrame, team_of_interest: str) -> pd.DataFrame:
         df.loc[index,"Run_Type"] = get_run_type(df.loc[index, "Play_Type"])
         df.loc[index, "Personnel"] = get_personnel(df.loc[index, "Running_Backs"], df.loc[index, "Tight_Ends"])
         df.loc[index, "Score_State"] = get_score_state(df.loc[index, "Home_Score"], df.loc[index, "Home_Team"], df.loc[index, "Away_Score"], df.loc[index, "Away_Team"], team_of_interest)
+        df.loc[index, "To_Strength"] = get_plays_to_strength(df.loc[index, "Formation_Strength"], df.loc[index, "Play_Type"], df.loc[index, "Play_Type_Dir"])
+        df.loc[index, "Pressure_Into_Strength"] = get_pressure_into_strength(df.loc[index, "Formation_Strength"], df.loc[index, "Pressure_Left"], df.loc[index, "Pressure_Right"])
+        df.loc[index, "Pressure_Away_Strength"] = get_pressure_away_strength(df.loc[index, "Formation_Strength"], df.loc[index, "Pressure_Left"], df.loc[index, "Pressure_Right"], df.loc[index, "Pressure_Middle"])
     return df
 
 def combine_pdf_pages(pages: list):
@@ -121,6 +143,55 @@ def combine_pdf_pages(pages: list):
     # Reset Bytes Position
     combined_pdf.seek(0)
     return combined_pdf.getvalue()
+
+def calculate_nfl_efficency_row(down: int, distance: str, result: int) -> float:
+    if down == 1: return result / distance >= .3
+    elif down == 2: return result / distance >= .6
+    elif down == 3: return result / distance >= 1
+    elif down == 4: return result / distance >= 1
+
+def ball_carrier_package(df: pd.DataFrame) -> pd.DataFrame:
+    df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
+    carries_by_ball_carrier = df.groupby('Ball_Carrier').size()
+    team_average = df["Result"].mean()
+    touchdowns_df = df[df['Event'] == 'Touchdown']
+    touchdowns_by_ball_carrier = touchdowns_df.groupby('Ball_Carrier').size()
+    fumbles_df = df[df['Event'] == 'Fumble']
+    fumbles_by_ball_carrier = fumbles_df.groupby('Ball_Carrier').size()
+    fumble_frequency = fumbles_by_ball_carrier / carries_by_ball_carrier
+    total_yards = df.groupby('Ball_Carrier')['Result'].sum()
+    average_result = df.groupby('Ball_Carrier')['Result'].mean()
+    median_result = df.groupby('Ball_Carrier')['Result'].median()
+    dev_result = df.groupby('Ball_Carrier')['Result'].apply(lambda x: x.mean() - team_average)
+    nfl_efficiency_by_call_carrier = df.groupby('Ball_Carrier')['Efficiency'].apply(lambda x: (x.mean() / len(x)) * 100 )
+    ball_carrier_df = pd.DataFrame({
+        'Total Yards': total_yards,
+        'Carries': carries_by_ball_carrier,
+        'Touchdowns': touchdowns_by_ball_carrier,
+        'Fumbles': fumbles_by_ball_carrier,
+        'Fumble Frequency': fumble_frequency,
+        'Average Result': average_result,
+        'Median Result': median_result,
+        'Difference from Team Average': dev_result,
+        'Efficient Carries': nfl_efficiency_by_call_carrier,
+    })
+    return ball_carrier_df.fillna(0)
+
+def passing_package(df: pd.DataFrame) -> pd.DataFrame:
+    df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
+    third_down_data = df[df['Down'] == 3]
+    pressure_play_data = df[df['Pressure_Existence'] == True]
+    passing_df = pd.DataFrame({
+        'Total Yards': df["Result"].sum(),
+        'Attempts': len(df),
+        'Completions': df['Complete_Pass'].count(),
+        'Completion Percentage': (df['Complete_Pass'].sum() / df['Complete_Pass'].count()) * 100,
+        'Completion Percentage vs Pressure': (pressure_play_data['Complete_Pass'].sum() / pressure_play_data['Complete_Pass'].count()) * 100,
+        'Third Down Completion Percentage': (third_down_data['Complete_Pass'].sum() / third_down_data['Complete_Pass'].count()) * 100,
+        'Efficiency': (df['Efficiency'].sum() / df['Efficiency'].count()) * 100
+    }, index=[0])
+    return passing_df.fillna(0)
+
 
 def get_nfl_efficiency(df: pd.DataFrame) -> str:
     total_length = len(df)
@@ -197,12 +268,6 @@ def breakdown_yardage(df: pd.DataFrame) -> dict:
     yardage_dict["passingYards"] = get_yardage(df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'))
     return yardage_dict
 
-def __save_matPlot__(plt: plt):
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    return base64.b64encode(buffer.getvalue()).decode('utf-8')
-
 def endzone_color_ramp(ticks: int) -> list:
     return RdYlBu(np.linspace(0, 1, ticks))
 
@@ -220,35 +285,45 @@ def group_by_df(df: pd.DataFrame, column: str) -> pd.DataFrame:
         rows.append(pd.Series({'Category': 'Other', 'Value': other_values}))
     return pd.DataFrame(rows)
 
+def categorical_pieChart_wrapper(data: pd.DataFrame, category: str, title: str) -> BytesIO:
+    chart_data = group_by_df(data, category)
+    return categorical_pieChart(title, chart_data)
+
 def categorical_pieChart(title: str, df: pd.DataFrame) -> BytesIO:
-    fig, ax = plt.subplots()
-    colors = endzone_color_ramp(len(df))
+    try: 
+        fig, ax = plt.subplots()
+        colors = endzone_color_ramp(len(df))
+        wedges, labels, autopcts = ax.pie(df['Value'], labels=df.Category, autopct='%1.1f%%', startangle=90,
+                wedgeprops={'edgecolor': 'white'}, pctdistance=0.75, textprops={'fontsize': 14}, colors = colors)
+        
+        for label in labels:
+            label.set_fontsize(18)
+            label.set_fontfamily("Audiowide")
+        centre_circle = plt.Circle((0,0),0.50,fc='white')
+        fig = plt.gcf()
+        plt.title(title, fontsize=18, fontdict={'weight': 'bold'})
+        fig.gca().add_artist(centre_circle)
 
-    wedges, labels, autopcts = ax.pie(df['Value'], labels=df.Category, autopct='%1.1f%%', startangle=90,
-            wedgeprops={'edgecolor': 'white'}, pctdistance=0.75, textprops={'fontsize': 14}, colors = colors)
-    
-    for label in labels:
-        label.set_fontsize(18)
-        label.set_fontfamily("Audiowide")
-    centre_circle = plt.Circle((0,0),0.50,fc='white')
-    fig = plt.gcf()
-    plt.title(title, fontsize=18, fontdict={'weight': 'bold'})
-    fig.gca().add_artist(centre_circle)
-
-    ax.set_aspect('equal')  # Equal aspect ratio ensures that the pie chart is a circle
-    return __save_matPlot__(plt)
+        ax.set_aspect('equal')  # Equal aspect ratio ensures that the pie chart is a circle
+        return __save_matPlot__(plt)
+    except KeyError:
+        return ''
 
 def barGraph(data, x, y, x_label: str, y_label: str):
     sns.barplot(x=data.index, y='Value', data=data)
     plt.title('Bar Graph Example with Pandas DataFrame')
     plt.xlabel(x_label)
     plt.ylabel(y_label)
-    plt.show()
     pass
 
 def crossTabQuery(df_x: pd.Series, df_y: pd.Series) -> pd.DataFrame:
     crossTab = pd.crosstab(df_x, df_y, normalize="index")
     crossTab = crossTab * 100
+    crossTab.reset_index(inplace=True)
+    return crossTab
+
+def crossTabQueryAgg(df_x: pd.Series, df_y: pd.Series, df_val: pd.Series, agg: str) -> pd.DataFrame:
+    crossTab = pd.crosstab(df_x, df_y, values=df_val, aggfunc=agg)
     crossTab.reset_index(inplace=True)
     return crossTab
 
@@ -281,7 +356,7 @@ def kdePlot(data) -> BytesIO:
 
     return __save_matPlot__(plt)
 
-def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, uniqueId_col: str = "Play_Number"):
+def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences'):
     fig, ax= plt.subplots()
     df = df[[uniqueId_col, x_col, y_col]]
     grouped_df = df.groupby([y_col, x_col]).count()
@@ -289,21 +364,23 @@ def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, unique
     num_colors = len(grouped_df.columns.levels[1])
     cmap = cm.get_cmap('RdYlBu', num_colors)
     ax = grouped_df.plot(kind='bar', rot=0, figsize=(10, 6), color=[cmap(i) for i in range(num_colors)])
+    plt.xlabel(x_col.replace('_', ' '))
+    plt.ylabel(y_label)
     ax.legend(title=title, labels=[col[1] for col in grouped_df.columns])
     return __save_matPlot__(plt)
 
-def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str) -> None:
+def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str, sizing_column: str = None) -> None:
     # Currently Broken
     # Background Image
     fig, ax = plt.subplots()
     img = mpimg.imread('reports_api\\reports\\static\\other\\FootballField.png')
-    sns.relplot(x="Yard", y="Hash", hue="Play_Type", size="Result",
+    if sizing_column:
+        sns.relplot(x=x_spatial_col, y=y_spatial_col, hue=categorical_col, size=sizing_column,
+                sizes=(40, 400), alpha=.5, palette="muted",
+                height=6, data=df)
+    else:
+        sns.relplot(x=x_spatial_col, y=y_spatial_col, hue=categorical_col,
             sizes=(40, 400), alpha=.5, palette="muted",
             height=6, data=df)
-    plt.show()
-
-    #ax.set_xticks([])
-    #ax.set_yticks([])
-    #ax.set_xlabel('')
-    #ax.set_ylabel('')
+        
     return __save_matPlot__(plt)
