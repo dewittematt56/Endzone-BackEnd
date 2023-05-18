@@ -173,7 +173,7 @@ def register():
                 team_query = db.session.query(Team).filter(Team.Team_Code == team_code).all()
                 if len(team_query) == 0:
                     return Response("Invalid org code, please try again", status = 403)
-                elif len(team_query == 1):
+                elif len(team_query) == 1:
                     org_query = db.session.query(Org).filter(Org.Org_Code == team_query[0].Org_Code).all()
                     if len(org_query) == 1:
                         db.session.add(Team_Member(team_query[0].Team_Code, new_user.get_id(), "Coach"))

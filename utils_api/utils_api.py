@@ -31,7 +31,7 @@ def formationAdd():
     try:
         if request.method == "POST":
             data = json.loads(request.get_data())
-            param_check =- check_required_params(["formation", "wideRecievers", "tightEnds", "runningBacks"], data.keys())
+            param_check = check_required_params(["formation", "wideRecievers", "tightEnds", "runningBacks"], data.keys())
             if param_check: return param_check
             formation = data["formation"]
             wr = int(data["wideRecievers"])

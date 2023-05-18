@@ -49,13 +49,13 @@
             }
 
             .good-td {
-                background-color: #4CAF50
+                background-color: #1283e2
             }
             .netural-td {
                 background-color: transparent;
             }
             .bad-td {
-                background-color: #FF5252;
+                background-color: #ed3a14;
             }
             .chart-div {
                 display: inline-flex;
@@ -66,7 +66,7 @@
             .barchart {
                 border: 0px;
                 z-index: -1;
-                width: 700px;
+                width: 550px;
                 margin-top: 25px;
             }
         </style>
@@ -97,17 +97,17 @@
                                 {% elif column == "Touchdowns" %}
                                     <td class="{% if row[column]  >= 2  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | int }}</td>
                                 {% elif column == "Fumbles" %}
-                                    <td class="{% if row[column]  == 0  %}good-td{% elif row[column]  > 2  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | int }}</td>
+                                    <td class="{% if row[column]  > 2  %}bad-td{% else  %}netural-td{% endif %}">{{ row[column] | int }}</td>
                                 {% elif column == "Fumble Frequency" %}
-                                    <td class="{% if row[column]  == 0  %}good-td{% elif row[column]  > 5  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
-                                {% elif column == "Average Result" %}
-                                    <td class="{% if row[column]  >= 5  %}good-td{% elif row[column]  > 1  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
-                                {% elif column == "Median Result" %}
-                                    <td class="{% if row[column]  >= 5  %}good-td{% elif row[column]  > 1  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                    <td class="{% if row[column]  > 5  %}bad-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Yards per Carry" %}
+                                    <td class="{% if row[column]  >= 5  %}good-td{% else  %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                {% elif column == "Median Yards Per Carry" %}
+                                    <td class="{% if row[column]  >= 5  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
                                 {% elif column == "Difference from Team Average" %}
-                                    <td class="{% if row[column]  >= 3  %}good-td{% elif row[column]  > -3  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}</td>
+                                    <td class="{% if row[column]  >= 3  %}good-td{% else  %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
                                 {% elif column == "Efficient Carries" %}
-                                 <td class="{% if row[column]  >= 66  %}good-td{% elif row[column]  > 33  %}netural-td{% else %}bad-td{% endif %}">{{ row[column] | round(2) }}%</td>
+                                 <td class="{% if row[column]  >= 66  %}good-td{% else  %}netural-td{% endif %}">{{ row[column] | round(2) }}%</td>
                                 {% endif %}
                             {% endfor %}
                         </tr>

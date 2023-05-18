@@ -1,0 +1,133 @@
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import seaborn as sns
+import pandas as pd
+from io import BytesIO
+from .utils import __save_matPlot__
+
+def endzone_diverging_colors():
+    return ["#1283e2", "#ed3a14", "#34f199", "#c7dd91", "#4be8f9", "#c5d5f0", "#6c9999", "#997cfb", "#3f5562", "#da8b57"]
+
+def group_by_df(df: pd.DataFrame, column: str, useOther: bool = True) -> pd.DataFrame:
+    grouped_df = df.groupby(column).count()
+    other_values = 0
+    rows = []
+    
+    for index, row in grouped_df.iterrows():
+        if not (grouped_df.loc[index, "Play_Number"] / len(df)) >= .1:
+            other_values = other_values + grouped_df.loc[index, "Play_Number"]
+        else:
+            rows.append(pd.Series({'Category': index, 'Value': grouped_df.loc[index, "Play_Number"]}))
+    
+    if other_values > 0 and useOther:
+        rows.append(pd.Series({'Category': 'Other', 'Value': other_values}))
+    return pd.DataFrame(rows)
+
+def categorical_pieChart_wrapper(data: pd.DataFrame, category: str, title: str, isBooleanGraph: bool = False, useOther: bool = True) -> BytesIO:
+    chart_data = group_by_df(data, category, useOther)
+    return categorical_pieChart(title, chart_data, isBooleanGraph)
+
+def categorical_pieChart(title: str, df: pd.DataFrame, isBooleanGraph: bool = False) -> BytesIO:
+    try: 
+        fig, ax = plt.subplots()
+        colors = endzone_diverging_colors()
+        wedges, labels, autopcts = ax.pie(df['Value'], labels=df.Category, autopct='%1.1f%%', startangle=90,
+                wedgeprops={'edgecolor': 'white'}, pctdistance=0.75, textprops={'fontsize': 14}, colors = colors) 
+        # If it's a boolean graph.
+        for wedge in wedges:
+            if isBooleanGraph:
+                if wedge.get_label() == 'True':
+                    wedge.set_facecolor("#0984E3")
+                elif wedge.get_label() == 'False':
+                    wedge.set_facecolor("#EC3813")
+            if wedge.get_label() == 'Other':
+                wedge.set_facecolor("#6b6d70")
+
+        for label in labels:
+            label.set_fontsize(18)
+            label.set_fontfamily("Audiowide")
+        centre_circle = plt.Circle((0,0),0.50,fc='white')
+        fig = plt.gcf()
+        plt.title(title, fontsize=18, fontdict={'weight': 'bold'})
+        fig.gca().add_artist(centre_circle)
+
+        ax.set_aspect('equal')  # Equal aspect ratio ensures that the pie chart is a circle
+        return __save_matPlot__(plt)
+    except KeyError:
+        return ''
+
+def barGraph(data, x, y, x_label: str, y_label: str):
+    sns.barplot(x=data.index, y='Value', data=data)
+    plt.title('Bar Graph Example with Pandas DataFrame')
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    pass
+
+def crossTabQuery(df_x: pd.Series, df_y: pd.Series) -> pd.DataFrame:
+    crossTab = pd.crosstab(df_x, df_y, normalize="index")
+    crossTab = crossTab * 100
+    crossTab.reset_index(inplace=True)
+    return crossTab
+
+def crossTabQueryAgg(df_x: pd.Series, df_y: pd.Series, df_val: pd.Series, agg: str) -> pd.DataFrame:
+    crossTab = pd.crosstab(df_x, df_y, values=df_val, aggfunc=agg)
+    crossTab.reset_index(inplace=True)
+    return crossTab
+
+def create_ridge_plot(df: pd.DataFrame, x: str, y: str, color_col: str):
+    pal = sns.color_palette(endzone_diverging_colors())
+    g = sns.FacetGrid(df, row=x, hue=color_col, aspect=7.5, height=1, palette=pal)
+    g.map(sns.kdeplot, y,
+      bw_adjust=.5, clip_on=False,
+      fill=True, alpha=1, linewidth=1.5)
+    g.map(sns.kdeplot, y, clip_on=False, color="w", lw=2, bw_adjust=.5)
+    g.refline(y=0, linewidth=2, linestyle="-", color=None, clip_on=False)
+    
+    def label(x, color, label):
+        ax = plt.gca()
+        ax.text(0, .5, label, fontweight="bold", color=color,
+                ha="left", va="center", transform=ax.transAxes)
+    g.map(label, y)
+
+    # Remove axes details that don't play well with overlap
+    g.set_titles("")
+    g.set(yticks=[], ylabel="")
+    g.despine(bottom=True, left=True)
+
+    # Show the plot
+    return __save_matPlot__(plt)
+
+def kdePlot(data) -> BytesIO:
+    #g = sns.FacetGrid(data, hue='Play_Type', height=6, aspect=1.2, legend_out=True)
+    sns.swarmplot(data=data, x="Distance", y="Down", hue="Play_Type")
+    return __save_matPlot__(plt)
+
+def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences'):
+    fig, ax= plt.subplots()
+    df = df[[uniqueId_col, x_col, y_col]]
+    grouped_df = df.groupby([y_col, x_col]).count()
+    grouped_df = grouped_df.unstack(level=0)
+    ax = grouped_df.plot(kind='bar', rot=0, figsize=(10, 6), color=endzone_diverging_colors())
+
+    
+
+    plt.xlabel(x_col.replace('_', ' '))
+    plt.ylabel(y_label)
+    ax.legend(title=title, labels=[col[1] for col in grouped_df.columns])
+    return __save_matPlot__(plt)
+
+def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str, sizing_column: str = None) -> None:
+    # Currently Broken
+    # Background Image
+    fig, ax = plt.subplots()
+    img = mpimg.imread('dependencies/other/FootballField.png')
+    if sizing_column:
+        sns.relplot(x=x_spatial_col, y=y_spatial_col, hue=categorical_col, size=sizing_column,
+                sizes=(40, 400), alpha=.5, palette="muted",
+                height=6, data=df)
+    else:
+        sns.relplot(x=x_spatial_col, y=y_spatial_col, hue=categorical_col,
+            sizes=(40, 400), alpha=.5, palette="muted",
+            height=6, data=df)
+        
+    return __save_matPlot__(plt)

@@ -40,13 +40,13 @@
                 border: 0px;
                 z-index: -1;
                 width: 500px;
-                margin-top: 25px;
+                margin-top: 10px;
             }
             .barchart-slim {
                 border: 0px;
                 z-index: -1;
                 width: 400px;
-                margin-top: 25px;
+                margin-top: 10px;
             }
             .table-div {
                 display: inline-block;
@@ -96,7 +96,7 @@
                     <tr>
                         {% for column in pressure_into_strength.columns %}
                             {% if column == "Pressure_Into_Strength" %}
-                                <th> Pressure into Strength of Formation </th>
+                                <th> Pressure </th>
                             {% else %}
                                 <th> {{ column | replace("_", "") }} </th>
                             {% endif %}
@@ -119,12 +119,13 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <p>Pressure Into Strength of Formation; Average Yards Gained by Formation</p>
             <table>
                 <thead>
                     <tr>
                         {% for column in pressure_away_strength.columns %}
                             {% if column == "Pressure_Away_Strength" %}
-                                <th> Pressure away from Strength of Formation </th>
+                                <th> Pressure </th>
                             {% else %}
                                 <th> {{ column | replace("_", "") }} </th>
                             {% endif %}
@@ -147,7 +148,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <p>Average Yards Gained by Formation</p>
+            <p>Pressure Away from Strength of Formation; Average Yards Gained by Formation</p>
         </div>
         
     </body>
