@@ -53,7 +53,8 @@ def load_play_json(plays: "list[Play]") -> "list[dict]":
                 "Pass_Y": play.Play.Pass_Y,
                 "Creation_Date": play.Play.Creation_Date,
                 "Home_Team": play.Game.Home_Team,
-                "Away_Team": play.Game.Away_Team
+                "Away_Team": play.Game.Away_Team,
+                "Game_Date" : play.Game.Game_Date
             })
         return json
     
