@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import seaborn as sns
 import warnings
-from .utils import __save_matPlot__
+
 warnings.filterwarnings('ignore')
 
 # Used for encoding binary data
@@ -17,7 +17,7 @@ import matplotlib.cm as cm
 from matplotlib.cm import RdYlBu
 import numpy as np
 
-font_path = "reports_api//reports//static//branding//Audiowide-Regular.ttf"
+font_path = "dependencies//branding//Audiowide-Regular.ttf"
 fontManager.addfont(font_path)
 prop = FontProperties(fname=font_path)
 plt.rcParams['font.family'] = 'Audiowide'
@@ -272,6 +272,23 @@ def get_efficiencies(df: pd.DataFrame) -> dict:
     efficiency_dict["negativePlayRate"] = get_negative_rate(df)
     return efficiency_dict
 
+def get_situational_efficiencies(df: pd.DataFrame) -> pd.DataFrame:
+    df_len = len(df)
+    situational_dict = {}
+    situational_dict["average"] = [df["Result"].mean(), df_len]
+    situational_dict["nfl_efficiency"] = get_nfl_efficiency(df)
+    situational_dict["nfl_efficiency_zone"] = get_nfl_efficiency(df[df['Coverage'].str.contains('Zone')])
+    situational_dict["nfl_efficiency_man"] = get_nfl_efficiency(df[df['Coverage'].str.contains('Man')])
+    situational_dict["nfl_efficiency_pressure"] = get_nfl_efficiency(df.query('Pressure_Existence == True'))
+    situational_dict["nfl_efficiency_edge_pressure"] = get_nfl_efficiency(df.query('Pressure_Edge == True'))
+    situational_dict["nfl_efficiency_middle_pressure"] = get_nfl_efficiency(df.query('Pressure_Middle == True'))
+    if(df_len > 1):
+        situational_dict["conversion_rate"] = [len(df.query('Result >= Distance')) / df_len, df_len]
+    else:
+        situational_dict["conversion_rate"] = [0, df_len]
+        
+    return situational_dict
+
 def get_yardage(df: pd.DataFrame):
     total_plays = len(df)
     if total_plays > 0:
@@ -291,119 +308,3 @@ def breakdown_yardage(df: pd.DataFrame) -> dict:
     yardage_dict["passingYards"] = get_yardage(df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'))
     return yardage_dict
 
-def endzone_color_ramp(ticks: int) -> list:
-    return RdYlBu(np.linspace(0, 1, ticks))
-
-def group_by_df(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    grouped_df = df.groupby(column).count()
-    other_values = 0
-    rows = []
-    for index, row in grouped_df.iterrows():
-        if not (grouped_df.loc[index, "Play_Number"] / len(df)) >= .1:
-            other_values = other_values + grouped_df.loc[index, "Play_Number"]
-        else:
-            rows.append(pd.Series({'Category': index, 'Value': grouped_df.loc[index, "Play_Number"]}))
-    
-    if other_values > 0:
-        rows.append(pd.Series({'Category': 'Other', 'Value': other_values}))
-    return pd.DataFrame(rows)
-
-def categorical_pieChart_wrapper(data: pd.DataFrame, category: str, title: str) -> BytesIO:
-    chart_data = group_by_df(data, category)
-    return categorical_pieChart(title, chart_data)
-
-def categorical_pieChart(title: str, df: pd.DataFrame) -> BytesIO:
-    try: 
-        fig, ax = plt.subplots()
-        colors = endzone_color_ramp(len(df))
-        wedges, labels, autopcts = ax.pie(df['Value'], labels=df.Category, autopct='%1.1f%%', startangle=90,
-                wedgeprops={'edgecolor': 'white'}, pctdistance=0.75, textprops={'fontsize': 14}, colors = colors)
-        
-        for label in labels:
-            label.set_fontsize(18)
-            label.set_fontfamily("Audiowide")
-        centre_circle = plt.Circle((0,0),0.50,fc='white')
-        fig = plt.gcf()
-        plt.title(title, fontsize=18, fontdict={'weight': 'bold'})
-        fig.gca().add_artist(centre_circle)
-
-        ax.set_aspect('equal')  # Equal aspect ratio ensures that the pie chart is a circle
-        return __save_matPlot__(plt)
-    except KeyError:
-        return ''
-
-def barGraph(data, x, y, x_label: str, y_label: str):
-    sns.barplot(x=data.index, y='Value', data=data)
-    plt.title('Bar Graph Example with Pandas DataFrame')
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    pass
-
-def crossTabQuery(df_x: pd.Series, df_y: pd.Series) -> pd.DataFrame:
-    crossTab = pd.crosstab(df_x, df_y, normalize="index")
-    crossTab = crossTab * 100
-    crossTab.reset_index(inplace=True)
-    return crossTab
-
-def crossTabQueryAgg(df_x: pd.Series, df_y: pd.Series, df_val: pd.Series, agg: str) -> pd.DataFrame:
-    crossTab = pd.crosstab(df_x, df_y, values=df_val, aggfunc=agg)
-    crossTab.reset_index(inplace=True)
-    return crossTab
-
-def create_ridge_plot(df: pd.DataFrame, x: str, y: str, color_col: str):
-    pal = sns.cubehelix_palette(start=2, rot=0.1, dark=0.2, light=0.8, reverse=True, hue=0.1)
-    g = sns.FacetGrid(df, row=x, hue=color_col, aspect=7.5, height=1, palette=pal)
-    g.map(sns.kdeplot, y,
-      bw_adjust=.5, clip_on=False,
-      fill=True, alpha=1, linewidth=1.5)
-    g.map(sns.kdeplot, y, clip_on=False, color="w", lw=2, bw_adjust=.5)
-    g.refline(y=0, linewidth=2, linestyle="-", color=None, clip_on=False)
-    
-    def label(x, color, label):
-        ax = plt.gca()
-        ax.text(0, .5, label, fontweight="bold", color=color,
-                ha="left", va="center", transform=ax.transAxes)
-    g.map(label, y)
-
-    # Remove axes details that don't play well with overlap
-    g.set_titles("")
-    g.set(yticks=[], ylabel="")
-    g.despine(bottom=True, left=True)
-
-    # Show the plot
-    return __save_matPlot__(plt)
-
-def kdePlot(data) -> BytesIO:
-    #g = sns.FacetGrid(data, hue='Play_Type', height=6, aspect=1.2, legend_out=True)
-    sns.swarmplot(data=data, x="Distance", y="Down", hue="Play_Type")
-
-    return __save_matPlot__(plt)
-
-def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences'):
-    fig, ax= plt.subplots()
-    df = df[[uniqueId_col, x_col, y_col]]
-    grouped_df = df.groupby([y_col, x_col]).count()
-    grouped_df = grouped_df.unstack(level=0)
-    num_colors = len(grouped_df.columns.levels[1])
-    cmap = cm.get_cmap('RdYlBu', num_colors)
-    ax = grouped_df.plot(kind='bar', rot=0, figsize=(10, 6), color=[cmap(i) for i in range(num_colors)])
-    plt.xlabel(x_col.replace('_', ' '))
-    plt.ylabel(y_label)
-    ax.legend(title=title, labels=[col[1] for col in grouped_df.columns])
-    return __save_matPlot__(plt)
-
-def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str, sizing_column: str = None) -> None:
-    # Currently Broken
-    # Background Image
-    fig, ax = plt.subplots()
-    img = mpimg.imread('reports_api\\reports\\static\\other\\FootballField.png')
-    if sizing_column:
-        sns.relplot(x=x_spatial_col, y=y_spatial_col, hue=categorical_col, size=sizing_column,
-                sizes=(40, 400), alpha=.5, palette="muted",
-                height=6, data=df)
-    else:
-        sns.relplot(x=x_spatial_col, y=y_spatial_col, hue=categorical_col,
-            sizes=(40, 400), alpha=.5, palette="muted",
-            height=6, data=df)
-        
-    return __save_matPlot__(plt)

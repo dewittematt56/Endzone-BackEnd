@@ -29,7 +29,7 @@ class PassZone(object):
 
     def __prep_dataframe__(self):
         breaks = jenks_breaks(self.df[self.value_column], n_classes=self.number_of_classes)
-        cmap = LinearSegmentedColormap.from_list('test', ['#0000FF', '#FF0000'], self.number_of_classes)
+        cmap = LinearSegmentedColormap.from_list('test', ['#1283e2', '#ed3a14'], self.number_of_classes)
         self.colors = [rgb2hex(cmap(x)) for x in range(self.number_of_classes + 1)]
         self.df['Color'] = np.searchsorted(breaks, self.df[self.value_column])
         self.df['Color'] = self.df['Color'].apply(lambda x: self.colors[x])
@@ -123,7 +123,7 @@ class FieldZone(object):
 
     def __prep_dataframe__(self):
         breaks = jenks_breaks(self.df[self.value_column], n_classes=self.number_of_classes)
-        cmap = LinearSegmentedColormap.from_list('test', ['#0000FF', '#FF0000'], self.number_of_classes)
+        cmap = LinearSegmentedColormap.from_list('test', ['#1283e2', '#ed3a14'], self.number_of_classes)
         self.colors = [rgb2hex(cmap(x)) for x in range(self.number_of_classes + 1)]
         self.df['Color'] = np.searchsorted(breaks, self.df[self.value_column])
         self.df['Color'] = self.df['Color'].apply(lambda x: self.colors[x])
@@ -201,7 +201,7 @@ class FieldZone(object):
         self.__prep_dataframe__()
         self.plot_field_zones()
         self.polish_graph()
-        img = mpimg.imread('reports_api\\reports\\static\\other\\FootballField.png')
+        img = mpimg.imread('dependencies/other/FootballField.png')
         self.ax.imshow(img, extent=[-.56, 5.06, 0, 3], zorder = 1, alpha=0.33)
         plt.show()
         # return __save_matPlot__(plt)
