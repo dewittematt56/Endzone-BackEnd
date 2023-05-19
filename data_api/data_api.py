@@ -2,6 +2,7 @@ from flask import Blueprint, Response, request, jsonify, render_template
 from flask_login import login_required
 from database.models import *
 import json
+from data_api.utils import *
 
 data_api = Blueprint("data_api", __name__)
 
@@ -40,3 +41,10 @@ def gameCreate():
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+
+@data_api.route("/endzone/data/game/get", methods = ['GET'])
+def getGame():
+    print(current_user.__dict__)
+    teamCode = current_user.Team_Code
+    query = db.session.query(Game).filter(Game.Team_Code == teamCode)
+    return jsonify(load_game_json(query.all()))

@@ -344,6 +344,10 @@ def deletePlay():
 @utils_api.route("/endzone/utils/play/get", methods = ["GET"])
 def getPlay():
     if request.method == "GET":
-        game_id = request.args.get("gameId")
-    query = db.session.query(Play, Game).filter(Play.Game_ID == game_id).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
+        if request.args.get("gameId"):
+            game_id = request.args.get("gameId")
+            query = db.session.query(Play, Game).filter(Play.Game_ID == game_id).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
+        else:
+            query = db.session.query(Play, Game).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
+    print(query.all())
     return jsonify(load_play_json(query.all()))

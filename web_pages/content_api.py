@@ -102,3 +102,8 @@ def OMProfile():
 @login_required
 def OMMembers():
     return render_template("/org/om_members/om_members.html")
+
+@content_api.route("/endzone/data/viewer", methods = ["GET"])
+@login_required
+def DataViewer():
+    return render_template("/data/data-viewer/data-viewer.html")
