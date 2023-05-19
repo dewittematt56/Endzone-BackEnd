@@ -45,6 +45,6 @@ def gameCreate():
 @data_api.route("/endzone/data/game/get", methods = ['GET'])
 def getGame():
     print(current_user.__dict__)
-    teamCode = current_user.Team_Code
+    teamCode = current_user.Current_Team
     query = db.session.query(Game).filter(Game.Team_Code == teamCode)
     return jsonify(load_game_json(query.all()))
