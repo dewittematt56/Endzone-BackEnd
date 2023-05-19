@@ -13,6 +13,7 @@ import numpy as np
 from .base_report_utils import *
 from .spatial_utils import *
 from .graphing_utils import *
+from .d_report_utils import *
 import sys
 
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports'))
@@ -21,17 +22,18 @@ env.globals.update(static='./reports_api/reports/static')
 class PregameReport():
     def __init__(self) -> None:
         self.pdfs = []
-        self.team_of_interest = "Eastview"
+        self.team_of_interest = "Burnsville"
         self.team_code = "Endzone-System"
-        self.game_ids = ["f492782c-a04f-43f6-af18-65d51d033803"]
+        self.game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e"]
         self.pages = ["Overview", "Play Type Personnel", "Play Type Down", "Play Type Field", "Strength of Formation", "Ball Carrier Overview", "Ball Carrier Detailed", "Passing Overview", "Passing Detail", "Passing Targets", "Redzone Situational"]
         self.pdf_write = PyPDF2.PdfWriter()
         # Get game-based & play-based data from database.
         self.get_data()
         self.split_data()
         self.title_page()
+        self.d_overview(self.defensive_data)
         # self.overview_page()
-        # self.offense_overview(self.offensive_data)
+        # self.o_overview(self.offensive_data)
         # self.play_type_personnel_page(self.offensive_data)
         # self.play_type_downDistance_page(self.offensive_data)
         # self.play_type_field_page(self.offensive_data) 
@@ -43,10 +45,10 @@ class PregameReport():
         # self.passing_detail_page(self.offensive_data)
         # self.passing_targets_page(self.offensive_data)
         # self.o_redzone_page(self.offensive_data)
-        self.o_down_1_page(self.offensive_data)
-        self.o_down_2_page(self.offensive_data)
-        self.o_down_3_page(self.offensive_data)
-        self.o_down_4_page(self.offensive_data)
+        # self.o_down_1_page(self.offensive_data)
+        # self.o_down_2_page(self.offensive_data)
+        # self.o_down_3_page(self.offensive_data)
+        # self.o_down_4_page(self.offensive_data)
 
     def template_to_pdf(self, html) -> None:
         # Used for ease of development
@@ -72,7 +74,7 @@ class PregameReport():
         html = overview_page.render(pages = self.pages)
         self.template_to_pdf(html)
 
-    def offense_overview(self, data: pd.DataFrame) -> None:
+    def o_overview(self, data: pd.DataFrame) -> None:
         """Overview of an opponents offense
         """
         efficiency_dict = get_efficiencies(data)
@@ -289,11 +291,30 @@ class PregameReport():
     def o_down_4_page(self, data: pd.DataFrame):
         self.o_down_page(data[data["Down"] == 4], "4th Down")
 
+    def d_overview(self, data: pd.DataFrame) -> None:
+        """Overview of an opponents defense
+        """
+        #efficiency_dict = get_efficiencies(data)
+        #yardage_dict = breakdown_yardage(data)
+        coverage_pie_chart_data = group_by_df(data, "Coverage")
+        coverage_chart = categorical_pieChart("Frequency of Coverage", coverage_pie_chart_data)
+        d_formation_pie_chart_data = group_by_df(data, "D_Formation")
+        d_formation_chart = categorical_pieChart("Frequency of Coverage", d_formation_pie_chart_data)
+        d_yards_data = d_yards_package(data)
+        d_overview_package(data, self.team_of_interest, self.game_data)
+        defense_overview_page = env.get_template('report_pages/defense_overview/defense_overview.html')
+        html = defense_overview_page.render(team = self.team_of_interest, coverage_chart = coverage_chart, d_formation_chart = d_formation_chart, d_yards_data = d_yards_data)
+        self.template_to_pdf(html)
+
+
+
+
     def get_data(self) -> None:
         db_engine = create_engine(db_uri)
         Session = sessionmaker(db_engine)
         session = Session()
         self.game_data = pd.read_sql(session.query(Game).filter(Game.Team_Code == self.team_code).filter(Game.Game_ID.in_(self.game_ids)).statement, db_engine)
+        self.game_data['Game_Date'] = pd.to_datetime(self.game_data['Game_Date'])
         self.game_data['Game_Date'] = self.game_data['Game_Date'].dt.strftime('%A, %d %B %Y')
         # Team Code is linked via team_code
         df_plays = pd.read_sql(session.query(Play).filter(Play.Game_ID.in_(self.game_ids)).statement, db_engine)
