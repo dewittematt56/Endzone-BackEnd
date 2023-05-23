@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import seaborn as sns
 import pandas as pd
+import numpy as np
 from io import BytesIO
 from .utils import __save_matPlot__
 
@@ -14,7 +15,7 @@ def group_by_df(df: pd.DataFrame, column: str, useOther: bool = True) -> pd.Data
     rows = []
     
     for index, row in grouped_df.iterrows():
-        if not (grouped_df.loc[index, "Play_Number"] / len(df)) >= .1:
+        if useOther and not (grouped_df.loc[index, "Play_Number"] / len(df)) >= .1:
             other_values = other_values + grouped_df.loc[index, "Play_Number"]
         else:
             rows.append(pd.Series({'Category': index, 'Value': grouped_df.loc[index, "Play_Number"]}))
@@ -63,6 +64,29 @@ def barGraph(data, x, y, x_label: str, y_label: str):
     plt.ylabel(y_label)
     pass
 
+def stackedBarGraph(df: pd.DataFrame, x_col: str, y_cols: 'list[str]', title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences'):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    df = df[[uniqueId_col, x_col] + y_cols]
+    grouped_df = df.groupby(x_col)[y_cols].sum()
+    x = np.arange(len(grouped_df))  # x-coordinates for the bars
+    opacity = 0.8  # Opacity of the bars
+
+    # Plot stacked bars for each column
+    bottom = np.zeros(len(grouped_df))
+    for i, col in enumerate(y_cols):
+        ax.bar(x, grouped_df[col], alpha=opacity, color=endzone_diverging_colors()[i],
+               label=col, bottom=bottom)
+        bottom += grouped_df[col]
+
+    ax.set_xlabel(x_col.replace('_', ' '))
+    ax.set_ylabel(y_label)
+    ax.set_xticks(x)
+    ax.set_xticklabels(grouped_df.index)
+    ax.set_title(title)
+    ax.legend()
+
+    return __save_matPlot__(plt)
+
 def crossTabQuery(df_x: pd.Series, df_y: pd.Series) -> pd.DataFrame:
     crossTab = pd.crosstab(df_x, df_y, normalize="index")
     crossTab = crossTab * 100
@@ -108,8 +132,6 @@ def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, unique
     grouped_df = df.groupby([y_col, x_col]).count()
     grouped_df = grouped_df.unstack(level=0)
     ax = grouped_df.plot(kind='bar', rot=0, figsize=(10, 6), color=endzone_diverging_colors())
-
-    
 
     plt.xlabel(x_col.replace('_', ' '))
     plt.ylabel(y_label)

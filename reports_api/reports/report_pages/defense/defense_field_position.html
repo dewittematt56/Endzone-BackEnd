@@ -22,73 +22,73 @@
                 text-decoration: underline;
             }
             .table-div {
-                display: inline-flex;
-                justify-content: center;
+                display: inline-block;
                 text-align: center;
                 width: 100%;
-                border-bottom: 1px solid black;
-                padding-bottom: 5px;
+                
             }
 
             .table-div table {
-                width: auto;
                 position: relative;
                 border: 1px solid black;                
-                padding: 1px;
+                padding: 5px;
                 margin: auto;
-                margin-top: 10px;
+                margin-top: 20px;
+                
             }
             .table-div th {
                 border: 1px solid black;
                 padding: 3px;
-                font-size: 15px;
+                font-size: 20px;
             }
 
             .table-div td {
                 border: 1px solid black;
                 margin: 2px;
+                font-size: 15px;
             }
 
-            .good-td {
-                background-color: #1283e2;
+            .bad-td {
+                background-color: #ed3a14;
             }
             .netural-td {
                 background-color: transparent;
             }
-            .bad-td {
-                background-color: #ed3a14;
+            .good-td {
+                background-color: #1283e2
+            }
+            p {
+                text-align: left;
+            }
+            .piechart {
+                height: 300px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
             }
             .chart-div {
-                display: inline-flex;
+                width: 95%;
+                padding: 0px;
+                margin: 0px;
+                display: inline-block;
                 justify-content: space-evenly;
                 border-bottom: 1px solid black;
                 text-align: center;
             }
-            .piechart {
-                height: 250px;
-                width: auto;
+            .fieldchart {
+                width: 100%;
                 margin: 0px;
-                margin-top: 5px;
                 padding: 0px;
-            }
-            .ridgechart {
-                border: 0px;
-                z-index: -1;
-                background-color: red;
-                width: auto;
-                width: 500px;
-                margin-top: 10px;
-                margin-right: 50px;
             }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Offense: Passing Detail </h2>
+            <h2>{{ team }} Defensive Field Position</h2>
         </div>
         <div class="chart-div">
-            <img src="data:image/png;base64, {{ pass_zone_distance_ridge_plot }}" alt="Pass Zone shown over Distance to First Down" class="ridgechart">
-            <p style="text-align: center;">Pass Zone Target Distribution over Distance to First Down</p>
-            <img src="data:image/png;base64, {{ pass_zone_map }}" alt="Pass Zone Field Map">        </div>
+            <img src="data:image/png;base64, {{ field_zone_coverage }}" alt="Coverage Pie Chart" class="fieldchart">
+            <img src="data:image/png;base64, {{ field_zone_pressure }}" alt="Coverage Pie Chart" class="fieldchart">
+        </div>
     </body>
 </html>

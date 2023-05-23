@@ -313,7 +313,7 @@ def isHomeTeam(game, team_of_interest) -> bool:
         return True
     return False
 
-def get_points_per_game(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
+def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
     grouped_df = df.groupby('Game_ID')
     max_rows = grouped_df.apply(lambda x: x.loc[x['Play_Number'].idxmax()])
     points = 0
@@ -324,4 +324,4 @@ def get_points_per_game(df: pd.DataFrame, team_of_interest: str, game_data: pd.D
             points += row["Home_Score"]
         else:
             points += row["Away_Score"]
-    return points / len(max_rows)
+    return points
