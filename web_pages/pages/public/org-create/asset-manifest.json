@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/public/org-create/static/css/main.6703b588.css",
-    "main.js": "/pages/public/org-create/static/js/main.f03a6076.js",
+    "main.css": "/pages/public/org-create/static/css/main.b6fde60c.css",
+    "main.js": "/pages/public/org-create/static/js/main.fb54faa9.js",
     "static/media/Endzone_Shield.png": "/pages/public/org-create/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
     "index.html": "/pages/public/org-create/index.html",
-    "main.6703b588.css.map": "/pages/public/org-create/static/css/main.6703b588.css.map",
-    "main.f03a6076.js.map": "/pages/public/org-create/static/js/main.f03a6076.js.map"
+    "main.b6fde60c.css.map": "/pages/public/org-create/static/css/main.b6fde60c.css.map",
+    "main.fb54faa9.js.map": "/pages/public/org-create/static/js/main.fb54faa9.js.map"
   },
   "entrypoints": [
-    "static/css/main.6703b588.css",
-    "static/js/main.f03a6076.js"
+    "static/css/main.b6fde60c.css",
+    "static/js/main.fb54faa9.js"
   ]
 }

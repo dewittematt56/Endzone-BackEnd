@@ -30,7 +30,7 @@ class PregameReport():
         # Get game-based & play-based data from database.
         self.get_data()
         self.split_data()
-        # self.title_page()
+        self.title_page()
         # self.overview_page()
         # self.o_overview(self.offensive_data)
         # self.o_play_type_personnel_page(self.offensive_data)
@@ -43,7 +43,7 @@ class PregameReport():
         # self.o_passing_overview_page(self.offensive_data)
         # self.o_passing_detail_page(self.offensive_data)
         # self.o_passing_targets_page(self.offensive_data)
-        self.o_redzone_page(self.offensive_data)
+        # self.o_redzone_page(self.offensive_data)
         # self.o_down_1_page(self.offensive_data)
         # self.o_down_2_page(self.offensive_data)
         # self.o_down_3_page(self.offensive_data)
@@ -59,7 +59,7 @@ class PregameReport():
         # self.d_down_2_page(self.offensive_data)
         # self.d_down_3_page(self.offensive_data)
         # self.d_down_4_page(self.offensive_data)
-        self.d_redzone_page(self.offensive_data)
+        # self.d_redzone_page(self.offensive_data)
 
     def template_to_pdf(self, html) -> None:
         # Used for ease of development
@@ -312,7 +312,7 @@ class PregameReport():
         html = defense_overview_page.render(
             team = self.team_of_interest,
             coverage_chart = categorical_pieChart("Frequency of Coverage", coverage_pie_chart_data), 
-            d_formation_chart = categorical_pieChart("Frequency of Coverage", d_formation_pie_chart_data),
+            d_formation_chart = categorical_pieChart("Variety of D-Formation", d_formation_pie_chart_data),
             d_yards_data = d_yards_package(data), 
             d_overview_dict = d_overview_package(data, self.team_of_interest, self.game_data)
         )
@@ -327,8 +327,8 @@ class PregameReport():
             formation_bar_chart = groupedBarGraph(data, "Formation", "Coverage", "Coverage"),
             personnel_bar_chart = groupedBarGraph(data, "Personnel", "Coverage", "Coverage"),
             coverage_pie_chart = categorical_pieChart_wrapper(data, "Coverage", "Coverage Baseline", True),
-            pressure_pie_chart = categorical_pieChart_wrapper(data, "Pressure_Existence", "Pressure Baseline", False, True),
-            pressure_formation_bar = stackedBarGraph(data, 'Formation', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Formation')
+            pressure_pie_chart = categorical_pieChart_wrapper(data, "Pressure_Existence", "Pressure Baseline", True, True),
+            pressure_formation_bar = stackedBarGraph(data, 'Formation', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Formation', include_total_plays = True, total_plays_label = 'No Pressure')
         )
         self.template_to_pdf(html)    
 
@@ -339,7 +339,7 @@ class PregameReport():
             distance_playType_data = crossTabQuery(data.Down_Group, data.Coverage),
             coverage_distance_plot = create_ridge_plot(data, "Coverage", "Distance", "Coverage"),
             pressure_distance_plot = create_ridge_plot(data, "Pressure_Existence", "Distance", "Pressure_Existence"),
-            pressure_down_bar = stackedBarGraph(data, 'Down', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Down')
+            pressure_down_bar = stackedBarGraph(data, 'Down', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Down', include_total_plays = True, total_plays_label = 'No Pressure')
         )
         self.template_to_pdf(html)          
 
@@ -403,12 +403,12 @@ class PregameReport():
         html = defense_overview_page.render(
             team = self.team_of_interest,
             field_zone_coverage = FieldZone_PieChart(data, 'Coverage', 'Coverage by Field Position').create_graph(),
-            field_zone_pressure = FieldZone_PieChart(data, 'Pressure_Existence', 'Coverage by Field Position').create_graph(),
+            field_zone_pressure = FieldZone_PieChart(data, 'Pressure_Existence', 'Coverage by Field Position', True).create_graph(),
         )
         self.template_to_pdf(html)  
         
     def d_down_page(self, data: pd.DataFrame, title: str) -> None:
-        pressure_down_group_bar = stackedBarGraph(data, 'Down_Group', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Down')
+        pressure_down_group_bar = stackedBarGraph(data, 'Down_Group', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Down', include_total_plays = True, total_plays_label = 'No Pressure')
         defense_overview_page = env.get_template('report_pages/defense/defense_base_situational.html')
         d_yards_data = d_yards_package(data)
         d_yards_data = d_yards_data[d_yards_data["Play Type"].isin(['Inside Run', 'Outside Run', 'Pocket Pass', 'Boot Pass'])]
@@ -417,7 +417,7 @@ class PregameReport():
             title = title,
             count = len(data), 
             coverage_by_down_group = crossTabQuery(data.Down_Group, data.Coverage),
-            pressure_pie_chart = categorical_pieChart_wrapper(data, "Pressure_Existence", "Pressure Frequency"),
+            pressure_pie_chart = categorical_pieChart_wrapper(data, "Pressure_Existence", "Pressure Frequency", isBooleanGraph=True),
             coverage_pie_chart = categorical_pieChart_wrapper(data, "Coverage", "Coverage Frequency"),
             pressure_down_group_bar = pressure_down_group_bar,
             d_yards_data = d_yards_data
@@ -438,16 +438,18 @@ class PregameReport():
 
     def d_redzone_page(self, data: pd.DataFrame):
         redzone_data = subset_redzone_data(data)
-        pressure_redzone_bar = stackedBarGraph(redzone_data, 'Redzone_Position', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Redzone Position')
+        pressure_down_bar = stackedBarGraph(redzone_data, 'Down', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Redzone Position', include_total_plays = True, total_plays_label = 'No Pressure')
+        pressure_redzone_bar = stackedBarGraph(redzone_data, 'Redzone_Position', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Redzone Position', include_total_plays = True, total_plays_label = 'No Pressure')
         d_redzone_page = env.get_template('report_pages/defense/defense_redzone_situational.html')
         html = d_redzone_page.render(
             team = self.team_of_interest, 
             count = len(redzone_data),
             redzone_data_detail_position_coverage = crossTabQuery(redzone_data.Redzone_Position, redzone_data.Coverage),
             redzone_data_detail_down_coverage = crossTabQuery(redzone_data.Down, redzone_data.Coverage),
-            pressure_pie_chart = categorical_pieChart_wrapper(data, "Pressure_Existence", "Pressure Frequency"),
+            pressure_pie_chart = categorical_pieChart_wrapper(data, "Pressure_Existence", "Pressure Frequency", isBooleanGraph=True),
             coverage_pie_chart = categorical_pieChart_wrapper(data, "Coverage", "Coverage Frequency"),
-            pressure_redzone_bar = pressure_redzone_bar
+            pressure_redzone_bar = pressure_redzone_bar,
+            pressure_down_bar = pressure_down_bar
         )
         self.template_to_pdf(html)   
 

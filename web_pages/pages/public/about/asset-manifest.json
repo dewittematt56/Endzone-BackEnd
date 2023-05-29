@@ -1,24 +1,22 @@
 {
   "files": {
-    "main.css": "/pages/public/about/static/css/main.84b4d556.css",
-    "main.js": "/pages/public/about/static/js/main.7bbc0e2f.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/public/about/static/js/787.942d2aa2.chunk.js",
+    "main.css": "/pages/public/about/static/css/main.50ee0b42.css",
+    "main.js": "/pages/public/about/static/js/main.0638cabc.js",
     "static/media/player-1.png": "/pages/public/about/static/media/player-1.cddbb437d64f0948a6bf.png",
     "static/media/player-2.png": "/pages/public/about/static/media/player-2.b7ba91d3643cb13ed406.png",
     "static/media/sean-kamano.jpg": "/pages/public/about/static/media/sean-kamano.e535b9c0973910c3eca9.jpg",
-    "static/media/EndzoneMainLogo.png": "/pages/public/about/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
     "static/media/charlie-dro.jpg": "/pages/public/about/static/media/charlie-dro.c5037e47a8de38ac5348.jpg",
+    "static/media/EndzoneMainLogo.png": "/pages/public/about/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "static/media/mikey-kamano.jpg": "/pages/public/about/static/media/mikey-kamano.384857bc22531a9f21a4.jpg",
     "static/media/spencer-ness.jpg": "/pages/public/about/static/media/spencer-ness.c4deb9a3bbbce7d14db8.jpg",
     "static/media/reece-miron.jpg": "/pages/public/about/static/media/reece-miron.da962a8aec496bb3f65f.jpg",
     "static/media/matt-dewitte.jpg": "/pages/public/about/static/media/matt-dewitte.88382ee904bcd5e34a47.jpg",
     "index.html": "/pages/public/about/index.html",
-    "main.84b4d556.css.map": "/pages/public/about/static/css/main.84b4d556.css.map",
-    "main.7bbc0e2f.js.map": "/pages/public/about/static/js/main.7bbc0e2f.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/public/about/static/js/787.942d2aa2.chunk.js.map"
+    "main.50ee0b42.css.map": "/pages/public/about/static/css/main.50ee0b42.css.map",
+    "main.0638cabc.js.map": "/pages/public/about/static/js/main.0638cabc.js.map"
   },
   "entrypoints": [
-    "static/css/main.84b4d556.css",
-    "static/js/main.7bbc0e2f.js"
+    "static/css/main.50ee0b42.css",
+    "static/js/main.0638cabc.js"
   ]
 }

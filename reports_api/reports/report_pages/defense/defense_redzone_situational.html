@@ -87,7 +87,7 @@
                 margin: 5px;
                 border: 0px;
                 z-index: -1;
-                width: 75%;
+                width: 60%;
             }
         </style>
     </head>
@@ -151,6 +151,8 @@
             <img src="data:image/png;base64, {{ coverage_pie_chart }}" alt="Pie Chart of Coverage" class="piechart">
         </div>
         <div class="chart-div">
+            <img src="data:image/png;base64, {{ pressure_down_bar }}" alt="Stacked Bar Chart of Pressure" class="barchart">
+
             <img src="data:image/png;base64, {{ pressure_redzone_bar }}" alt="Stacked Bar Chart of Pressure" class="barchart">
         </div>
     </body>

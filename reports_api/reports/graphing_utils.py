@@ -7,7 +7,7 @@ from io import BytesIO
 from .utils import __save_matPlot__
 
 def endzone_diverging_colors():
-    return ["#1283e2", "#ed3a14", "#34f199", "#c7dd91", "#4be8f9", "#c5d5f0", "#6c9999", "#997cfb", "#3f5562", "#da8b57"]
+    return ["#f5720d", "#14c7ed", "#cd9200", "#00c8d3", "#a1a802", "#00c6aa", "#72b645", "#35c079"]
 
 def group_by_df(df: pd.DataFrame, column: str, useOther: bool = True) -> pd.DataFrame:
     grouped_df = df.groupby(column).count()
@@ -64,10 +64,11 @@ def barGraph(data, x, y, x_label: str, y_label: str):
     plt.ylabel(y_label)
     pass
 
-def stackedBarGraph(df: pd.DataFrame, x_col: str, y_cols: 'list[str]', title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences'):
+def stackedBarGraph(df: pd.DataFrame, x_col: str, y_cols: 'list[str]', title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences', include_total_plays: bool = False, total_plays_label: str = ""):
     fig, ax = plt.subplots(figsize=(10, 6))
     df = df[[uniqueId_col, x_col] + y_cols]
     grouped_df = df.groupby(x_col)[y_cols].sum()
+    len_df = df.groupby(x_col).size()
     x = np.arange(len(grouped_df))  # x-coordinates for the bars
     opacity = 0.8  # Opacity of the bars
 
@@ -77,6 +78,9 @@ def stackedBarGraph(df: pd.DataFrame, x_col: str, y_cols: 'list[str]', title: st
         ax.bar(x, grouped_df[col], alpha=opacity, color=endzone_diverging_colors()[i],
                label=col, bottom=bottom)
         bottom += grouped_df[col]
+    
+    if include_total_plays:
+        ax.bar(x, len_df, alpha=0.5, color='none', edgecolor='black', linewidth=2, label=total_plays_label)
 
     ax.set_xlabel(x_col.replace('_', ' '))
     ax.set_ylabel(y_label)

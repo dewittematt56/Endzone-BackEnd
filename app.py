@@ -144,7 +144,7 @@ def register():
             last_has_number = any(map(str.isdigit,last))
             pass_has_letter = any(map(str.isalpha,password1))
             pass_has_number = any(map(str.isdigit, password1)) # contains if the passwords have a number in them
-            special_char = re.compile('[\'@_!#$%^&*()<>?/\\|}{~:]') # compiles the special characters to check for them in password
+            special_char = re.compile('[@_!#$%^&<>?/|~:\']') # compiles the special characters to check for them in password
             # Make sure there isn't already an account with this email
             if len(db.session.query(User).filter(User.Email == email).all()) != 0:
                 return Response("There is an account already associated with this email", status = 403)
