@@ -16,21 +16,20 @@ def getProfile():
     try:
         teams = []
         dbTeams = db.session.query(Team_Member).filter(Team_Member.User_ID == current_user.id).all()
-        for team in dbTeams:
-            team = db.session.query(Team).filter(Team.Team_Code == team.Team_Code).first()
-            teams.append(team)
+        for dbTeam in dbTeams:
+            tempTeam = db.session.query(Team).filter(Team.Team_Code == dbTeam.Team_Code).first()
+            teams.append(tempTeam)
         teamsList = []
         for team in teams:
             teamsList.append({"text": team.Team_Name, "value": team.Team_Code})
         if current_user.Current_Team == None:
-            current_user.Current_Team = teams[0].Team_Code
-            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Team": teams[0].Team_Code})
+            current_user.Current_Team = teamsList[0].value
+            db.session.query(User).filter(User.ID == current_user.id).update({"Current_Team": current_user.Current_Team})
             db.session.commit()
-
-        currentTeamObj = db.session.query(Team).filter(Team.Team_Code == User.Current_Team).all()
-        currentTeam = currentTeamObj[0].Team_Name
+            
+        currentTeamObj = db.session.query(Team).filter(Team.Team_Code == current_user.Current_Team).first()
         response = jsonify({"first_name": current_user.First_Name, "last_name": current_user.Last_Name, "email": current_user.Email, "phone": current_user.Phone, 
-                            "curTeam": currentTeam, "teamsList": teamsList})
+                            "curTeam": currentTeamObj.Team_Code, "curTeamText": currentTeamObj.Team_Name, "teamsList": teamsList})
         return make_response(response, 200)
     except Exception as e:
         print(e)
