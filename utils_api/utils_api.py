@@ -86,7 +86,7 @@ def formationImage(imageId):
 @utils_api.route("/endzone/utils/formation/get", methods = ["GET"])
 def getFormation():
     query = db.session.query(Formations).filter(Formations.Org_Code == current_user.Org_Code) .\
-        filter(Formations.Team_Code == current_user.Current_Team)
+        filter(Formations.Team_Code == current_user.Current_Team).order_by(asc(Formations.Formation))
     
     return jsonify(load_formation_json(query.all()))
 
@@ -351,3 +351,26 @@ def getPlay():
             query = db.session.query(Play, Game).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
     print(query.all())
     return jsonify(load_play_json(query.all()))
+
+@login_required
+@utils_api.route("/endzone/utils/penalty/add", methods = ["POST"])
+def addPenalty():
+    try:
+        if request.method == "POST":
+            data = json.loads(request.get_data())
+            param_check = check_required_params(["game_id", "penalty_name", "offending_team", "offending_player", "penalty_yards"], data.keys())
+            if param_check: 
+                return param_check
+            else:
+                game_id = str(data["game_id"])
+                penalty_name = str(data["penalty_name"])
+                offending_team = str(data["offending_team"])
+                offending_player = str(data["offending_player"])
+                penalty_yards = int(data["penalty_yards"])
+                new_penalty = Penalty(game_id, penalty_name, offending_team, offending_player, penalty_yards) 
+                db.session.add(new_penalty)
+                db.session.commit()       
+                return Response("Penalty Added", status = 200)   
+    except Exception as e:
+        print(e)
+        return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)

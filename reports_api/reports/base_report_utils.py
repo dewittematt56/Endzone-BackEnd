@@ -144,7 +144,7 @@ def combine_pdf_pages(pages: list):
     combined_pdf.seek(0)
     return combined_pdf.getvalue()
 
-def calculate_nfl_efficency_row(down: int, distance: str, result: int) -> float:
+def calculate_nfl_efficency_row(down: int, distance: str, result: int) -> bool:
     if down == 1: return result / distance >= .3
     elif down == 2: return result / distance >= .6
     elif down == 3: return result / distance >= 1
@@ -308,3 +308,20 @@ def breakdown_yardage(df: pd.DataFrame) -> dict:
     yardage_dict["passingYards"] = get_yardage(df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'))
     return yardage_dict
 
+def isHomeTeam(game, team_of_interest) -> bool:
+    if game["Home_Team"][0] == team_of_interest:
+        return True
+    return False
+
+def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
+    grouped_df = df.groupby('Game_ID')
+    max_rows = grouped_df.apply(lambda x: x.loc[x['Play_Number'].idxmax()])
+    points = 0
+    for index, row in max_rows.iterrows():
+        game_id = row['Game_ID']
+        game_info = game_data.loc[game_data['Game_ID'] == game_id]
+        if isHomeTeam(game_info, team_of_interest):
+            points += row["Home_Score"]
+        else:
+            points += row["Away_Score"]
+    return points

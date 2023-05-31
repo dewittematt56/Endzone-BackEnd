@@ -1,16 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/public/contact/static/css/main.5e0d8d28.css",
-    "main.js": "/pages/public/contact/static/js/main.e9dda823.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/public/contact/static/js/787.942d2aa2.chunk.js",
-    "static/media/EndzoneMainLogo.png": "/pages/public/contact/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "main.css": "/pages/public/contact/static/css/main.62cce0ae.css",
+    "main.js": "/pages/public/contact/static/js/main.0660bd25.js",
+    "static/media/EndzoneMainLogo.png": "/pages/public/contact/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/public/contact/index.html",
-    "main.5e0d8d28.css.map": "/pages/public/contact/static/css/main.5e0d8d28.css.map",
-    "main.e9dda823.js.map": "/pages/public/contact/static/js/main.e9dda823.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/public/contact/static/js/787.942d2aa2.chunk.js.map"
+    "main.62cce0ae.css.map": "/pages/public/contact/static/css/main.62cce0ae.css.map",
+    "main.0660bd25.js.map": "/pages/public/contact/static/js/main.0660bd25.js.map"
   },
   "entrypoints": [
-    "static/css/main.5e0d8d28.css",
-    "static/js/main.e9dda823.js"
+    "static/css/main.62cce0ae.css",
+    "static/js/main.0660bd25.js"
   ]
 }

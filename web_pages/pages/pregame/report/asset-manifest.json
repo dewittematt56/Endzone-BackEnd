@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/pages/pregame/report/static/css/main.a7e68ff5.css",
+    "main.js": "/pages/pregame/report/static/js/main.c5855db1.js",
+    "static/media/Endzone_Shield.png": "/pages/pregame/report/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
+    "static/media/EndzoneMainLogo.png": "/pages/pregame/report/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
+    "index.html": "/pages/pregame/report/index.html",
+    "main.a7e68ff5.css.map": "/pages/pregame/report/static/css/main.a7e68ff5.css.map",
+    "main.c5855db1.js.map": "/pages/pregame/report/static/js/main.c5855db1.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a7e68ff5.css",
+    "static/js/main.c5855db1.js"
+  ]
+}

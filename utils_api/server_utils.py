@@ -50,7 +50,7 @@ def validate_play_input(json_data: dict) -> Optional[Union[Response, None]]:
             if not json_data[key]:
                 return Response("Ball carrier needs a number", status = 400)
         elif key == "Event":
-            events = ["Penalty", "Interception", "Touchdown", "Fumble", "Field Goal", "Safety", "None"]
+            events = ["Penalty", "Interception", "Touchdown", "Fumble", "Field Goal", "Punt", "Safety", "None"]
             if json_data[key] not in events:
                 return Response("Event must be in list {}".format(events), status=400)
         elif key == "Result":

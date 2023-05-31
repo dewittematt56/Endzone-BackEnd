@@ -1,19 +1,17 @@
 {
   "files": {
-    "main.css": "/pages/public/pricing/static/css/main.b2ccb8a6.css",
-    "main.js": "/pages/public/pricing/static/js/main.f1bab317.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/public/pricing/static/js/787.942d2aa2.chunk.js",
+    "main.css": "/pages/public/pricing/static/css/main.95fc7c76.css",
+    "main.js": "/pages/public/pricing/static/js/main.92bc2362.js",
     "static/media/Pueschner.jpg": "/pages/public/pricing/static/media/Pueschner.8b6370a2b51632e05038.jpg",
     "static/media/Kyle_Lee.jpg": "/pages/public/pricing/static/media/Kyle_Lee.79d798ad54454083a307.jpg",
     "static/media/Sherwin.jpg": "/pages/public/pricing/static/media/Sherwin.eeb19361dfc57c9ec762.jpg",
-    "static/media/EndzoneMainLogo.png": "/pages/public/pricing/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "static/media/EndzoneMainLogo.png": "/pages/public/pricing/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/public/pricing/index.html",
-    "main.b2ccb8a6.css.map": "/pages/public/pricing/static/css/main.b2ccb8a6.css.map",
-    "main.f1bab317.js.map": "/pages/public/pricing/static/js/main.f1bab317.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/public/pricing/static/js/787.942d2aa2.chunk.js.map"
+    "main.95fc7c76.css.map": "/pages/public/pricing/static/css/main.95fc7c76.css.map",
+    "main.92bc2362.js.map": "/pages/public/pricing/static/js/main.92bc2362.js.map"
   },
   "entrypoints": [
-    "static/css/main.b2ccb8a6.css",
-    "static/js/main.f1bab317.js"
+    "static/css/main.95fc7c76.css",
+    "static/js/main.92bc2362.js"
   ]
 }

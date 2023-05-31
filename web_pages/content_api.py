@@ -39,7 +39,9 @@ def accountTermsServices():
 def accountUser():
     return render_template("/public/user-create/user-create.html")
 
+# Login in Required -- since user's must be logged in to create an organization.
 @content_api.route("/account/org", methods = ["GET"])
+@login_required
 def accountOrg():
     return render_template("/public/org-create/org-create.html")
 
@@ -107,3 +109,8 @@ def OMMembers():
 @login_required
 def DataViewer():
     return render_template("/data/data-viewer/data-viewer.html")
+
+@content_api.route("/endzone/pregame/report", methods = ["GET"])
+@login_required
+def PreGameReportPage():
+    return render_template("/pregame/report/pregame_report.html")

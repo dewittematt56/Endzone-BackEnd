@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+            }
+            .title-div {
+                width: 100%;
+                display: inline-block;
+                text-align: center;
+            }
+            .title-div h2{
+                font-size: 25px;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: underline;
+            }
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                width: 100%;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 20px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+                font-size: 15px;
+            }
+
+            .bad-td {
+                background-color: #ed3a14;
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .good-td {
+                background-color: #1283e2
+            }
+            p {
+                text-align: left;
+            }
+            .piechart {
+                height: 300px;
+                width: auto;
+                margin: 0px;
+                margin-top: 5px;
+                padding: 0px;
+            }
+            .chart-div {
+                width: 100%;
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                border-top: 1px solid black;
+                text-align: center;
+            }
+            .pass_zone_chart {
+                height: 200px;
+                width: auto;
+                margin: 0px;
+                margin-top: 5px;
+                padding: 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "title-div">
+            <h2>{{ team }} Defensive Passing Overview</h2>
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pass Zone</th>
+                        {% for column in d_formation_data.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in d_formation_data.iterrows() %}
+                        <tr>
+                            <td><b>{{ index | replace(".0", "") }}</b></td>
+                            {% for column in d_formation_data.columns %}
+                                {% if column == "Yards" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Average Gain" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Completion Percentage" %}
+                                    <td><b>{{ row[column] |round(2) }}%</b></td>
+                                {% elif column == "NCAA QBR" %}
+                                <td><b>{{ row[column] | int }}</b></td>
+                                {% else %}
+                                    <td>
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ pass_zone_chart }}" alt="Pass Zone Chart" class="pass_zone_chart">
+            <img src="data:image/png;base64, {{ pass_zone_qbr_chart }}" alt="Pass Zone QBR Chart" class="pass_zone_chart">
+            <img src="data:image/png;base64, {{ pass_zone_yards_chart }}" alt="Pass Zone Yardage Chart" class="pass_zone_chart">
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Formation</th>
+                        {% for column in d_passing_data.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in d_passing_data.iterrows() %}
+                        <tr>
+                            <td><b>{{ index | replace(".0", "") }}</b></td>
+                            {% for column in d_passing_data.columns %}
+                                {% if column == "Yards" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Average Gain" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Completions" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Attempts" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Completion Percentage" %}
+                                    <td><b>{{ row[column] |round(2) }}%</b></td>
+                                {% elif column == "NCAA QBR" %}
+                                <td><b>{{ row[column] | int }}</b></td>
+                                {% else %}
+                                    <td>
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ d_scramble_chart }}" alt="Scramble Pie Chart" class="piechart">
+            <img src="data:image/png;base64, {{ d_sack_chart }}" alt="Sack Pie Chart Chart" class="piechart">
+        </div>
+    </body>
+</html>
