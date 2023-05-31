@@ -1,19 +1,17 @@
 {
   "files": {
-    "main.css": "/pages/org/om_home/static/css/main.2e429b80.css",
-    "main.js": "/pages/org/om_home/static/js/main.f3ffd212.js",
+    "main.css": "/pages/org/om_home/static/css/main.c9391337.css",
+    "main.js": "/pages/org/om_home/static/js/main.59a22b46.js",
     "static/media/payment.jpg": "/pages/org/om_home/static/media/payment.1f47d855185f67709e4e.jpg",
-    "static/media/org.jpg": "/pages/org/om_home/static/media/org.f5fc90b4da8b97620feb.jpg",
-    "static/media/members.jpg": "/pages/org/om_home/static/media/members.65931912c6dfc0de530d.jpg",
-    "static/media/squad2.jpg": "/pages/org/om_home/static/media/squad2.c9e9e58c34ab33d08ace.jpg",
-    "static/media/invite.jpg": "/pages/org/om_home/static/media/invite.68a7b23a49b4e93cf204.jpg",
-    "static/media/EndzoneMainLogo.png": "/pages/org/om_home/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "static/media/profile.jpg": "/pages/org/om_home/static/media/profile.c9e9e58c34ab33d08ace.jpg",
+    "static/media/members.jpg": "/pages/org/om_home/static/media/members.68a7b23a49b4e93cf204.jpg",
+    "static/media/Endzone_Logos.png": "/pages/org/om_home/static/media/Endzone_Logos.a78c11f5eee8b6fdc67b.png",
     "index.html": "/pages/org/om_home/index.html",
-    "main.2e429b80.css.map": "/pages/org/om_home/static/css/main.2e429b80.css.map",
-    "main.f3ffd212.js.map": "/pages/org/om_home/static/js/main.f3ffd212.js.map"
+    "main.c9391337.css.map": "/pages/org/om_home/static/css/main.c9391337.css.map",
+    "main.59a22b46.js.map": "/pages/org/om_home/static/js/main.59a22b46.js.map"
   },
   "entrypoints": [
-    "static/css/main.2e429b80.css",
-    "static/js/main.f3ffd212.js"
+    "static/css/main.c9391337.css",
+    "static/js/main.59a22b46.js"
   ]
 }

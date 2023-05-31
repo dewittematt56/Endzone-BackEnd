@@ -88,7 +88,7 @@ def ManageData():
 @content_api.route("/endzone/account/profile", methods = ["GET"])
 @login_required
 def profile():
-    return render_template("/user/profile/index.html")
+    return render_template("/user/profile/profile.html")
 
 @content_api.route("/endzone/org/home", methods = ["GET"])
 @login_required
