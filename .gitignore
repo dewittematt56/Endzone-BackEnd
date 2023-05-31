@@ -21,3 +21,4 @@ reports_api/reports/__pycache__/pregame_report.cpython-38.pyc
 *.pyc
 *.pyc
 *.pyc
+reports_api/__pycache__/reports_api.cpython-38.pyc
