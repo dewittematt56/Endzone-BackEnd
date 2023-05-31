@@ -1,11 +1,10 @@
-from flask import Flask, request, Response, redirect, jsonify, make_response, render_template
+from flask import Flask, request, Response, redirect, make_response, render_template, send_file
 from flask_login import login_manager, LoginManager, login_user, current_user, logout_user, login_required
 from database.db import db, db_uri
 from database.models import *
 from login_api.login_persona import LoggedInPersona
-
+from reports_api.reports_api import reports_api
 from utils_api import server_utils
-
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
@@ -19,29 +18,24 @@ from org_api.om_profile_api import om_profile_api
 from org_api.om_members_api import om_members_api
 import json
 import re
-
+from io import BytesIO
 
 application = Flask(__name__, template_folder="web_pages/pages")
 
 application.config['SECRET_KEY'] = 'secret key'
 application.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-application.config['EXECUTOR_TYPE'] = 'thread'
-application.config['EXECUTOR_MAX_WORKERS'] = 5
-report_executor = Executor(application)
 
 
 application.register_blueprint(content_api)
 application.register_blueprint(utils_api)
 application.register_blueprint(data_api)
-# application.register_blueprint(report_api)
+application.register_blueprint(reports_api)
 application.register_blueprint(profile_api)
 application.register_blueprint(om_profile_api)
 application.register_blueprint(om_members_api)
 
 # Executors
-
-report_executor.init_app(application)
 
 db.init_app(application)
 
@@ -272,23 +266,6 @@ def createOrg():
             print(e)
             return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
-thread_lock = Lock()
-
-
-def run_report():
-    with thread_lock:
-        report = PregameReport()
-        pdf = report.combine_reports()
-        response = make_response(pdf)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
-        return response
-
-@application.route("/endzone/reports/test")
-def test():
-    job_1 = report_executor.submit(run_report)
-    response = job_1.result()
-    return response
 
 
 if __name__ == "__main__":

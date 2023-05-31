@@ -20,48 +20,53 @@ env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports')
 env.globals.update(static='./reports_api/reports/static')
 
 class PregameReport():
-    def __init__(self) -> None:
+    def __init__(self, requested_pages: 'list[str]') -> None:
         self.pdfs = []
         self.team_of_interest = "Burnsville"
         self.team_code = "Endzone-System"
+        self.requested_pages = requested_pages
         self.game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e"]
-        self.pages = ["Overview", "Play Type Personnel", "Play Type Down", "Play Type Field", "Strength of Formation", "Ball Carrier Overview", "Ball Carrier Detailed", "Passing Overview", "Passing Detail", "Passing Targets", "Redzone Situational"]
+        self.pages = []
         self.pdf_write = PyPDF2.PdfWriter()
         # Get game-based & play-based data from database.
         self.get_data()
         self.split_data()
+
+        
+
+        if "o_overview" in requested_pages: self.o_overview(self.offensive_data); self.pages.append("Offense Overview")
+        if "o_playType_personnel" in requested_pages: self.o_play_type_personnel_page(self.offensive_data); self.pages.append("Offense Play Type - Personnel")
+        if "o_playType_downDistance" in requested_pages: self.o_play_type_downDistance_page(self.offensive_data); self.pages.append("Offense Play Type - Down & Distance")
+        if "o_playType_fieldPos" in requested_pages: self.o_play_type_field_page(self.offensive_data); self.pages.append("Offense Play Type - Field Position")
+        if "o_formStrength" in requested_pages: self.o_strength_page(self.offensive_data); self.pages.append("Offense Play Type - Formation Strength")
+        if "o_ballCarrier_overview" in requested_pages: self.o_ball_carrier_overview_page(self.offensive_data); self.pages.append("Offense Ball Carrier - Overview")
+        if "o_ballCarrier_detail" in requested_pages: self.o_ball_carrier_detail_page(self.offensive_data); self.pages.append("Offense Ball Carrier - Detail")
+        if "o_boundary" in requested_pages: self.o_boundary_page(self.offensive_data); self.pages.append("Offense - Field Boundary Analysis")
+        if "o_passing_overview" in requested_pages: self.o_passing_overview_page(self.offensive_data); self.pages.append("Offense Passing - Overview")
+        if "o_passing_detail" in requested_pages: self.o_passing_detail_page(self.offensive_data); self.pages.append("Offense Passing - Detail")
+        if "o_passing_targets" in requested_pages: self.o_passing_targets_page(self.offensive_data); self.pages.append("Offense Passing - Targets")
+        if "o_situational_redzone" in requested_pages: self.o_redzone_page(self.offensive_data); self.pages.append("Offense Situational - Redzone")
+        if "o_situational_1" in requested_pages: self.o_down_1_page(self.offensive_data); self.pages.append("Offense Situational - 1st Down")
+        if "o_situational_2" in requested_pages: self.o_down_2_page(self.offensive_data); self.pages.append("Offense Situational - 2nd Down")
+        if "o_situational_3" in requested_pages: self.o_down_3_page(self.offensive_data); self.pages.append("Offense Situational - 3rd Down")
+        if "o_situational_4" in requested_pages: self.o_down_4_page(self.offensive_data); self.pages.append("Offense Situational - 4th Down")
+        if "d_overview" in requested_pages: self.d_overview(self.defensive_data); self.pages.append("Defense Overview")
+        if "d_base_personnel" in requested_pages: self.d_formation_personnel(self.defensive_data); self.pages.append("Defense - Personnel")
+        if "d_base_downDistance" in requested_pages: self.d_formation_down_distance(self.defensive_data); self.pages.append("Defense - Down & Distance")
+        if "d_pass" in requested_pages: self.d_pass_page(self.defensive_data); self.pages.append("Defense - Passing")
+        if "d_boundary_strength" in requested_pages: self.d_boundary_strength_page(self.defensive_data); self.pages.append("Defense Field Boundary & Formation Strength")
+        if "d_fieldPos" in requested_pages: self.d_field_position(self.defensive_data); self.pages.append("Defense - Field Position")
+        if "d_situational_redzone" in requested_pages: self.d_redzone_page(self.offensive_data); self.pages.append("Defense Situational - Redzone") 
+        if "d_situational_1" in requested_pages: self.d_down_1_page(self.offensive_data); self.pages.append("Defense Situational - 1st Down")
+        if "d_situational_2" in requested_pages: self.d_down_2_page(self.offensive_data); self.pages.append("Defense Situational - 2nd Down")
+        if "d_situational_3" in requested_pages: self.d_down_3_page(self.offensive_data); self.pages.append("Defense Situational - 3rd Down")
+        if "d_situational_4" in requested_pages: self.d_down_4_page(self.offensive_data); self.pages.append("Defense Situational - 4th Down")
+
+        ## These are called last to push in front of other pages.
+        self.overview_page()
         self.title_page()
-        # self.overview_page()
-        # self.o_overview(self.offensive_data)
-        # self.o_play_type_personnel_page(self.offensive_data)
-        # self.o_play_type_downDistance_page(self.offensive_data)
-        # self.o_play_type_field_page(self.offensive_data) 
-        # self.o_strength_page(self.offensive_data)
-        # self.o_ball_carrier_overview_page(self.offensive_data)
-        # self.o_ball_carrier_detail_page(self.offensive_data)
-        # self.o_boundary_page(self.offensive_data)
-        # self.o_passing_overview_page(self.offensive_data)
-        # self.o_passing_detail_page(self.offensive_data)
-        # self.o_passing_targets_page(self.offensive_data)
-        # self.o_redzone_page(self.offensive_data)
-        # self.o_down_1_page(self.offensive_data)
-        # self.o_down_2_page(self.offensive_data)
-        # self.o_down_3_page(self.offensive_data)
-        # self.o_down_4_page(self.offensive_data)
 
-        # self.d_overview(self.defensive_data)
-        # self.d_formation_personnel(self.defensive_data)
-        # self.d_formation_down_distance(self.defensive_data)
-        # self.d_pass_page(self.defensive_data)
-        # self.d_boundary_strength_page(self.defensive_data)
-        # self.d_field_position(self.defensive_data)
-        # self.d_down_1_page(self.offensive_data)
-        # self.d_down_2_page(self.offensive_data)
-        # self.d_down_3_page(self.offensive_data)
-        # self.d_down_4_page(self.offensive_data)
-        # self.d_redzone_page(self.offensive_data)
-
-    def template_to_pdf(self, html) -> None:
+    def template_to_pdf(self, html, appendToFront: bool = False) -> None:
         # Used for ease of development
         if sys.platform.startswith('win'):
             pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='dependencies/wkhtmltopdf.exe'))
@@ -69,21 +74,24 @@ class PregameReport():
         else:
             pdf = pdfkit.from_string(html, False)
         pdf_reader = PyPDF2.PdfReader(BytesIO(pdf))
-        self.pdfs.append(pdf_reader)
+        
+        if appendToFront: self.pdfs.insert(0, pdf_reader)
+        else: self.pdfs.append(pdf_reader)
+        
 
     def combine_reports(self) -> None:
         return combine_pdf_pages(self.pdfs)
 
     def title_page(self) -> None:
         title_template = env.get_template('report_pages/title/title_page.html')
-        html = title_template.render(title="Pregame Report", team="Eastview", games = self.game_data.to_dict(orient='records'))
+        html = title_template.render(title="Pregame Report", team=self.team_of_interest, games = self.game_data.to_dict(orient='records'))
         # Render this sucker!
-        self.template_to_pdf(html)
+        self.template_to_pdf(html, True)
     
     def overview_page(self) -> None:
         overview_page = env.get_template('report_pages/overview/overview_page.html')
         html = overview_page.render(pages = self.pages)
-        self.template_to_pdf(html)
+        self.template_to_pdf(html, True)
 
     def o_overview(self, data: pd.DataFrame) -> None:
         """Overview of an opponents offense

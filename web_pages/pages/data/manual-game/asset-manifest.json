@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/pages/data/manual-game/static/css/main.8276cdb4.css",
-    "main.js": "/pages/data/manual-game/static/js/main.da162180.js",
+    "main.css": "/pages/data/manual-game/static/css/main.a5e45487.css",
+    "main.js": "/pages/data/manual-game/static/js/main.0480cf53.js",
     "static/media/FootballField.png": "/pages/data/manual-game/static/media/FootballField.cb53e6c025621de7c9f5.png",
     "static/media/EndzoneMainLogo.png": "/pages/data/manual-game/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/data/manual-game/index.html",
-    "main.8276cdb4.css.map": "/pages/data/manual-game/static/css/main.8276cdb4.css.map",
-    "main.da162180.js.map": "/pages/data/manual-game/static/js/main.da162180.js.map"
+    "main.a5e45487.css.map": "/pages/data/manual-game/static/css/main.a5e45487.css.map",
+    "main.0480cf53.js.map": "/pages/data/manual-game/static/js/main.0480cf53.js.map"
   },
   "entrypoints": [
-    "static/css/main.8276cdb4.css",
-    "static/js/main.da162180.js"
+    "static/css/main.a5e45487.css",
+    "static/js/main.0480cf53.js"
   ]
 }
