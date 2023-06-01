@@ -195,19 +195,22 @@ def receiver_package(df: pd.DataFrame) -> pd.DataFrame:
     }).fillna(0).sort_values('Total Yards', ascending=False)
 
 def passing_package(df: pd.DataFrame) -> pd.DataFrame:
-    df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
-    third_down_data = df[df['Down'] == 3]
-    pressure_play_data = df[df['Pressure_Existence'] == True]
-    passing_df = pd.DataFrame({
-        'Total Yards': df["Result"].sum(),
-        'Attempts': len(df),
-        'Completions': df['Complete_Pass'].count(),
-        'Completion Percentage': (df['Complete_Pass'].sum() / df['Complete_Pass'].count()) * 100,
-        'Completion Percentage vs Pressure': (pressure_play_data['Complete_Pass'].sum() / pressure_play_data['Complete_Pass'].count()) * 100,
-        'Third Down Completion Percentage': (third_down_data['Complete_Pass'].sum() / third_down_data['Complete_Pass'].count()) * 100,
-        'Efficiency': (df['Efficiency'].sum() / df['Efficiency'].count()) * 100
-    }, index=[0])
-    return passing_df.fillna(0)
+    try:
+        df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
+        third_down_data = df[df['Down'] == 3]
+        pressure_play_data = df[df['Pressure_Existence'] == True]
+        passing_df = pd.DataFrame({
+            'Total Yards': df["Result"].sum(),
+            'Attempts': len(df),
+            'Completions': df['Complete_Pass'].count(),
+            'Completion Percentage': (df['Complete_Pass'].sum() / df['Complete_Pass'].count()) * 100,
+            'Completion Percentage vs Pressure': (pressure_play_data['Complete_Pass'].sum() / pressure_play_data['Complete_Pass'].count()) * 100,
+            'Third Down Completion Percentage': (third_down_data['Complete_Pass'].sum() / third_down_data['Complete_Pass'].count()) * 100,
+            'Efficiency': (df['Efficiency'].sum() / df['Efficiency'].count()) * 100
+        }, index=[0])
+        return passing_df.fillna(0)
+    except Exception:
+        return None
 
 def subset_redzone_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["Yard"] >= 80]
@@ -244,13 +247,19 @@ def get_explosive_rate(df):
     rush_explosive = 0 if not len(rush_plays) > 0 else len(rush_plays.query("Result  >= 10"))
     pass_plays = df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
     pass_explosive = 0 if not len(pass_plays) > 0 else len(pass_plays.query("Result  >= 20"))
-    return [round(sum([rush_explosive, pass_explosive]) / total_plays  * 100), sum([rush_explosive, pass_explosive])]
-
+    if total_plays > 0:
+        return [round(sum([rush_explosive, pass_explosive]) / total_plays  * 100), sum([rush_explosive, pass_explosive])]
+    else:
+        return [0, 0]
+    
 def get_negative_rate(df):
     total_plays = len(df)
     total_negative_plays = len(df.query("Result  < -1"))
-    return [round(total_negative_plays / total_plays  * 100), total_negative_plays]
-
+    if total_plays > 0:
+        return [round(total_negative_plays / total_plays  * 100), total_negative_plays]
+    else:
+        return [0, 0]
+    
 def get_efficiencies(df: pd.DataFrame) -> dict:
     efficiency_dict = {}
     efficiency_dict['EfficiencyOverall'] = get_efficiency(df)

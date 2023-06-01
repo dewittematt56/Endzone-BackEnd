@@ -12,13 +12,14 @@ thread_lock = Lock()
 
 from reports_api.reports.pregame_report import PregameReport
 
-def __run_pregame_report__(requested_pages: 'list[str]'):
+def __run_pregame_report__(requested_pages: 'list[str]', requested_team: str, requested_games: 'list[str]', team_code: str):
     with thread_lock:
-        report = PregameReport(requested_pages)
+        report = PregameReport(requested_pages, requested_team, requested_games, team_code)
         pdf = report.combine_reports()
         return pdf
 
 @reports_api.route("/endzone/reports/pregame/metadata")
+@login_required
 def pregame_report():
     available_packs = {}
     available_packs["Packs"] = []
@@ -49,13 +50,20 @@ def create_pregame_d_packs():
     defense_pack["packs"].append({"name": "Situational Pack", 'id': 'd_situational_pack', "isAutoEnabled": False, "packs": [{"name": "Redzone", 'id': 'd_situational_redzone', "isAutoEnabled": False},{"name": "1st Down", 'id': 'd_situational_1', "isAutoEnabled": False}, {"name": "2nd Down", 'id': 'd_situational_2', "isAutoEnabled": False}, {"name": "3rd Down", 'id': 'd_situational_3', "isAutoEnabled": False}, {"name": "4th Down", 'id': 'd_situational_4', "isAutoEnabled": False}]})
     return defense_pack
 
+
 @reports_api.route("/endzone/reports/pregame/run", methods = ["GET"])
+@login_required
 def pregame_report_run():
+    current_team = current_user.Current_Team
     requestedPages = request.args.get('requestedPages')
+    requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
+    requestedGames = request.args.get('requestedGames')
     if requestedPages:
         requestedPages_list = requestedPages.split(',')
+        requestedTeamOfInterest_str = requestedTeamOfInterest
+        requestedGame_list = requestedGames.split(",")
         
-        executor_job = report_executor.submit(__run_pregame_report__, requestedPages_list)
+        executor_job = report_executor.submit(__run_pregame_report__, requestedPages_list, requestedTeamOfInterest_str, requestedGame_list, current_team)
         response = executor_job.result()
         return send_file(
             io.BytesIO(response),

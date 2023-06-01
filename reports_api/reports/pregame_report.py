@@ -20,12 +20,12 @@ env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports')
 env.globals.update(static='./reports_api/reports/static')
 
 class PregameReport():
-    def __init__(self, requested_pages: 'list[str]') -> None:
+    def __init__(self, requested_pages: 'list[str]', team_of_interest: str, games: 'list[str]', user_team_code: str) -> None:
         self.pdfs = []
-        self.team_of_interest = "Burnsville"
-        self.team_code = "Endzone-System"
+        self.team_of_interest = team_of_interest
+        self.team_code = user_team_code
         self.requested_pages = requested_pages
-        self.game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e"]
+        self.game_ids = games
         self.pages = []
         self.pdf_write = PyPDF2.PdfWriter()
         # Get game-based & play-based data from database.
@@ -96,6 +96,8 @@ class PregameReport():
     def o_overview(self, data: pd.DataFrame) -> None:
         """Overview of an opponents offense
         """
+        if len(data) == 0: return
+
         efficiency_dict = get_efficiencies(data)
         yardage_dict = breakdown_yardage(data)
         play_type_pie_chart_data = group_by_df(data, "Play_Type")
@@ -107,6 +109,7 @@ class PregameReport():
     def o_play_type_personnel_page(self, data: pd.DataFrame) -> None:
         """Overview of opponents offense through Personnel & Formation
         """
+        if len(data) == 0: return
         data.rename({"O_Formation": "Formation"})
         #Prep Personnel
         personnel_playType= crossTabQuery(data.Personnel, data.Play_Type)
@@ -126,6 +129,7 @@ class PregameReport():
     def o_play_type_downDistance_page(self, data: pd.DataFrame) -> None:
         """Overview of opponents offense through Personnel & Formation
         """
+        if len(data) == 0: return
         data.rename({"O_Formation": "Formation"})
         down_playType = crossTabQuery(data.Down, data.Play_Type)
         distance_playType = crossTabQuery(data.Down_Group, data.Play_Type)
@@ -137,20 +141,20 @@ class PregameReport():
         self.template_to_pdf(html)
 
     def o_play_type_field_page(self, data: pd.DataFrame) -> None:
-        data["Play_Detail"] = data["Play_Type"] + "-" + data["Play_Type_Dir"]
+        if len(data) == 0: return
 
-        
+        data["Play_Detail"] = data["Play_Type"] + "-" + data["Play_Type_Dir"]
         play_type_map = FieldZone_PieChart(data, "Play_Type", "Play Type by Field Position").create_graph()
         play_type_hash = crossTabQuery(data.Hash, data.Play_Type)
         play_detail_hash = crossTabQuery(data.Hash, data.Play_Detail)
-
         bar_plot = groupedBarGraph(data, "Field_Group", "Play_Type", "Play Type by Field Position")
-
         offense_overview_page = env.get_template('report_pages/offense_playType/playType_field.html')
         html = offense_overview_page.render(team = self.team_of_interest, play_type_map = play_type_map, play_detail_hash = play_detail_hash, play_type_hash = play_type_hash, play_type_bar = bar_plot)
         self.template_to_pdf(html)
 
     def o_strength_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
+
         data_trim = data[~data["Play_Type"].isin(['Pocket Pass', 'Unknown'])]
         strength_chart_data = group_by_df(data_trim, "To_Strength")
         strength_chart = categorical_pieChart("Frequency of Plays to Formation Strength", strength_chart_data, True)
@@ -165,6 +169,8 @@ class PregameReport():
         self.template_to_pdf(html)
 
     def o_ball_carrier_overview_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
+
         data = data[~data["Play_Type"].isin(['Pocket Pass', 'Unknown', 'Boot Pass'])]
         data["Play_Detail"] = data["Play_Type"] + "-" + data["Play_Type_Dir"]
 
@@ -177,6 +183,7 @@ class PregameReport():
         self.template_to_pdf(html)
 
     def o_ball_carrier_detail_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         data = data[~data["Play_Type"].isin(['Pocket Pass', 'Unknown', 'Boot Pass'])]
         ball_carrier_distance_ridge_plot = create_ridge_plot(data, "Ball_Carrier", "Distance", "Ball_Carrier")
         ball_carrier_field_position_ridge_plot = create_ridge_plot(data, "Ball_Carrier", "Yard", "Ball_Carrier")
@@ -187,6 +194,7 @@ class PregameReport():
         self.template_to_pdf(html)
 
     def o_boundary_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         try:
             # Set Data
             data['Into_Boundary'] = data['Play_Type_Dir'] == data['Hash']
@@ -217,6 +225,7 @@ class PregameReport():
             print('No Data')
 
     def o_passing_overview_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         data = data[data["Play_Type"].isin(['Pocket Pass', 'Boot Pass'])]
         data['Pass_Zone'] = data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
         data['Complete_Pass'] = (~data['Pass_Zone'].isin(['Not Thrown', 'Unknown'])) & (data["Result"] != 0)
@@ -238,6 +247,7 @@ class PregameReport():
 
     def o_passing_detail_page(self, data: pd.DataFrame):
         data = data[data["Play_Type"].isin(['Pocket Pass', 'Boot Pass'])]
+        if len(data) == 0: return
         data['Pass_Zone'] = data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
         data['Did_Scramble'] = (data['Pass_Zone'].isin(['Non-Passing-Play'])) & (data["Result"] > 0)
         data['Non_Passing_Play'] = data['Did_Scramble'].map({True: 'Scramble', False: 'Sack'})
@@ -255,39 +265,35 @@ class PregameReport():
 
     def o_passing_targets_page(self, data: pd.DataFrame):
         data = data[data["Play_Type"].isin(['Pocket Pass', 'Boot Pass'])]
+        if len(data) == 0: return
         receiver_data = receiver_package(data)
         data['Pass_Zone'] = data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
         data['Did_Scramble'] = (data['Pass_Zone'].isin(['Non-Passing-Play'])) & (data["Result"] > 0)
         data['Non_Passing_Play'] = data['Did_Scramble'].map({True: 'Scramble', False: 'Sack'})
-
         data_slim = data[~data["Pass_Zone"].isin(['Unknown', 'Not Thrown'])]
-
         receiver_pass_zone = crossTabQuery(data_slim.Ball_Carrier, data_slim.Pass_Zone)
         personnel_receiver_bar_plot = groupedBarGraph(data_slim, "Personnel", "Ball_Carrier", "Targeted Receiver by Formation")
-
         o_passing_detail_page = env.get_template('report_pages/offense_passing/offense_passing_passZone_targets.html')
         html = o_passing_detail_page.render(team = self.team_of_interest, receiver_data = receiver_data, receiver_pass_zone = receiver_pass_zone, personnel_receiver_bar_plot = personnel_receiver_bar_plot)
         self.template_to_pdf(html)        
 
     def o_redzone_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         redzone_data = subset_redzone_data(data)
-        
         redzone_data_detail_position = crossTabQuery(redzone_data.Redzone_Position, redzone_data.Play_Type)
         redzone_data_detail_down = crossTabQuery(redzone_data.Down, redzone_data.Play_Type)
-
         personnel_pie_chart_data = group_by_df(data, "Personnel")
         personnel_chart = categorical_pieChart("Frequency of Personnel Groups", personnel_pie_chart_data)
         formation_pie_chart_data = group_by_df(data, "Formation")
         formation_chart = categorical_pieChart("Frequency of Formations", formation_pie_chart_data)
-
         redzone_data_detail_formation = crossTabQuery(redzone_data.Formation, redzone_data.Play_Type)
         redzone_data_detail_personnel = crossTabQuery(redzone_data.Personnel, redzone_data.Play_Type)
-        
         o_redzone_page = env.get_template('report_pages/offense_situational/offense_redzone.html')
         html = o_redzone_page.render(team = self.team_of_interest, redzone_data_detail_position = redzone_data_detail_position, redzone_data_detail_down = redzone_data_detail_down, personnel_chart = personnel_chart, formation_chart = formation_chart,redzone_data_detail_formation = redzone_data_detail_formation, redzone_data_detail_personnel= redzone_data_detail_personnel )
         self.template_to_pdf(html)   
 
     def o_down_page(self, data: pd.DataFrame, situation: str):
+        if len(data) == 0: return
         """Abstraction of O Down Pages (1, 2, 3)"""
         data["Detailed_Field_Group"] = data["Field_Group"] + "-" + data["Hash"]
         play_type_by_down_group = crossTabQuery(data.Down_Group, data.Play_Type)
@@ -300,20 +306,25 @@ class PregameReport():
         self.template_to_pdf(html)  
 
     def o_down_1_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.o_down_page(data[data["Down"] == 1], "1st Down")
 
     def o_down_2_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.o_down_page(data[data["Down"] == 2], "2nd Down")
 
     def o_down_3_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.o_down_page(data[data["Down"] == 3], "3rd Down")
 
     def o_down_4_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.o_down_page(data[data["Down"] == 4], "4th Down")
 
     def d_overview(self, data: pd.DataFrame) -> None:
         """Overview of an opponents defense
         """
+        if len(data) == 0: return
         coverage_pie_chart_data = group_by_df(data, "Coverage")
         d_formation_pie_chart_data = group_by_df(data, "D_Formation")
         defense_overview_page = env.get_template('report_pages/defense/defense_overview.html')
@@ -329,6 +340,7 @@ class PregameReport():
     def d_formation_personnel(self, data: pd.DataFrame) -> None:
         """Overview of an opponents defense
         """
+        if len(data) == 0: return
         defense_formation_personnel_page = env.get_template('report_pages/defense/defense_formation_personnel.html')
         html = defense_formation_personnel_page.render(
             team = self.team_of_interest, 
@@ -341,6 +353,7 @@ class PregameReport():
         self.template_to_pdf(html)    
 
     def d_formation_down_distance(self, data: pd.DataFrame) -> None:
+        if len(data) == 0: return
         defense_formation_down_page_page = env.get_template('report_pages/defense/defense_down_distance.html')
         html = defense_formation_down_page_page.render(
             team = self.team_of_interest, 
@@ -353,6 +366,8 @@ class PregameReport():
 
     def d_pass_page(self, data: pd.DataFrame) -> None:
         data = data[data["Play_Type"].isin(['Pocket Pass', 'Boot Pass'])]
+        if len(data) == 0: 
+            return
         data['Pass_Zone'] = data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
        
         data['Sack'] = (data["Pass_Zone"] == 'Not Thrown') & (data["Result"] < 0)
@@ -387,6 +402,7 @@ class PregameReport():
         self.template_to_pdf(html)            
 
     def d_boundary_strength_page(self, data: pd.DataFrame) -> None:
+        if len(data) == 0: return
         data_left = data[data["Hash"] == 'Left']
         data_right = data[data["Hash"] == 'Right']
 
@@ -407,6 +423,7 @@ class PregameReport():
         self.template_to_pdf(html)  
 
     def d_field_position(self, data: pd.DataFrame) -> None:
+        if len(data) == 0: return
         defense_overview_page = env.get_template('report_pages/defense/defense_field_position.html')
         html = defense_overview_page.render(
             team = self.team_of_interest,
@@ -416,6 +433,7 @@ class PregameReport():
         self.template_to_pdf(html)  
         
     def d_down_page(self, data: pd.DataFrame, title: str) -> None:
+        if len(data) == 0: return
         pressure_down_group_bar = stackedBarGraph(data, 'Down_Group', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Down', include_total_plays = True, total_plays_label = 'No Pressure')
         defense_overview_page = env.get_template('report_pages/defense/defense_base_situational.html')
         d_yards_data = d_yards_package(data)
@@ -433,18 +451,23 @@ class PregameReport():
         self.template_to_pdf(html)          
 
     def d_down_1_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.d_down_page(data[data["Down"] == 1], "1st Down")
 
     def d_down_2_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.d_down_page(data[data["Down"] == 2], "2nd Down")
 
     def d_down_3_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.d_down_page(data[data["Down"] == 3], "3rd Down")
 
     def d_down_4_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         self.d_down_page(data[data["Down"] == 4], "4th Down")
 
     def d_redzone_page(self, data: pd.DataFrame):
+        if len(data) == 0: return
         redzone_data = subset_redzone_data(data)
         pressure_down_bar = stackedBarGraph(redzone_data, 'Down', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Redzone Position', include_total_plays = True, total_plays_label = 'No Pressure')
         pressure_redzone_bar = stackedBarGraph(redzone_data, 'Redzone_Position', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Redzone Position', include_total_plays = True, total_plays_label = 'No Pressure')
