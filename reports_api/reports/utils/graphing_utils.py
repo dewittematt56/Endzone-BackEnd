@@ -4,7 +4,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from io import BytesIO
-from .utils import __save_matPlot__
+from .utils import save_matPlot
 
 def endzone_diverging_colors():
     return ["#f5720d", "#14c7ed", "#cd9200", "#00c8d3", "#a1a802", "#00c6aa", "#72b645", "#35c079"]
@@ -53,7 +53,7 @@ def categorical_pieChart(title: str, df: pd.DataFrame, isBooleanGraph: bool = Fa
         fig.gca().add_artist(centre_circle)
 
         ax.set_aspect('equal')  # Equal aspect ratio ensures that the pie chart is a circle
-        return __save_matPlot__(plt)
+        return save_matPlot(plt)
     except KeyError:
         return ''
 
@@ -89,7 +89,7 @@ def stackedBarGraph(df: pd.DataFrame, x_col: str, y_cols: 'list[str]', title: st
     ax.set_title(title)
     ax.legend()
 
-    return __save_matPlot__(plt)
+    return save_matPlot(plt)
 
 def crossTabQuery(df_x: pd.Series, df_y: pd.Series) -> pd.DataFrame:
     crossTab = pd.crosstab(df_x, df_y, normalize="index")
@@ -123,12 +123,12 @@ def create_ridge_plot(df: pd.DataFrame, x: str, y: str, color_col: str):
     g.despine(bottom=True, left=True)
 
     # Show the plot
-    return __save_matPlot__(plt)
+    return save_matPlot(plt)
 
 def kdePlot(data) -> BytesIO:
     #g = sns.FacetGrid(data, hue='Play_Type', height=6, aspect=1.2, legend_out=True)
     sns.swarmplot(data=data, x="Distance", y="Down", hue="Play_Type")
-    return __save_matPlot__(plt)
+    return save_matPlot(plt)
 
 def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences'):
     fig, ax= plt.subplots()
@@ -140,7 +140,7 @@ def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, unique
     plt.xlabel(x_col.replace('_', ' '))
     plt.ylabel(y_label)
     ax.legend(title=title, labels=[col[1] for col in grouped_df.columns])
-    return __save_matPlot__(plt)
+    return save_matPlot(plt)
 
 def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str, sizing_column: str = None) -> None:
     # Currently Broken
@@ -156,4 +156,4 @@ def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, cate
             sizes=(40, 400), alpha=.5, palette="muted",
             height=6, data=df)
         
-    return __save_matPlot__(plt)
+    return save_matPlot(plt)

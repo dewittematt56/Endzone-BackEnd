@@ -1,5 +1,5 @@
 import pandas as pd
-from .base_report_utils import calculate_nfl_efficency_row, get_total_points, get_nfl_efficiency
+from ..utils.data_report_utils import *
 
 def d_efficiency(down: int, distance: str, result: int):
     return not calculate_nfl_efficency_row(down, distance, result)

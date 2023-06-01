@@ -1,27 +1,10 @@
 
-from io import BytesIO
 import pandas as pd
 from typing import Union
-import PyPDF2
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import seaborn as sns
 import warnings
-
 warnings.filterwarnings('ignore')
-
 # Used for encoding binary data
-import base64
-from matplotlib.font_manager import fontManager, FontProperties
-import matplotlib.cm as cm
-from matplotlib.cm import RdYlBu
 import numpy as np
-
-font_path = "dependencies//branding//Audiowide-Regular.ttf"
-fontManager.addfont(font_path)
-prop = FontProperties(fname=font_path)
-plt.rcParams['font.family'] = 'Audiowide'
-sns.set(font=prop.get_name())
 
 def get_pressure_away_strength(form_strength: str, pressure_left: bool, pressure_right: bool, pressure_middle: bool) -> bool:
     if form_strength  != 'Unknown':
@@ -130,19 +113,6 @@ def enrich_data(df: pd.DataFrame, team_of_interest: str) -> pd.DataFrame:
         df.loc[index, "Pressure_Into_Strength"] = get_pressure_into_strength(df.loc[index, "Formation_Strength"], df.loc[index, "Pressure_Left"], df.loc[index, "Pressure_Right"])
         df.loc[index, "Pressure_Away_Strength"] = get_pressure_away_strength(df.loc[index, "Formation_Strength"], df.loc[index, "Pressure_Left"], df.loc[index, "Pressure_Right"], df.loc[index, "Pressure_Middle"])
     return df
-
-def combine_pdf_pages(pages: list):
-    pdf_writer = PyPDF2.PdfWriter()
-    for pdf in pages:
-        for page in pdf.pages:
-            pdf_writer.add_page(page)
-
-    combined_pdf = BytesIO()
-    pdf_writer.write(combined_pdf)
-
-    # Reset Bytes Position
-    combined_pdf.seek(0)
-    return combined_pdf.getvalue()
 
 def calculate_nfl_efficency_row(down: int, distance: str, result: int) -> bool:
     if down == 1: return result / distance >= .3

@@ -10,7 +10,7 @@ reports_api = Blueprint('reports_api', __name__)
 report_executor = ThreadPoolExecutor()
 thread_lock = Lock()
 
-from reports_api.reports.pregame_report import PregameReport
+from reports_api.reports.pregame_report.pregame_report import PregameReport
 
 def __run_pregame_report__(requested_pages: 'list[str]', requested_team: str, requested_games: 'list[str]', team_code: str):
     with thread_lock:
