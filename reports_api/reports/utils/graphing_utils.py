@@ -5,6 +5,13 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 from .utils import save_matPlot
+from matplotlib.font_manager import fontManager, FontProperties
+
+font_path = "dependencies//branding//Audiowide-Regular.ttf"
+fontManager.addfont(font_path)
+prop = FontProperties(fname=font_path)
+plt.rcParams['font.family'] = 'Audiowide'
+sns.set(font=prop.get_name())
 
 def endzone_diverging_colors():
     return ["#f5720d", "#14c7ed", "#cd9200", "#00c8d3", "#a1a802", "#00c6aa", "#72b645", "#35c079"]

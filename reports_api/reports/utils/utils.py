@@ -7,6 +7,7 @@ import base64
 
 warnings.filterwarnings('ignore')
 
+
 def save_matPlot(plt: plt):
     buffer = BytesIO()
     plt.savefig(buffer, format='png')
