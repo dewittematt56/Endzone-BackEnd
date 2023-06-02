@@ -9,6 +9,7 @@ from database.db import db_uri
 from database.models import *
 from .d_report_utils import *
 from ..utils.spatial_utils import *
+from ..utils.spatial_utils import *
 from ..utils.graphing_utils import *
 from ..utils.utils import *
 from .d_report_utils import *
@@ -96,17 +97,13 @@ class PregameReport():
         """Overview of an opponents offense
         """
         if len(data) == 0: return
-        try:       
+        try:
+            efficiency_dict = get_efficiencies(data)
+            yardage_dict = breakdown_yardage(data)
+            play_type_pie_chart_data = group_by_df(data, "Play_Type")
+            play_type_chart = categorical_pieChart("Frequency of Plays Ran", play_type_pie_chart_data)
             offense_overview_page = env.get_template('pregame_report/report_pages/offense_overview/offense_overview.html')
-            html = offense_overview_page.render(
-                opponent_qbr = calculate_qbr(data),
-                efficiency_data = get_efficiencies(data), 
-                yardage_data = breakdown_yardage(data), 
-                team = self.team_of_interest, 
-                play_type_chart = categorical_pieChart_wrapper(data, "Play_Type", "Frequency of Plays Ran"),
-                formation_chart = categorical_pieChart_wrapper(data, "O_Formation", "Frequency of Formations"),
-                point_data = points_package(data, self.team_of_interest, self.game_data)
-            )
+            html = offense_overview_page.render(efficiency_data = efficiency_dict, yardage_data = yardage_dict, team = self.team_of_interest, play_type_chart = play_type_chart)
             self.template_to_pdf(html)
         except Exception as e:
             print(e)
@@ -245,7 +242,8 @@ class PregameReport():
 
             data_passing_overview = passing_package(data)
             pass_zone_by_down = crossTabQuery(data.Down, data.Pass_Zone)
-
+            data_passZone = group_by_df(data, 'Pass_Zone')
+            pass_zone_chart = PassZone(data_passZone, 'Value', number_of_classes=3).create_graph()
 
             pass_zone_chart_data = group_by_df(data, "Pass_Zone")
             pass_zone_chart_pie = categorical_pieChart("Overall Pass Zone Breakdown", pass_zone_chart_data)
@@ -254,7 +252,7 @@ class PregameReport():
             pass_zone_by_personnel = crossTabQuery(data.Personnel, data.Pass_Zone)
 
             o_passing_overview_page = env.get_template('pregame_report/report_pages/offense_passing/offense_passing_overview.html')
-            html = o_passing_overview_page.render(team = self.team_of_interest, data_passing_overview = data_passing_overview, pass_zone_by_down = pass_zone_by_down, pass_zone_by_formation = pass_zone_by_formation, pass_zone_by_personnel = pass_zone_by_personnel, pass_zone_chart_pie=pass_zone_chart_pie)
+            html = o_passing_overview_page.render(team = self.team_of_interest, data_passing_overview = data_passing_overview, pass_zone_by_down = pass_zone_by_down, pass_zone_by_formation = pass_zone_by_formation, pass_zone_by_personnel = pass_zone_by_personnel, pass_zone_chart_pie=pass_zone_chart_pie, pass_zone_chart=pass_zone_chart)
             self.template_to_pdf(html)
         except Exception as e:
             print(e)
@@ -269,31 +267,7 @@ class PregameReport():
             pass_zone_distance_ridge_plot = create_ridge_plot(data, "Pass_Zone", "Distance", "Pass_Zone")
             pass_zone_map = FieldZone_PieChart(data, "Pass_Zone", "Pass Zones by Field Position").create_graph()
             o_passing_detail_page = env.get_template('pregame_report/report_pages/offense_passing/offense_passing_detail.html')
-
-            thrown_passes = (data[data['Pass_Zone'] != 'Not Thrown'])
-            thrown_passes['Complete_Pass'] = (~thrown_passes['Pass_Zone'].isin(['Not Thrown', 'Unknown'])) & (thrown_passes["Result"] != 0)
-            df_completions_group_by = thrown_passes.groupby('Pass_Zone')['Complete_Pass'].apply(lambda x: x.sum()).reset_index()
-            df_qbr = thrown_passes.groupby("Pass_Zone").apply(calculate_qbr).reset_index()
-            df_yards = thrown_passes.groupby('Pass_Zone')['Complete_Pass'].apply(lambda x: int((x.sum() / len(x)) * 100)).reset_index()
-            data_passZone = group_by_df(data, 'Pass_Zone')
-
-            df_yards.columns = ["Category", "Value"]
-            df_qbr.columns = ["Category", "Value"]
-            df_completions_group_by.columns = ["Category", "Value"]
-            completion_chart = PassZone(df_completions_group_by, 'Value', number_of_classes=3, title="Completions Per Pass Zone").create_graph()
-            yards_chart = PassZone(df_yards, 'Value', number_of_classes=3, title="Yards Per Pass Zone").create_graph()
-            qbr_chart = PassZone(df_qbr, 'Value', number_of_classes=3, title="QBR Per Pass Zone").create_graph()
-            pass_zone_chart = PassZone(data_passZone, 'Value', number_of_classes=3).create_graph()
-
-            # df_qbr = thrown_passes.groupby("Pass_Zone").apply(calculate_qbr).reset_index()
-            html = o_passing_detail_page.render(
-                team = self.team_of_interest, 
-                completion_chart = completion_chart,
-                yards_chart = yards_chart,
-                pass_zone_chart = pass_zone_chart,
-                qbr_chart = qbr_chart,
-                pass_zone_map = pass_zone_map
-            )
+            html = o_passing_detail_page.render(team = self.team_of_interest, pass_zone_distance_ridge_plot = pass_zone_distance_ridge_plot, pass_zone_map = pass_zone_map)
             self.template_to_pdf(html)
         except Exception as e:
             print(e)
@@ -369,12 +343,12 @@ class PregameReport():
         """Overview of an opponents defense
         """
         if len(data) == 0: return
-        coverage_pie_chart_data = group_by_df(data, "Coverage_Type")
+        coverage_pie_chart_data = group_by_df(data, "Coverage")
         d_formation_pie_chart_data = group_by_df(data, "D_Formation")
         defense_overview_page = env.get_template('pregame_report/report_pages/defense/defense_overview.html')
         html = defense_overview_page.render(
             team = self.team_of_interest,
-            coverage_chart = categorical_pieChart("Variety of Coverage", coverage_pie_chart_data), 
+            coverage_chart = categorical_pieChart("Frequency of Coverage", coverage_pie_chart_data), 
             d_formation_chart = categorical_pieChart("Variety of D-Formation", d_formation_pie_chart_data),
             d_yards_data = d_yards_package(data), 
             d_overview_dict = d_overview_package(data, self.team_of_interest, self.game_data)
@@ -390,7 +364,7 @@ class PregameReport():
             team = self.team_of_interest, 
             formation_bar_chart = groupedBarGraph(data, "Formation", "Coverage", "Coverage"),
             personnel_bar_chart = groupedBarGraph(data, "Personnel", "Coverage", "Coverage"),
-            coverage_pie_chart = categorical_pieChart_wrapper(data, "Coverage", "Coverage Baseline", True, False),
+            coverage_pie_chart = categorical_pieChart_wrapper(data, "Coverage", "Coverage Baseline", True),
             pressure_pie_chart = categorical_pieChart_wrapper(data, "Pressure_Existence", "Pressure Baseline", True, True),
             pressure_formation_bar = stackedBarGraph(data, 'Formation', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Formation', include_total_plays = True, total_plays_label = 'No Pressure')
         )
@@ -420,20 +394,19 @@ class PregameReport():
             data['Did_Scramble'] = (data['Pass_Zone'] == 'Not Thrown') & (data["Result"] > 0)
             thrown_passes = (data[data['Pass_Zone'] != 'Not Thrown'])
             thrown_passes['Complete_Pass'] = (~thrown_passes['Pass_Zone'].isin(['Not Thrown', 'Unknown'])) & (thrown_passes["Result"] != 0)
-            
-            df_completions = (thrown_passes[thrown_passes['Complete_Pass'] != False])
-            df_completions_group_by = thrown_passes.groupby('Pass_Zone')['Complete_Pass'].apply(lambda x: x.sum()).reset_index()
-            # df_qbr = thrown_passes.groupby("Pass_Zone").apply(calculate_qbr).reset_index()
+            df_completions = thrown_passes.groupby('Pass_Zone')['Complete_Pass'].apply(lambda x: x.sum()).reset_index()
+            df_qbr = thrown_passes.groupby("Pass_Zone").apply(calculate_qbr).reset_index()
             df_yards = thrown_passes.groupby('Pass_Zone')['Complete_Pass'].apply(lambda x: int((x.sum() / len(x)) * 100)).reset_index()
+            df_qbr.columns = ["Category", "Value"]
             df_yards.columns = ["Category", "Value"]
-            df_completions_group_by.columns = ["Category", "Value"]
+            df_completions.columns = ["Category", "Value"]
             defense_pass_page = env.get_template('pregame_report/report_pages/defense/defense_passing.html')
             html = defense_pass_page.render(
                 team = self.team_of_interest,
                 d_passing_data = d_passing_pack(thrown_passes),
-                pass_zone_chart = PassZone(df_completions_group_by, 'Value', number_of_classes=3, title="Completions Per Pass Zone").create_graph(),
+                pass_zone_chart = PassZone(df_completions, 'Value', number_of_classes=3, title="Completions Per Pass Zone").create_graph(),
+                pass_zone_qbr_chart = PassZone(df_qbr, 'Value', number_of_classes=3, legend_labels=['Low QBR', 'Medium QBR', 'High QBR'], title="QBR Per Pass Zone").create_graph(),
                 pass_zone_yards_chart = PassZone(df_yards, 'Value', number_of_classes=3, legend_labels=['Low Completion %', 'Medium Completion %', 'High Completion %'], title="Completion Percentage Per Pass Zone").create_graph(),
-                pass_zone_distance = groupedBarGraph(df_completions, "Down_Group", "Pass_Zone", "Completions by Distance"),
                 d_sack_chart = categorical_pieChart("Sack Rate", group_by_df(data, "Sack", False), True),
                 d_scramble_chart = categorical_pieChart("Successful Scrambles", group_by_df(data, "Did_Scramble", False), True),
                 d_formation_data = d_formation_pack(thrown_passes)
@@ -471,7 +444,7 @@ class PregameReport():
             html = defense_overview_page.render(
                 team = self.team_of_interest,
                 field_zone_coverage = FieldZone_PieChart(data, 'Coverage', 'Coverage by Field Position').create_graph(),
-                field_zone_pressure = FieldZone_PieChart(data, 'Pressure_Existence', 'Any Pressure by Field Position', True).create_graph(),
+                field_zone_pressure = FieldZone_PieChart(data, 'Pressure_Existence', 'Coverage by Field Position', True).create_graph(),
             )
             self.template_to_pdf(html)  
         except Exception as e:
@@ -480,7 +453,7 @@ class PregameReport():
     def d_down_page(self, data: pd.DataFrame, title: str) -> None:
         if len(data) == 0: return
         try:
-            pressure_down_group_bar = stackedBarGraph(data, 'Down_Group', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Distance to First Down', include_total_plays = True, total_plays_label = 'No Pressure')
+            pressure_down_group_bar = stackedBarGraph(data, 'Down_Group', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Down', include_total_plays = True, total_plays_label = 'No Pressure')
             defense_overview_page = env.get_template('pregame_report/report_pages/defense/defense_base_situational.html')
             d_yards_data = d_yards_package(data)
             d_yards_data = d_yards_data[d_yards_data["Play Type"].isin(['Inside Run', 'Outside Run', 'Pocket Pass', 'Boot Pass'])]
@@ -518,7 +491,7 @@ class PregameReport():
         if len(data) == 0: return
         try:
             redzone_data = subset_redzone_data(data)
-            pressure_down_bar = stackedBarGraph(redzone_data, 'Down', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Down', include_total_plays = True, total_plays_label = 'No Pressure')
+            pressure_down_bar = stackedBarGraph(redzone_data, 'Down', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Redzone Position', include_total_plays = True, total_plays_label = 'No Pressure')
             pressure_redzone_bar = stackedBarGraph(redzone_data, 'Redzone_Position', ['Pressure_Left', 'Pressure_Middle', 'Pressure_Right'], 'Pressure by Redzone Position', include_total_plays = True, total_plays_label = 'No Pressure')
             d_redzone_page = env.get_template('pregame_report/report_pages/defense/defense_redzone_situational.html')
             html = d_redzone_page.render(

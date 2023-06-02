@@ -67,29 +67,17 @@
                 padding: 0px;
             }
             .chart-div {
-                width: 95%;
-                padding: 0px;
-                margin: 0px;
-                display: inline-block;
+                width: 100%;
+                display: inline-flex;
                 justify-content: space-evenly;
                 border-bottom: 1px solid black;
                 text-align: center;
-            }
-            .fieldchart {
-                width: 100%;
-                margin: 0px;
-                padding: 0px;
-                padding-top: -100px;
             }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Defensive Field Position</h2>
-        </div>
-        <div class="chart-div">
-            <img src="data:image/png;base64, {{ field_zone_coverage }}" alt="Coverage Pie Chart" class="fieldchart">
-            <img src="data:image/png;base64, {{ field_zone_pressure }}" alt="Coverage Pie Chart" class="fieldchart">
+            <h2>{{ team }} Defensive Formation & Personnel</h2>
         </div>
     </body>
 </html>

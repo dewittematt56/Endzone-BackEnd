@@ -77,11 +77,17 @@
                 text-align: center;
             }
             .pass_zone_chart {
-                height: 200px;
+                height: 325px;
                 width: auto;
                 margin: 0px;
                 margin-top: 5px;
                 padding: 0px;
+            }
+            .barchart {
+                margin-top: 2.5px;
+                border: 0px;
+                z-index: -1;
+                width: 75%;
             }
         </style>
     </head>
@@ -89,43 +95,8 @@
         <div class = "title-div">
             <h2>{{ team }} Defensive Passing Overview</h2>
         </div>
-        <div class="table-div">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Pass Zone</th>
-                        {% for column in d_formation_data.columns %}
-                            <th> {{ column | replace("_", " ") }} </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for index, row in d_formation_data.iterrows() %}
-                        <tr>
-                            <td><b>{{ index | replace(".0", "") }}</b></td>
-                            {% for column in d_formation_data.columns %}
-                                {% if column == "Yards" %}
-                                    <td><b>{{ row[column] |int }}</b></td>
-                                {% elif column == "Average Gain" %}
-                                    <td><b>{{ row[column] |int }}</b></td>
-                                {% elif column == "Completion Percentage" %}
-                                    <td><b>{{ row[column] |round(2) }}%</b></td>
-                                {% elif column == "NCAA QBR" %}
-                                <td><b>{{ row[column] | int }}</b></td>
-                                {% else %}
-                                    <td>
-                                        {{ row[column] | round(2) }}%
-                                    </td>
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
         <div class="chart-div">
             <img src="data:image/png;base64, {{ pass_zone_chart }}" alt="Pass Zone Chart" class="pass_zone_chart">
-            <img src="data:image/png;base64, {{ pass_zone_qbr_chart }}" alt="Pass Zone QBR Chart" class="pass_zone_chart">
             <img src="data:image/png;base64, {{ pass_zone_yards_chart }}" alt="Pass Zone Yardage Chart" class="pass_zone_chart">
         </div>
         <div class="table-div">
@@ -153,7 +124,7 @@
                                     <td><b>{{ row[column] |int }}</b></td>
                                 {% elif column == "Completion Percentage" %}
                                     <td><b>{{ row[column] |round(2) }}%</b></td>
-                                {% elif column == "NCAA QBR" %}
+                                {% elif column == "QBR" %}
                                 <td><b>{{ row[column] | int }}</b></td>
                                 {% else %}
                                     <td>
@@ -169,6 +140,9 @@
         <div class="chart-div">
             <img src="data:image/png;base64, {{ d_scramble_chart }}" alt="Scramble Pie Chart" class="piechart">
             <img src="data:image/png;base64, {{ d_sack_chart }}" alt="Sack Pie Chart Chart" class="piechart">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ pass_zone_distance }}" alt="Pass Zone by Distance" class="barchart">
         </div>
     </body>
 </html>

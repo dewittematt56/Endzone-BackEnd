@@ -232,19 +232,16 @@ def get_negative_rate(df):
     
 def get_efficiencies(df: pd.DataFrame) -> dict:
     efficiency_dict = {}
-    efficiency_dict['EfficiencyOverall'] = get_efficiency(df)
-    efficiency_dict["EfficiencyFirst"] = get_efficiency(df.query('Down == 1'))
-    efficiency_dict["EfficiencySecond"] = get_efficiency(df.query('Down == 2'))
-    efficiency_dict["EfficiencyThird"] = get_efficiency(df.query('Down == 3'))
-    efficiency_dict['EfficiencyPressure'] = get_efficiency(df.query('Pressure_Left | Pressure_Right | Pressure_Middle'))
-    efficiency_dict['EfficiencyPressureEdge'] = get_efficiency(df.query('Pressure_Left | Pressure_Right'))
-    efficiency_dict['EfficiencyPressureMiddle'] = get_efficiency(df.query('Pressure_Middle'))
-    efficiency_dict["InsideRunsEfficiency"] = get_efficiency(df.query('Run_Type == "Inside"'))
-    efficiency_dict["OutsideRunsEfficiency"] = get_efficiency(df.query('Run_Type == "Outside"'))
-    efficiency_dict["PassEfficiency"] = get_efficiency(df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'))
-    efficiency_dict['NFLEfficiencyOverall'] = get_nfl_efficiency(df)
-    efficiency_dict['NFLEfficiencyFirst'] = get_nfl_efficiency(df.query('Down == 1'))
-    efficiency_dict['NFLEfficiencySecond'] = get_nfl_efficiency(df.query('Down == 2'))
+    efficiency_dict['EfficiencyOverall'] = get_nfl_efficiency(df)
+    efficiency_dict["EfficiencyFirst"] = get_nfl_efficiency(df.query('Down == 1'))
+    efficiency_dict["EfficiencySecond"] = get_nfl_efficiency(df.query('Down == 2'))
+    efficiency_dict["EfficiencyThird"] = get_nfl_efficiency(df.query('Down == 3'))
+    efficiency_dict['EfficiencyPressure'] = get_nfl_efficiency(df.query('Pressure_Left | Pressure_Right | Pressure_Middle'))
+    efficiency_dict['EfficiencyPressureEdge'] = get_nfl_efficiency(df.query('Pressure_Left | Pressure_Right'))
+    efficiency_dict['EfficiencyPressureMiddle'] = get_nfl_efficiency(df.query('Pressure_Middle'))
+    efficiency_dict["InsideRunsEfficiency"] = get_nfl_efficiency(df.query('Run_Type == "Inside"'))
+    efficiency_dict["OutsideRunsEfficiency"] = get_nfl_efficiency(df.query('Run_Type == "Outside"'))
+    efficiency_dict["PassEfficiency"] = get_nfl_efficiency(df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'))
     efficiency_dict["ThirdDownConversionRate"] = get_nfl_efficiency(df.query('Down == 3'))
     efficiency_dict["FourthDownConversionRate"] = get_nfl_efficiency(df.query('Down == 4'))
     efficiency_dict["explosivePlayRate"] = get_explosive_rate(df)
@@ -292,6 +289,17 @@ def isHomeTeam(game, team_of_interest) -> bool:
         return True
     return False
 
+def points_package(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
+    total_points_allowed = get_total_points(df, team_of_interest, game_data)
+    total_games = len(df["Game_ID"].unique())
+    total_drives = len(df["Drive"].unique())
+    total_plays = len(df)
+    points_dict = {}
+    points_dict["points_per_game"] = [total_points_allowed / total_games, total_games]
+    points_dict["points_per_drive"] = [total_points_allowed / total_drives, total_drives]
+    points_dict["points_per_play"] = [total_points_allowed / total_plays, total_plays]
+    return points_dict
+
 def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
     grouped_df = df.groupby('Game_ID')
     max_rows = grouped_df.apply(lambda x: x.loc[x['Play_Number'].idxmax()])
@@ -304,3 +312,12 @@ def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.Data
         else:
             points += row["Away_Score"]
     return points
+
+def calculate_qbr(df: pd.DataFrame):
+    df['Complete_Pass'] = (~df['Pass_Zone'].isin(['Not Thrown', 'Unknown'])) & (df["Result"] != 0)
+    total_yards = df["Result"].sum()
+    total_touchdowns = len(df[df["Event"] == "Touchdown"])
+    total_completions = df["Complete_Pass"].sum()
+    total_interceptions = len(df[df["Event"] == "Interceptions"])
+    total_attempts = len(df)
+    return round((((8.4 * total_yards) + (330 * total_touchdowns) + (100 * total_completions) - (200 * total_interceptions)) / total_attempts), 2)

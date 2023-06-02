@@ -22,7 +22,8 @@
                 text-decoration: underline;
             }
             .table-div {
-                display: inline-block;
+                display: inline-flex;
+                justify-content: center;
                 text-align: center;
                 width: 100%;
                 border-bottom: 1px solid black;
@@ -30,17 +31,17 @@
             }
 
             .table-div table {
+                width: auto;
                 position: relative;
                 border: 1px solid black;                
-                padding: 5px;
+                padding: 1px;
                 margin: auto;
-                margin-top: 20px;
-                
+                margin-top: 10px;
             }
             .table-div th {
                 border: 1px solid black;
                 padding: 3px;
-                font-size: 20px;
+                font-size: 15px;
             }
 
             .table-div td {
@@ -54,44 +55,49 @@
             .netural-td {
                 background-color: transparent;
             }
-            .bad-td {
-                background-color: #ed3a14;
-            }
             .chart-div {
                 display: inline-flex;
                 justify-content: space-evenly;
                 border-bottom: 1px solid black;
                 text-align: center;
             }
-            .barchart {
+            .ridgechart {
                 border: 0px;
                 z-index: -1;
-                width: 66%;
-                margin-top: 5px;
+                background-color: red;
+                width: auto;
+                width: 500px;
+                margin-top: 10px;
+                margin-right: 50px;
+            }
+            p {
+                margin: 1px;
+                padding: 0;
             }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{team}} Offense: Ball Carrier Overview</h2>
+            <h2>{{team}} Offense: Ball Carrier Detail</h2>
         </div>
         <div class="chart-div">
-            <img src="data:image/png;base64, {{ formation_ball_carrier_bar_plot }}" alt="Ball Carrier Formation Bar Chart" class="barchart">
-            <img src="data:image/png;base64, {{ personnel_ball_carrier_bar_plot }}" alt="Ball Carrier Personnel Pie Chart" class="barchart">
+            <img src="data:image/png;base64, {{ ball_carrier_distance_ridge_plot }}" alt="Strength Pie Chart" class="ridgechart">
+            <p style="text-align: center;">Ball Carrier Frequency by Distance to First Down</p>
         </div>
         <div class="table-div">
             <table>
+                <p>Ball Carrier by Down</p>
                 <thead>
                     <tr>
-                        {% for column in ball_Carrier_playType.columns %}
+                        {% for column in ball_carrier_by_down.columns %}
                             <th> {{ column | replace("_", " ") }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in ball_Carrier_playType.iterrows() %}
+                    {% for index, row in ball_carrier_by_down.iterrows() %}
                         <tr>
-                            {% for column in ball_Carrier_playType.columns %}
+                            {% for column in ball_carrier_by_down.columns %}
                                 {% if column == "Ball_Carrier" %}
                                 <td><b>#{{ row[column] | replace(".0", "") }}</b></td>
                                 {% else %}
@@ -104,40 +110,25 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="table-div">
             <table>
+                <p>Ball Carrier by Hash</p>
                 <thead>
                     <tr>
-                        <th>Ball Carrier</th>
-                        {% for column in ball_carrier_data.columns %}
-                            <th> {{ column | replace("_", "") }} </th>
+                        {% for column in ball_carrier_by_hash.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in ball_carrier_data.iterrows() %}
+                    {% for index, row in ball_carrier_by_hash.iterrows() %}
                         <tr>
-                            <td><b>#{{ index | replace(".0", "") }}</b></td>
-                            {% for column in ball_carrier_data.columns %}
-                                {% if column == "Total Yards" %}
-                                    <td>{{ row[column] | int }}</td>
-                                {% elif column == "Carries" %}
-                                    <td>{{ row[column] | int }}</td>
-                                {% elif column == "Touchdowns" %}
-                                    <td class="{% if row[column]  >= 2  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | int }}</td>
-                                {% elif column == "Fumbles" %}
-                                    <td class="{% if row[column]  > 2  %}bad-td{% else  %}netural-td{% endif %}">{{ row[column] | int }}</td>
-                                {% elif column == "Fumble Frequency" %}
-                                    <td class="{% if row[column]  > 5  %}bad-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
-                                {% elif column == "Yards per Carry" %}
-                                    <td class="{% if row[column]  >= 5  %}good-td{% else  %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
-                                {% elif column == "Median Yards Per Carry" %}
-                                    <td class="{% if row[column]  >= 5  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
-                                {% elif column == "Difference from Team Average" %}
-                                    <td class="{% if row[column]  >= 3  %}good-td{% else  %}netural-td{% endif %}">{{ row[column] | round(2) }}</td>
-                                {% elif column == "Efficient Carries" %}
-                                 <td class="{% if row[column]  >= 66  %}good-td{% else  %}netural-td{% endif %}">{{ row[column] | round(2) }}%</td>
+                            {% for column in ball_carrier_by_hash.columns %}
+                                {% if column == "Ball_Carrier" %}
+                                <td><b>#{{ row[column] | replace(".0", "") }}</b></td>
+                                {% else %}
+                                    <td class="{% if row[column]  >= 66  %}good-td{% elif row[column]  > 33  %}netural-td{% else %}bad-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
                                 {% endif %}
                             {% endfor %}
                         </tr>
@@ -145,6 +136,10 @@
                 </tbody>
             </table>
         </div>
-        <p style="text-align: center;">A Ball Carrier with the number -99 is Unknown.</p>
+
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ ball_carrier_field_position_ridge_plot }}" alt="Strength Pie Chart" class="ridgechart">
+            <p style="text-align: center;">Ball Carrier Frequency by Field Position</p>
+        </div>
     </body>
 </html>

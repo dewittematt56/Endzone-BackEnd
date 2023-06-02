@@ -61,35 +61,66 @@
                 text-align: left;
             }
             .piechart {
-                height: 300px;
+                height: 275px;
                 width: auto;
                 margin: 0px;
                 padding: 0px;
             }
             .chart-div {
-                width: 95%;
-                padding: 0px;
-                margin: 0px;
+                width: 60%;
                 display: inline-block;
                 justify-content: space-evenly;
-                border-bottom: 1px solid black;
                 text-align: center;
-            }
-            .fieldchart {
-                width: 100%;
                 margin: 0px;
                 padding: 0px;
-                padding-top: -100px;
+            }
+            .barchart {
+                border: 0px;
+                z-index: -1;
+                width: 55%;
+            }
+
+            .pressure-div {
+                width: 100%;
+            }
+            
+            .pressure-div .barchart {
+                width: 100%;
+            }
+
+            .coverage-div {
+                width: 100%;
+                height: 45%;
+                display: inline-flex;       
+                justify-content: space-evenly;     
+                border-bottom: 1px solid black;    
+            }
+
+            .coverage-div-row {
+                display: inline-flex;
+                justify-content: space-evenly;
+                width: 100%;
             }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Defensive Field Position</h2>
+            <h2>{{ team }} Defensive Formation & Personnel</h2>
         </div>
-        <div class="chart-div">
-            <img src="data:image/png;base64, {{ field_zone_coverage }}" alt="Coverage Pie Chart" class="fieldchart">
-            <img src="data:image/png;base64, {{ field_zone_pressure }}" alt="Coverage Pie Chart" class="fieldchart">
+        <div class="coverage-div">
+            <div class="coverage-div-row">
+                <img src="data:image/png;base64, {{ formation_bar_chart }}" alt="Formation by Coverage Bar Graph" class="barchart">
+                <img src="data:image/png;base64, {{ coverage_pie_chart }}" alt="Coverage Pie Chart" class="piechart">
+            </div>
+            <div class="coverage-div-row">
+                <img src="data:image/png;base64, {{ personnel_bar_chart }}" alt="Personnel by Coverage Bar Graph" class="barchart">
+                <img src="data:image/png;base64, {{ pressure_pie_chart }}" alt="Pressure Pie Chart" class="piechart">
+            </div>
+        </div>
+        <div class="pressure-div">
+            <div>
+                <img src="data:image/png;base64, {{ pressure_formation_bar }}" alt="Pressure by Formation Bar Chart" class="barchart">
+            </div>
         </div>
     </body>
 </html>

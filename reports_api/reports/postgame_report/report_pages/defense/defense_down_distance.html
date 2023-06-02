@@ -66,30 +66,66 @@
                 margin: 0px;
                 padding: 0px;
             }
+            .ridgechart {
+                border: 0px;
+                z-index: -1;
+                background-color: red;
+                width: auto;
+                width: 600px;
+                margin-top: 10px;
+                margin-right: 50px;
+            }
             .chart-div {
-                width: 95%;
-                padding: 0px;
-                margin: 0px;
-                display: inline-block;
+                width: 100%;
+                display: inline-flex;
                 justify-content: space-evenly;
                 border-bottom: 1px solid black;
                 text-align: center;
             }
-            .fieldchart {
-                width: 100%;
-                margin: 0px;
-                padding: 0px;
-                padding-top: -100px;
+            .barchart {
+                border: 0px;
+                z-index: -1;
+                width: 75%;
             }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Defensive Field Position</h2>
+            <h2>{{ team }} Defensive Coverage & Pressure by Down and Distance</h2>
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in distance_playType_data.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in distance_playType_data.iterrows() %}
+                        <tr>
+                            {% for column in distance_playType_data.columns %}
+                                {% if column == "Down_Group" %}
+                                <td><b>{{ row[column] }}</b></td>
+                                {% else %}
+                                    <td class="{% if row[column]  >= 50  %}good-td{% else %}netural-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div class="chart-div">
-            <img src="data:image/png;base64, {{ field_zone_coverage }}" alt="Coverage Pie Chart" class="fieldchart">
-            <img src="data:image/png;base64, {{ field_zone_pressure }}" alt="Coverage Pie Chart" class="fieldchart">
+            <img src="data:image/png;base64, {{ coverage_distance_plot }}" alt="Bar Graph of Play Type by Down" class="ridgechart">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ pressure_down_bar }}" alt="Bar Graph of Play Type by Down" class="barchart">
+            <img src="data:image/png;base64, {{ pressure_distance_plot }}" alt="Bar Graph of Play Type by Down" class="ridgechart">
+            <p style="text-align: center;">Any Pressure by Distance to First Down</p>
         </div>
     </body>
 </html>

@@ -4,9 +4,7 @@ import PyPDF2
 import matplotlib.pyplot as plt
 import warnings
 import base64
-
 warnings.filterwarnings('ignore')
-
 
 def save_matPlot(plt: plt):
     buffer = BytesIO()

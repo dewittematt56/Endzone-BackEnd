@@ -25,6 +25,7 @@
             .boundary-div {
                 width: 100%;
                 height: auto;
+                background-color: red;
             }
             .left-div, .right-div {
                 width: 50%;
@@ -46,8 +47,8 @@
             }
             .chart-div {
                 display: inline-flex;
-                width: 100%;
                 justify-content: space-evenly;
+                border-bottom: 1px solid black;
                 text-align: center;
             }
 
@@ -183,8 +184,8 @@
                 <div class="chart-div">
                     <img src="data:image/png;base64, {{ data_right_passZone_graph }}" alt="Right Hash Pass Zones" class="passZoneChart">
                 </div>
+                
             </div>
         </div>
-        
     </body>
 </html>

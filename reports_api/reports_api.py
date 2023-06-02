@@ -50,7 +50,6 @@ def create_pregame_d_packs():
     defense_pack["packs"].append({"name": "Situational Pack", 'id': 'd_situational_pack', "isAutoEnabled": False, "packs": [{"name": "Redzone", 'id': 'd_situational_redzone', "isAutoEnabled": False},{"name": "1st Down", 'id': 'd_situational_1', "isAutoEnabled": False}, {"name": "2nd Down", 'id': 'd_situational_2', "isAutoEnabled": False}, {"name": "3rd Down", 'id': 'd_situational_3', "isAutoEnabled": False}, {"name": "4th Down", 'id': 'd_situational_4', "isAutoEnabled": False}]})
     return defense_pack
 
-
 @reports_api.route("/endzone/reports/pregame/run", methods = ["GET"])
 @login_required
 def pregame_report_run():

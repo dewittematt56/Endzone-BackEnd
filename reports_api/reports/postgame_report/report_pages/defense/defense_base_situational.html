@@ -47,11 +47,18 @@
                 margin: 2px;
                 font-size: 15px;
             }
+
+            .bad-td {
+                background-color: #ed3a14;
+            }
             .netural-td {
                 background-color: transparent;
             }
             .good-td {
-                background-color: #1283e2;
+                background-color: #1283e2
+            }
+            p {
+                text-align: left;
             }
             .piechart {
                 height: 300px;
@@ -68,11 +75,6 @@
                 margin-top: 10px;
                 margin-right: 50px;
             }
-            .barchart {
-                border: 0px;
-                z-index: -1;
-                width: 600px;
-            }
             .chart-div {
                 width: 100%;
                 display: inline-flex;
@@ -80,66 +82,75 @@
                 border-bottom: 1px solid black;
                 text-align: center;
             }
-            .chart-div-2 {
-                width: 100%;
-                display: inline-flex;
-                justify-content: space-evenly;
-                border-bottom: 1px solid black;
-                text-align: center;  
+            .barchart {
+                margin: 5px;
+                border: 0px;
+                z-index: -1;
+                width: 75%;
             }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Offense: Play Type - Down & Distance</h2>
+            <h2>{{ team }} - Defense Situational: {{ title }}</h2>
+        </div>
+        <p style="text-align: center;">Plays Included: {{ count }}</p>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in coverage_by_down_group.columns %}
+                            <th> {{ column |  replace("_", " ") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in coverage_by_down_group.iterrows() %}
+                        <tr>
+                            {% for column in coverage_by_down_group.columns %}
+                                {% if column == "Down_Group" %}
+                                <td><b>{{ row[column] }}</b></td>
+                                {% else %}
+                                <td class="{% if row[column]  >= 50  %}good-td{% else %}netural-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ pressure_pie_chart }}" alt="Pie Chart of Pressure" class="piechart">
+            <img src="data:image/png;base64, {{ coverage_pie_chart }}" alt="Pie Chart of Coverage" class="piechart">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ pressure_down_group_bar }}" alt="Stacked Bar Chart of Pressure" class="barchart">
         </div>
         <div class="table-div">
             <table>
                 <thead>
                     <tr>
-                        {% for column in down_playType.columns %}
-                            <th> {{ column }} </th>
+                        {% for column in d_yards_data.columns %}
+                            <th> {{ column | replace("_", "") }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in down_playType.iterrows() %}
+                    {% for index, row in d_yards_data.iterrows() %}
                         <tr>
-                            {% for column in down_playType.columns %}
-                                {% if column == "Down" %}
-                                <td><b>{{ row[column] | int }}</b></td>
-                                {% else %}
-                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
-                                        {{ row[column] | round(2) }}%
-                                    </td>
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <table>
-                <thead>
-                    <tr>
-                        {% for column in distance_playType.columns %}
-                            {% if column == "Down_Group" %}
-                                <th>Distance</th>
-                            {% else %}
-                                <th> {{ column }} </th>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for index, row in distance_playType.iterrows() %}
-                        <tr>
-                            {% for column in distance_playType.columns %}
-                                {% if column == "Down_Group" %}
-                                <td><b>{{ row[column] }}</b></td>
-                                {% else %}
-                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
-                                        {{ row[column] | round(2) }}%
-                                    </td>
+                            {% for column in d_yards_data.columns %}
+                                {% if column == "Play Type" %}
+                                    <th>{{ row[column]}}</th>
+                                {% elif column == "Total Yards" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% elif column == "Yards Per Attempt" %}
+                                    <td>{{ row[column] | round(2) }}</td>
+                                {% elif column == "Efficient Stops" %}
+                                    <td class="{% if row[column]  >= 66  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}%</td>
+                                {% elif column == "Number of Plays" %}
+                                    <td>{{ row[column] | int }}</td>
                                 {% endif %}
                             {% endfor %}
                         </tr>
@@ -147,19 +158,5 @@
                 </tbody>
             </table>
         </div>
-        <!-- <div class="chart-div">
-            <img src="data:image/png;base64, {{ personnel_chart }}" alt="Personnel Pie Chart" class="piechart">
-            <img src="data:image/png;base64, {{ formation_chart }}" alt="Formation Pie Chart" class="piechart">
-        </div>
-        !-->
-        <div class="chart-div-2">
-            <img src="data:image/png;base64, {{ bar_plot }}" alt="Bar Graph of Play Type by Down" class="barchart">
-            <p>Frequency of Plays Based on Distance to 1st Down</p>
-        </div>
-        <div class="chart-div-2">
-            <img src="data:image/png;base64, {{ ridge_plot }}" alt="Histogram of Results by Play Type" class="ridgechart">
-            <p>Frequency of Plays Based on Distance to 1st Down</p>
-        </div>
-
     </body>
 </html>

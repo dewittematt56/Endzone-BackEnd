@@ -117,11 +117,7 @@
                 <thead>
                     <tr>
                         {% for column in receiver_pass_zone.columns %}
-                            {% if column == "Ball_Carrier" %}   
-                            <th>Receiver</th>
-                            {% else %} 
                             <th> {{ column | replace("_", " ") }} </th>
-                            {% endif %}
                         {% endfor %}
                     </tr>
                 </thead>
@@ -141,7 +137,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <p style="text-align: center;">Receiver by Pass Zone</p>
+            <p style="text-align: center;">Ball Carrier by Pass Zone</p>
         </div>
         <div class="chart-div">
             <img src="data:image/png;base64, {{ personnel_receiver_bar_plot }}" alt="Ball Carrier Formation Bar Chart" class="barchart">

@@ -47,6 +47,7 @@
                 margin: 2px;
                 font-size: 15px;
             }
+
             .netural-td {
                 background-color: transparent;
             }
@@ -59,55 +60,40 @@
                 margin: 0px;
                 padding: 0px;
             }
-            .ridgechart {
-                border: 0px;
-                z-index: -1;
-                background-color: red;
-                width: auto;
-                width: 600px;
-                margin-top: 10px;
-                margin-right: 50px;
-            }
             .barchart {
                 border: 0px;
                 z-index: -1;
                 width: 600px;
+                margin-top: 5px;
             }
+
             .chart-div {
-                width: 100%;
                 display: inline-flex;
                 justify-content: space-evenly;
                 border-bottom: 1px solid black;
                 text-align: center;
             }
-            .chart-div-2 {
-                width: 100%;
-                display: inline-flex;
-                justify-content: space-evenly;
-                border-bottom: 1px solid black;
-                text-align: center;  
-            }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Offense: Play Type - Down & Distance</h2>
+            <h2>{{ team }} Offense: Play Type - Personnel & Formation</h2>
         </div>
         <div class="table-div">
             <table>
                 <thead>
                     <tr>
-                        {% for column in down_playType.columns %}
+                        {% for column in personnel_playType.columns %}
                             <th> {{ column }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in down_playType.iterrows() %}
+                    {% for index, row in personnel_playType.iterrows() %}
                         <tr>
-                            {% for column in down_playType.columns %}
-                                {% if column == "Down" %}
-                                <td><b>{{ row[column] | int }}</b></td>
+                            {% for column in personnel_playType.columns %}
+                                {% if column == "Personnel" %}
+                                <td><b>{{ row[column] }}</b></td>
                                 {% else %}
                                     <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
                                         {{ row[column] | round(2) }}%
@@ -121,20 +107,16 @@
             <table>
                 <thead>
                     <tr>
-                        {% for column in distance_playType.columns %}
-                            {% if column == "Down_Group" %}
-                                <th>Distance</th>
-                            {% else %}
-                                <th> {{ column }} </th>
-                            {% endif %}
+                        {% for column in formation_playType.columns %}
+                            <th> {{ column }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in distance_playType.iterrows() %}
+                    {% for index, row in formation_playType.iterrows() %}
                         <tr>
-                            {% for column in distance_playType.columns %}
-                                {% if column == "Down_Group" %}
+                            {% for column in formation_playType.columns %}
+                                {% if column == "Formation" %}
                                 <td><b>{{ row[column] }}</b></td>
                                 {% else %}
                                     <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
@@ -147,19 +129,13 @@
                 </tbody>
             </table>
         </div>
-        <!-- <div class="chart-div">
+        <div class="chart-div">
             <img src="data:image/png;base64, {{ personnel_chart }}" alt="Personnel Pie Chart" class="piechart">
             <img src="data:image/png;base64, {{ formation_chart }}" alt="Formation Pie Chart" class="piechart">
         </div>
-        !-->
-        <div class="chart-div-2">
-            <img src="data:image/png;base64, {{ bar_plot }}" alt="Bar Graph of Play Type by Down" class="barchart">
-            <p>Frequency of Plays Based on Distance to 1st Down</p>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ bar_plot }}" alt="Bar Graph of Play Type by Formation" class="barchart">
+            <p>Play Type by Formation</p>
         </div>
-        <div class="chart-div-2">
-            <img src="data:image/png;base64, {{ ridge_plot }}" alt="Histogram of Results by Play Type" class="ridgechart">
-            <p>Frequency of Plays Based on Distance to 1st Down</p>
-        </div>
-
     </body>
 </html>

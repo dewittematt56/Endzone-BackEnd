@@ -62,8 +62,8 @@
                 text-align: center;
             }
             .piechart {
-                height: auto;
-                width: 500px;
+                height: 250px;
+                width: auto;
                 margin: 0px;
                 margin-top: 5px;
                 padding: 0px;
@@ -126,6 +126,7 @@
                 </tbody>
             </table>
             <table>
+                <p>Pass Zone by Down</p>
                 <thead>
                     <tr>
                         {% for column in pass_zone_by_down.columns %}
@@ -148,9 +149,9 @@
                         </tr>
                     {% endfor %}
                 </tbody>
-                <p>Pass Zone by Down</p>
             </table>
             <table>
+                <p>Pass Zone by Formation</p>
                 <thead>
                     <tr>
                         {% for column in pass_zone_by_formation.columns %}
@@ -173,9 +174,9 @@
                         </tr>
                     {% endfor %}
                 </tbody>
-                <p>Pass Zone by Formation</p>
             </table>
             <table>
+                <p>Pass Zone by Personnel</p>
                 <thead>
                     <tr>
                         {% for column in pass_zone_by_personnel.columns %}
@@ -198,12 +199,13 @@
                         </tr>
                     {% endfor %}
                 </tbody>
-                <p>Pass Zone by Personnel</p>
             </table>
             <p style="text-align: center;">A Ball not thrown can be occurs when a Quarterback is Sack or Scrambles</p>
         </div>
         <div class="chart-div">
-            <img src="data:image/png;base64, {{ pass_zone_chart_pie }}" alt="Pass Zone Pie Chart" class="piechart">
+            <img src="data:image/png;base64, {{ pass_zone_chart_pie }}" alt="Strength Pie Chart" class="piechart">
+            <img src="data:image/png;base64, {{ pass_zone_chart }}" alt="Strength Pie Chart" class="piechart">
         </div>
+        <p style="text-align: center;">Ball Carrier Frequency by Distance to First Down</p>
     </body>
 </html>

@@ -6,12 +6,12 @@ def d_efficiency(down: int, distance: str, result: int):
 
 def query_d_yards_package(df: pd.DataFrame, clause: str, name: str) -> 'list[str]':
     df_subset = df.query(clause)
-    if len(df_subset) < 1: return pd.DataFrame({'Play Type': [], 'Total Yards': [], 'Yards Per Attempt': [], 'Efficient Stops': [], 'Attempts': []})
+    if len(df_subset) < 1: return pd.DataFrame({'Play Type': [], 'Total Yards': [], 'Yards Per Attempt': [], 'Efficient Stops': [], 'Number of Plays': []})
     df_subset['Efficiency'] = df_subset.apply(lambda row: d_efficiency(row['Down'], row['Distance'], row['Result']), axis=1)
     total_efficient_plays = df_subset['Efficiency'].sum()
     total_yards = df_subset["Result"].sum()
     total_plays = len(df_subset["Result"])
-    return pd.DataFrame({'Play Type': [name],'Total Yards': [df_subset["Result"].sum()], 'Yards Per Attempt': [total_yards / total_plays], 'Efficient Stops': [ (total_efficient_plays / total_plays) * 100], 'Attempts': [total_plays]})
+    return pd.DataFrame({'Play Type': [name],'Total Yards': [df_subset["Result"].sum()], 'Yards Per Attempt': [total_yards / total_plays], 'Efficient Stops': [ (total_efficient_plays / total_plays) * 100], 'Number of Plays': [total_plays]})
 
 def d_overview_package(df: pd.DataFrame, team_of_interest: str, game_data):
     """ Get Basic Stats for a overview of a Defense """
@@ -51,7 +51,7 @@ def d_passing_pack(df: pd.DataFrame):
         "Yards": df.groupby('Formation')['Result'].sum(),
         "Average Gain": df.groupby('Formation')['Result'].mean(),
         "Completion Percentage": df.groupby('Formation')['Complete_Pass'].apply(lambda x: (x.sum() / len(x)) * 100 ),
-        "QBR": df.groupby("Formation").apply(calculate_qbr)
+        "NCAA QBR": df.groupby("Formation").apply(calculate_qbr)
     })
 
 def d_formation_pack(df: pd.DataFrame):
@@ -62,5 +62,14 @@ def d_formation_pack(df: pd.DataFrame):
         "Completions": df.groupby('Pass_Zone')['Complete_Pass'].sum(),
         "Attempts": df.groupby("Pass_Zone").size(),
         "Completion Percentage": df.groupby('Pass_Zone')['Complete_Pass'].apply(lambda x: (x.sum() / len(x)) * 100 ),
-        "QBR": df.groupby("Pass_Zone").apply(calculate_qbr)
+        "NCAA QBR": df.groupby("Pass_Zone").apply(calculate_qbr)
     })
+
+def calculate_qbr(df: pd.DataFrame):
+    df['Complete_Pass'] = (~df['Pass_Zone'].isin(['Not Thrown', 'Unknown'])) & (df["Result"] != 0)
+    total_yards = df["Result"].sum()
+    total_touchdowns = len(df[df["Event"] == "Touchdown"])
+    total_completions = df["Complete_Pass"].sum()
+    total_interceptions = len(df[df["Event"] == "Interceptions"])
+    total_attempts = len(df)
+    return round((((8.4 * total_yards) + (330 * total_touchdowns) + (100 * total_completions) - (200 * total_interceptions)) / total_attempts), 2)

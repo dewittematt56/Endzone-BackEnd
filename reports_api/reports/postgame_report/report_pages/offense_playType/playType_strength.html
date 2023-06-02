@@ -21,6 +21,33 @@
                 margin: 0;
                 text-decoration: underline;
             }
+
+            .chart-div {
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                text-align: center;
+            }
+
+            .piechart {
+                height: 300px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+            }
+
+            .barchart {
+                border: 0px;
+                z-index: -1;
+                width: 500px;
+                margin-top: 10px;
+            }
+            .barchart-slim {
+                border: 0px;
+                z-index: -1;
+                width: 400px;
+                margin-top: 10px;
+            }
             .table-div {
                 display: inline-block;
                 text-align: center;
@@ -47,98 +74,44 @@
                 margin: 2px;
                 font-size: 15px;
             }
-            .netural-td {
-                background-color: transparent;
-            }
-            .good-td {
-                background-color: #1283e2;
-            }
-            .piechart {
-                height: 300px;
-                width: auto;
-                margin: 0px;
-                padding: 0px;
-            }
-            .ridgechart {
-                border: 0px;
-                z-index: -1;
-                background-color: red;
-                width: auto;
-                width: 600px;
-                margin-top: 10px;
-                margin-right: 50px;
-            }
-            .barchart {
-                border: 0px;
-                z-index: -1;
-                width: 600px;
-            }
-            .chart-div {
-                width: 100%;
-                display: inline-flex;
-                justify-content: space-evenly;
-                border-bottom: 1px solid black;
-                text-align: center;
-            }
-            .chart-div-2 {
-                width: 100%;
-                display: inline-flex;
-                justify-content: space-evenly;
-                border-bottom: 1px solid black;
-                text-align: center;  
-            }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} Offense: Play Type - Down & Distance</h2>
+            <h2>{{ team }} Offense: Formation Strength Analysis</h2>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ strength_chart }}" alt="Strength Pie Chart" class="piechart">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ strength_form_bar_plot }}" alt="Strength Pie Chart" class="barchart-slim">
+            <img src="data:image/png;base64, {{ strength_personnel_bar_plot }}" alt="Strength Pie Chart" class="barchart-slim">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ strength_playType_bar_plot }}" alt="Strength Pie Chart" class="barchart">
         </div>
         <div class="table-div">
             <table>
                 <thead>
                     <tr>
-                        {% for column in down_playType.columns %}
-                            <th> {{ column }} </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for index, row in down_playType.iterrows() %}
-                        <tr>
-                            {% for column in down_playType.columns %}
-                                {% if column == "Down" %}
-                                <td><b>{{ row[column] | int }}</b></td>
-                                {% else %}
-                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
-                                        {{ row[column] | round(2) }}%
-                                    </td>
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <table>
-                <thead>
-                    <tr>
-                        {% for column in distance_playType.columns %}
-                            {% if column == "Down_Group" %}
-                                <th>Distance</th>
+                        {% for column in pressure_into_strength.columns %}
+                            {% if column == "Pressure_Into_Strength" %}
+                                <th> Pressure </th>
                             {% else %}
-                                <th> {{ column }} </th>
+                                <th> {{ column | replace("_", "") }} </th>
                             {% endif %}
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in distance_playType.iterrows() %}
+                    {% for index, row in pressure_into_strength.iterrows() %}
                         <tr>
-                            {% for column in distance_playType.columns %}
-                                {% if column == "Down_Group" %}
+                            {% for column in pressure_into_strength.columns %}
+                                {% if column == "Pressure_Into_Strength" %}
                                 <td><b>{{ row[column] }}</b></td>
                                 {% else %}
                                     <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
-                                        {{ row[column] | round(2) }}%
+                                        {{ row[column] | round(2) }}
                                     </td>
                                 {% endif %}
                             {% endfor %}
@@ -146,20 +119,37 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <p>Pressure Into Strength of Formation; Average Yards Gained by Formation</p>
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in pressure_away_strength.columns %}
+                            {% if column == "Pressure_Away_Strength" %}
+                                <th> Pressure </th>
+                            {% else %}
+                                <th> {{ column | replace("_", "") }} </th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in pressure_away_strength.iterrows() %}
+                        <tr>
+                            {% for column in pressure_away_strength.columns %}
+                                {% if column == "Pressure_Away_Strength" %}
+                                <td><b>{{ row[column] }}</b></td>
+                                {% else %}
+                                    <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
+                                        {{ row[column] | round(2) }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p>Pressure Away from Strength of Formation; Average Yards Gained by Formation</p>
         </div>
-        <!-- <div class="chart-div">
-            <img src="data:image/png;base64, {{ personnel_chart }}" alt="Personnel Pie Chart" class="piechart">
-            <img src="data:image/png;base64, {{ formation_chart }}" alt="Formation Pie Chart" class="piechart">
-        </div>
-        !-->
-        <div class="chart-div-2">
-            <img src="data:image/png;base64, {{ bar_plot }}" alt="Bar Graph of Play Type by Down" class="barchart">
-            <p>Frequency of Plays Based on Distance to 1st Down</p>
-        </div>
-        <div class="chart-div-2">
-            <img src="data:image/png;base64, {{ ridge_plot }}" alt="Histogram of Results by Play Type" class="ridgechart">
-            <p>Frequency of Plays Based on Distance to 1st Down</p>
-        </div>
-
+        
     </body>
 </html>

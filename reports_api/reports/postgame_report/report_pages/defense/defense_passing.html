@@ -25,7 +25,8 @@
                 display: inline-block;
                 text-align: center;
                 width: 100%;
-                
+                margin-top: 5px;
+                margin-bottom: 5px;
             }
 
             .table-div table {
@@ -64,54 +65,55 @@
                 height: 300px;
                 width: auto;
                 margin: 0px;
+                margin-top: 5px;
                 padding: 0px;
-            }
-            .ridgechart {
-                border: 0px;
-                z-index: -1;
-                background-color: red;
-                width: auto;
-                width: 600px;
-                margin-top: 10px;
-                margin-right: 50px;
             }
             .chart-div {
                 width: 100%;
                 display: inline-flex;
                 justify-content: space-evenly;
                 border-bottom: 1px solid black;
+                border-top: 1px solid black;
                 text-align: center;
             }
-            .barchart {
-                margin: 5px;
-                border: 0px;
-                z-index: -1;
-                width: 66%;
+            .pass_zone_chart {
+                height: 200px;
+                width: auto;
+                margin: 0px;
+                margin-top: 5px;
+                padding: 0px;
             }
         </style>
     </head>
     <body>
         <div class = "title-div">
-            <h2>{{ team }} - Defense Situational: {{ title }}</h2>
+            <h2>{{ team }} Defensive Passing Overview</h2>
         </div>
-        <p style="text-align: center;">Plays Included: {{ count }}</p>
         <div class="table-div">
             <table>
                 <thead>
                     <tr>
-                        {% for column in coverage_by_down_group.columns %}
-                            <th> {{ column |  replace("_", " ") }} </th>
+                        <th>Pass Zone</th>
+                        {% for column in d_formation_data.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in coverage_by_down_group.iterrows() %}
+                    {% for index, row in d_formation_data.iterrows() %}
                         <tr>
-                            {% for column in coverage_by_down_group.columns %}
-                                {% if column == "Down_Group" %}
-                                <td><b>{{ row[column] }}</b></td>
+                            <td><b>{{ index | replace(".0", "") }}</b></td>
+                            {% for column in d_formation_data.columns %}
+                                {% if column == "Yards" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Average Gain" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Completion Percentage" %}
+                                    <td><b>{{ row[column] |round(2) }}%</b></td>
+                                {% elif column == "NCAA QBR" %}
+                                <td><b>{{ row[column] | int }}</b></td>
                                 {% else %}
-                                <td class="{% if row[column]  >= 50  %}good-td{% else %}netural-td{% endif %}">
+                                    <td>
                                         {{ row[column] | round(2) }}%
                                     </td>
                                 {% endif %}
@@ -122,35 +124,41 @@
             </table>
         </div>
         <div class="chart-div">
-            <img src="data:image/png;base64, {{ pressure_pie_chart }}" alt="Pie Chart of Pressure" class="piechart">
-            <img src="data:image/png;base64, {{ coverage_pie_chart }}" alt="Pie Chart of Coverage" class="piechart">
-        </div>
-        <div class="chart-div">
-            <img src="data:image/png;base64, {{ pressure_down_group_bar }}" alt="Stacked Bar Chart of Pressure" class="barchart">
+            <img src="data:image/png;base64, {{ pass_zone_chart }}" alt="Pass Zone Chart" class="pass_zone_chart">
+            <img src="data:image/png;base64, {{ pass_zone_qbr_chart }}" alt="Pass Zone QBR Chart" class="pass_zone_chart">
+            <img src="data:image/png;base64, {{ pass_zone_yards_chart }}" alt="Pass Zone Yardage Chart" class="pass_zone_chart">
         </div>
         <div class="table-div">
             <table>
                 <thead>
                     <tr>
-                        {% for column in d_yards_data.columns %}
-                            <th> {{ column | replace("_", "") }} </th>
+                        <th>Formation</th>
+                        {% for column in d_passing_data.columns %}
+                            <th> {{ column | replace("_", " ") }} </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for index, row in d_yards_data.iterrows() %}
+                    {% for index, row in d_passing_data.iterrows() %}
                         <tr>
-                            {% for column in d_yards_data.columns %}
-                                {% if column == "Play Type" %}
-                                    <th>{{ row[column]}}</th>
-                                {% elif column == "Total Yards" %}
-                                    <td>{{ row[column] | int }}</td>
-                                {% elif column == "Yards Per Attempt" %}
-                                    <td>{{ row[column] | round(2) }}</td>
-                                {% elif column == "Efficient Stops" %}
-                                    <td class="{% if row[column]  >= 66  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}%</td>
+                            <td><b>{{ index | replace(".0", "") }}</b></td>
+                            {% for column in d_passing_data.columns %}
+                                {% if column == "Yards" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Average Gain" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Completions" %}
+                                    <td><b>{{ row[column] |int }}</b></td>
                                 {% elif column == "Attempts" %}
-                                    <td>{{ row[column] | int }}</td>
+                                    <td><b>{{ row[column] |int }}</b></td>
+                                {% elif column == "Completion Percentage" %}
+                                    <td><b>{{ row[column] |round(2) }}%</b></td>
+                                {% elif column == "NCAA QBR" %}
+                                <td><b>{{ row[column] | int }}</b></td>
+                                {% else %}
+                                    <td>
+                                        {{ row[column] | round(2) }}%
+                                    </td>
                                 {% endif %}
                             {% endfor %}
                         </tr>
@@ -158,8 +166,9 @@
                 </tbody>
             </table>
         </div>
-        <div style="border: 2px solid black; padding: 5px;">
-            <p style="margin: 0px; padding: 5px;"><u>Efficient Stops:</u> Plays where the offense is prevented from performing a efficient play</p>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ d_scramble_chart }}" alt="Scramble Pie Chart" class="piechart">
+            <img src="data:image/png;base64, {{ d_sack_chart }}" alt="Sack Pie Chart Chart" class="piechart">
         </div>
     </body>
 </html>
