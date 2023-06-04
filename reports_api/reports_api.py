@@ -10,15 +10,16 @@ reports_api = Blueprint('reports_api', __name__)
 report_executor = ThreadPoolExecutor()
 thread_lock = Lock()
 
-from reports_api.reports.pregame_report import PregameReport
+from reports_api.reports.pregame_report.pregame_report import PregameReport
 
-def __run_pregame_report__(requested_pages: 'list[str]'):
+def __run_pregame_report__(requested_pages: 'list[str]', requested_team: str, requested_games: 'list[str]', team_code: str):
     with thread_lock:
-        report = PregameReport(requested_pages)
+        report = PregameReport(requested_pages, requested_team, requested_games, team_code)
         pdf = report.combine_reports()
         return pdf
 
 @reports_api.route("/endzone/reports/pregame/metadata")
+@login_required
 def pregame_report():
     available_packs = {}
     available_packs["Packs"] = []
@@ -50,12 +51,18 @@ def create_pregame_d_packs():
     return defense_pack
 
 @reports_api.route("/endzone/reports/pregame/run", methods = ["GET"])
+@login_required
 def pregame_report_run():
+    current_team = current_user.Current_Team
     requestedPages = request.args.get('requestedPages')
+    requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
+    requestedGames = request.args.get('requestedGames')
     if requestedPages:
         requestedPages_list = requestedPages.split(',')
+        requestedTeamOfInterest_str = requestedTeamOfInterest
+        requestedGame_list = requestedGames.split(",")
         
-        executor_job = report_executor.submit(__run_pregame_report__, requestedPages_list)
+        executor_job = report_executor.submit(__run_pregame_report__, requestedPages_list, requestedTeamOfInterest_str, requestedGame_list, current_team)
         response = executor_job.result()
         return send_file(
             io.BytesIO(response),

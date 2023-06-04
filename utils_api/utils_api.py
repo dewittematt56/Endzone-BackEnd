@@ -48,7 +48,11 @@ def formationAdd():
                 image = None
             if len(formation) == 0:
                 return Response("Formation needs to include at least one letter or number", status = 400)
-
+            
+            if len(db.session.query(Formations).filter(Formations.Org_Code == current_user.Org_Code) .\
+                filter(Formations.Formation == formation).all()) > 0:
+                return Response("A formation with that name already exists.", status = 400)
+            
             if wr > 5:
                 return Response("You can have a maximum of 5 Wide Recievers in a formation", status = 400)
             elif wr < 0:

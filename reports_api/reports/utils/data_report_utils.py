@@ -1,27 +1,10 @@
 
-from io import BytesIO
 import pandas as pd
 from typing import Union
-import PyPDF2
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import seaborn as sns
 import warnings
-
 warnings.filterwarnings('ignore')
-
 # Used for encoding binary data
-import base64
-from matplotlib.font_manager import fontManager, FontProperties
-import matplotlib.cm as cm
-from matplotlib.cm import RdYlBu
 import numpy as np
-
-font_path = "dependencies//branding//Audiowide-Regular.ttf"
-fontManager.addfont(font_path)
-prop = FontProperties(fname=font_path)
-plt.rcParams['font.family'] = 'Audiowide'
-sns.set(font=prop.get_name())
 
 def get_pressure_away_strength(form_strength: str, pressure_left: bool, pressure_right: bool, pressure_middle: bool) -> bool:
     if form_strength  != 'Unknown':
@@ -131,19 +114,6 @@ def enrich_data(df: pd.DataFrame, team_of_interest: str) -> pd.DataFrame:
         df.loc[index, "Pressure_Away_Strength"] = get_pressure_away_strength(df.loc[index, "Formation_Strength"], df.loc[index, "Pressure_Left"], df.loc[index, "Pressure_Right"], df.loc[index, "Pressure_Middle"])
     return df
 
-def combine_pdf_pages(pages: list):
-    pdf_writer = PyPDF2.PdfWriter()
-    for pdf in pages:
-        for page in pdf.pages:
-            pdf_writer.add_page(page)
-
-    combined_pdf = BytesIO()
-    pdf_writer.write(combined_pdf)
-
-    # Reset Bytes Position
-    combined_pdf.seek(0)
-    return combined_pdf.getvalue()
-
 def calculate_nfl_efficency_row(down: int, distance: str, result: int) -> bool:
     if down == 1: return result / distance >= .3
     elif down == 2: return result / distance >= .6
@@ -195,19 +165,22 @@ def receiver_package(df: pd.DataFrame) -> pd.DataFrame:
     }).fillna(0).sort_values('Total Yards', ascending=False)
 
 def passing_package(df: pd.DataFrame) -> pd.DataFrame:
-    df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
-    third_down_data = df[df['Down'] == 3]
-    pressure_play_data = df[df['Pressure_Existence'] == True]
-    passing_df = pd.DataFrame({
-        'Total Yards': df["Result"].sum(),
-        'Attempts': len(df),
-        'Completions': df['Complete_Pass'].count(),
-        'Completion Percentage': (df['Complete_Pass'].sum() / df['Complete_Pass'].count()) * 100,
-        'Completion Percentage vs Pressure': (pressure_play_data['Complete_Pass'].sum() / pressure_play_data['Complete_Pass'].count()) * 100,
-        'Third Down Completion Percentage': (third_down_data['Complete_Pass'].sum() / third_down_data['Complete_Pass'].count()) * 100,
-        'Efficiency': (df['Efficiency'].sum() / df['Efficiency'].count()) * 100
-    }, index=[0])
-    return passing_df.fillna(0)
+    try:
+        df['Efficiency'] = df.apply(lambda row: calculate_nfl_efficency_row(row['Down'], row['Distance'], row['Result']), axis=1)
+        third_down_data = df[df['Down'] == 3]
+        pressure_play_data = df[df['Pressure_Existence'] == True]
+        passing_df = pd.DataFrame({
+            'Total Yards': df["Result"].sum(),
+            'Attempts': len(df),
+            'Completions': df['Complete_Pass'].count(),
+            'Completion Percentage': (df['Complete_Pass'].sum() / df['Complete_Pass'].count()) * 100,
+            'Completion Percentage vs Pressure': (pressure_play_data['Complete_Pass'].sum() / pressure_play_data['Complete_Pass'].count()) * 100,
+            'Third Down Completion Percentage': (third_down_data['Complete_Pass'].sum() / third_down_data['Complete_Pass'].count()) * 100,
+            'Efficiency': (df['Efficiency'].sum() / df['Efficiency'].count()) * 100
+        }, index=[0])
+        return passing_df.fillna(0)
+    except Exception:
+        return None
 
 def subset_redzone_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["Yard"] >= 80]
@@ -244,28 +217,31 @@ def get_explosive_rate(df):
     rush_explosive = 0 if not len(rush_plays) > 0 else len(rush_plays.query("Result  >= 10"))
     pass_plays = df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
     pass_explosive = 0 if not len(pass_plays) > 0 else len(pass_plays.query("Result  >= 20"))
-    return [round(sum([rush_explosive, pass_explosive]) / total_plays  * 100), sum([rush_explosive, pass_explosive])]
-
+    if total_plays > 0:
+        return [round(sum([rush_explosive, pass_explosive]) / total_plays  * 100), sum([rush_explosive, pass_explosive])]
+    else:
+        return [0, 0]
+    
 def get_negative_rate(df):
     total_plays = len(df)
     total_negative_plays = len(df.query("Result  < -1"))
-    return [round(total_negative_plays / total_plays  * 100), total_negative_plays]
-
+    if total_plays > 0:
+        return [round(total_negative_plays / total_plays  * 100), total_negative_plays]
+    else:
+        return [0, 0]
+    
 def get_efficiencies(df: pd.DataFrame) -> dict:
     efficiency_dict = {}
-    efficiency_dict['EfficiencyOverall'] = get_efficiency(df)
-    efficiency_dict["EfficiencyFirst"] = get_efficiency(df.query('Down == 1'))
-    efficiency_dict["EfficiencySecond"] = get_efficiency(df.query('Down == 2'))
-    efficiency_dict["EfficiencyThird"] = get_efficiency(df.query('Down == 3'))
-    efficiency_dict['EfficiencyPressure'] = get_efficiency(df.query('Pressure_Left | Pressure_Right | Pressure_Middle'))
-    efficiency_dict['EfficiencyPressureEdge'] = get_efficiency(df.query('Pressure_Left | Pressure_Right'))
-    efficiency_dict['EfficiencyPressureMiddle'] = get_efficiency(df.query('Pressure_Middle'))
-    efficiency_dict["InsideRunsEfficiency"] = get_efficiency(df.query('Run_Type == "Inside"'))
-    efficiency_dict["OutsideRunsEfficiency"] = get_efficiency(df.query('Run_Type == "Outside"'))
-    efficiency_dict["PassEfficiency"] = get_efficiency(df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'))
-    efficiency_dict['NFLEfficiencyOverall'] = get_nfl_efficiency(df)
-    efficiency_dict['NFLEfficiencyFirst'] = get_nfl_efficiency(df.query('Down == 1'))
-    efficiency_dict['NFLEfficiencySecond'] = get_nfl_efficiency(df.query('Down == 2'))
+    efficiency_dict['EfficiencyOverall'] = get_nfl_efficiency(df)
+    efficiency_dict["EfficiencyFirst"] = get_nfl_efficiency(df.query('Down == 1'))
+    efficiency_dict["EfficiencySecond"] = get_nfl_efficiency(df.query('Down == 2'))
+    efficiency_dict["EfficiencyThird"] = get_nfl_efficiency(df.query('Down == 3'))
+    efficiency_dict['EfficiencyPressure'] = get_nfl_efficiency(df.query('Pressure_Left | Pressure_Right | Pressure_Middle'))
+    efficiency_dict['EfficiencyPressureEdge'] = get_nfl_efficiency(df.query('Pressure_Left | Pressure_Right'))
+    efficiency_dict['EfficiencyPressureMiddle'] = get_nfl_efficiency(df.query('Pressure_Middle'))
+    efficiency_dict["InsideRunsEfficiency"] = get_nfl_efficiency(df.query('Run_Type == "Inside"'))
+    efficiency_dict["OutsideRunsEfficiency"] = get_nfl_efficiency(df.query('Run_Type == "Outside"'))
+    efficiency_dict["PassEfficiency"] = get_nfl_efficiency(df.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'))
     efficiency_dict["ThirdDownConversionRate"] = get_nfl_efficiency(df.query('Down == 3'))
     efficiency_dict["FourthDownConversionRate"] = get_nfl_efficiency(df.query('Down == 4'))
     efficiency_dict["explosivePlayRate"] = get_explosive_rate(df)
@@ -313,6 +289,17 @@ def isHomeTeam(game, team_of_interest) -> bool:
         return True
     return False
 
+def points_package(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
+    total_points_allowed = get_total_points(df, team_of_interest, game_data)
+    total_games = len(df["Game_ID"].unique())
+    total_drives = len(df["Drive"].unique())
+    total_plays = len(df)
+    points_dict = {}
+    points_dict["points_per_game"] = [total_points_allowed / total_games, total_games]
+    points_dict["points_per_drive"] = [total_points_allowed / total_drives, total_drives]
+    points_dict["points_per_play"] = [total_points_allowed / total_plays, total_plays]
+    return points_dict
+
 def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
     grouped_df = df.groupby('Game_ID')
     max_rows = grouped_df.apply(lambda x: x.loc[x['Play_Number'].idxmax()])
@@ -325,3 +312,12 @@ def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.Data
         else:
             points += row["Away_Score"]
     return points
+
+def calculate_qbr(df: pd.DataFrame):
+    df['Complete_Pass'] = (~df['Pass_Zone'].isin(['Not Thrown', 'Unknown'])) & (df["Result"] != 0)
+    total_yards = df["Result"].sum()
+    total_touchdowns = len(df[df["Event"] == "Touchdown"])
+    total_completions = df["Complete_Pass"].sum()
+    total_interceptions = len(df[df["Event"] == "Interceptions"])
+    total_attempts = len(df)
+    return round((((8.4 * total_yards) + (330 * total_touchdowns) + (100 * total_completions) - (200 * total_interceptions)) / total_attempts), 2)

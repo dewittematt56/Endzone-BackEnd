@@ -3,11 +3,10 @@ from matplotlib.patches import Polygon, Rectangle
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex
 import matplotlib.image as mpimg
 import matplotlib.patches as patches
-
 from jenkspy import jenks_breaks
 import pandas as pd
 import numpy as np
-from .utils import __save_matPlot__
+from .utils import save_matPlot
 
 def group_by_df(df: pd.DataFrame, column: str, useOther: bool = True) -> pd.DataFrame:
     grouped_df = df.groupby(column).count()
@@ -112,7 +111,7 @@ class PassZone(object):
         self.__prep_dataframe__()
         self.plot_pass_zones()
         self.polish_graph()
-        return __save_matPlot__(plt)
+        return save_matPlot(plt)
 
 class FieldZone(object):
     def __init__(self, df: pd.DataFrame, value_column: str, label_column: str = 'Category', number_of_classes: int = 3, legend_labels: list = ['Low Attempts', 'Medium Attempts', 'High Attempts'], title: str = "Field Map"):
@@ -223,7 +222,7 @@ class FieldZone(object):
         self.polish_graph()
         img = mpimg.imread('dependencies/other/FootballField.png')
         self.ax.imshow(img, extent=[-.56, 5.06, 0, 3], zorder = 1, alpha=0.33)
-        return __save_matPlot__(plt)
+        return save_matPlot(plt)
 
 
 class FieldZone_PieChart(object):
@@ -328,7 +327,7 @@ class FieldZone_PieChart(object):
         self.polish_graph()
         img = mpimg.imread('dependencies/other/FootballField.png')
         self.ax.imshow(img, extent=[-.56, 5.06, 0, 3], zorder = 1, alpha=0.33)
-        return __save_matPlot__(plt)
+        return save_matPlot(plt)
 
 if __name__ == '__main__':
     labels = [

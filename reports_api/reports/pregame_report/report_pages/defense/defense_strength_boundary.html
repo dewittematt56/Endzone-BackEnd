@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+                height: 100%;
+                width: 100%;
+            }
+            .title-div {
+                width: 100%;
+                display: inline-block;
+                text-align: center;
+            }
+            .title-div h2{
+                font-size: 25px;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: underline;
+            }
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                width: 100%;
+                
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 20px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+                font-size: 15px;
+            }
+
+            .bad-td {
+                background-color: #ed3a14;
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .good-td {
+                background-color: #1283e2
+            }
+            p {
+                text-align: left;
+            }
+            .piechart {
+                height: 250px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+            }
+            .chart-div {
+                width: 100%;
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                text-align: center;
+            }
+            .boundary-div {
+                width: 100%;
+                height: auto;
+                border-bottom: 1px solid black;
+                display: inline-block;
+                justify-content: center;
+            }
+            .strength-div {
+                width: 100%;
+                height: auto;
+                border-bottom: 1px solid black;
+                display: inline-block;
+                justify-content: center;
+                margin: 0px;
+                padding: 0px;
+            }
+            .left-div {
+                width: 49.9%;
+                float: left;
+                height: 100%;
+                border-right: 1px solid black;
+            }
+            .right-div {
+                float: right;
+                width: 49.9%;
+                height: 100%;
+            }
+            .boundary-div h2 {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: none;
+            }
+            .strength-div h2 {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: none;
+            }
+            .barchart {
+                border: 0px;
+                margin: 0;
+                padding: 0px;
+                z-index: -1;
+                width: 80%;
+            }
+    </style>
+    </head>
+    <body>
+        <div class = "title-div">
+            <h2>{{ team }} Defensive Boundary and Strength</h2>
+            <div class="boundary-div">
+                <div class="left-div">
+                    <h2>Left Boundary</h2>
+                    <img src="data:image/png;base64, {{ left_pie_into_p_left }}" alt="Into Boundary Pie Chart" class="piechart">
+                    <img src="data:image/png;base64, {{ left_pie_into_p_middle }}" alt="Into Boundary Pie Chart" class="piechart">
+                    <img src="data:image/png;base64, {{ left_pie_into_p_right }}" alt="Into Boundary Pie Chart" class="piechart">
+                </div>
+                <div class="right-div">
+                    <h2>Right Boundary</h2>
+                    <img src="data:image/png;base64, {{ right_pie_into_p_left }}" alt="Into Boundary Pie Chart" class="piechart">
+                    <img src="data:image/png;base64, {{ right_pie_into_p_middle }}" alt="Into Boundary Pie Chart" class="piechart">
+                    <img src="data:image/png;base64, {{ right_pie_into_p_right }}" alt="Into Boundary Pie Chart" class="piechart">
+                </div>
+            </div>
+            <div class="strength-div">
+                <div class="left-div">
+                    <img src="data:image/png;base64, {{ left_bar_plot }}" alt="Into Boundary Pie Chart" class="barchart">
+                    <img src="data:image/png;base64, {{ left_strength_bar_plot }}" alt="Into Boundary Pie Chart" class="barchart">
+                </div>
+                <div class="right-div">
+                    <img src="data:image/png;base64, {{ right_bar_plot }}" alt="Into Boundary Pie Chart" class="barchart">
+                    <img src="data:image/png;base64, {{ right_strength_bar_plot }}" alt="Into Boundary Pie Chart" class="barchart">
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
