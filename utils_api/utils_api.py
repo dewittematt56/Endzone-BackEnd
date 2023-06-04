@@ -220,113 +220,6 @@ def addPlay():
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
 @login_required
-@utils_api.route("/endzone/utils/play/update", methods = ["POST"])
-def updatePlay():
-    try:
-        if request.method == "POST":
-            data = json.loads(request.get_data())
-            # Get Data
-            id = data["id"]
-            gameId = data["gameID"]
-            playNumber = data["playNumber"]
-            possession = data["possession"]
-            yard = data["yard"]
-            hash = data["hash"]
-            down = data["down"]
-            distance = data["distance"]
-            quarter = data["quarter"]
-            dFormation = data["dFormation"]
-            oFormation = data["oFormation"]
-            formationStrength = data["formationStrength"]
-            playType = data["playType"]
-            play = data["play"]
-            playTypeDir = data["playTypeDir"]
-            passZone = data["passZone"]
-            coverage = data["coverage"]
-            pressureLeft = data["pressureLeft"]
-            pressureMiddle = data["pressureMiddle"]
-            pressureRight = data["pressureRight"]
-            ballCarrier = data["ballCarrier"]
-            event = data["event"]
-            result = data["result"]
-            resultX = data["resultX"]
-            resultY = data["resultY"]
-            playX = data["playX"]
-            playY = data["playY"]
-
-            # Validation Fields
-
-            #To-Do make global variables so only have to be defined once.
-            formationStrengths = ["Left", "Right", "Balanced", "Unknown"]
-            playTypes = ["Inside Run", "Outside Run", "Pass", "Boot Pass", "Option", "Unknown"]
-            passZones = ["Screen Left", "Screen Right", "Flat Left", "Flat Right", "Middle Left", "Middle Middle", "Middle Right", "Deep Left", "Deep Right"]
-            coverages = ["Man 0", "Man 1", "Man 2", "Man 3", "Cover 2", "Cover 3", "Cover 4", "Prevent"]
-            events = ["Penalty", "Interception", "Touchdown", "Fumble", "Field Goal", "Safety"]
-            
-            # To - Do Write as Function to match with Play-Add Code
-            if playNumber not in range(0,1000):
-                return Response("Play number must be in the range of 0 to 999", status = 400)
-            
-            if yard not in range(1,101):
-                return Response("The yardage must be in range of 1 to 100", status = 400)
-            
-            if hash != "Left" and hash != "Right" and hash != "Middle":
-                return Response("Hash must be either Left, Right, or Middle", status = 400)
-            
-            if down not in range(1,5):
-                return Response("Down must be in range from 1 to 4", status = 400)
-            
-            if distance not in range(1,101):
-                return Response("Distance must be in range from 1 to 100", status = 400)
-            
-            # if quarter not in range(1,6):
-            #     return Response("Quarter must be in range from 1 to 5", status = 400)
-            
-            if formationStrength not in formationStrengths:
-                return Response("Formation Strength must be either Left, Right, Balanced, or Unknown", status = 400)
-            
-            if playType not in playTypes:
-                return Response("Play type must be in list {}".format(playTypes), status = 400)
-            
-            if playTypeDir != "Left" and playTypeDir != "Right" and playTypeDir != "Unknown":
-                return Response("PlayTypeDir must be either Left, Right, or Unknown", status = 400)
-            
-            if passZone not in passZones:
-                return Response("Pass zone must be in list {}".format(passZones), status = 400)
-            
-            if coverage not in coverages:
-                return Response("Coverage must be in list {}".format(coverages),status = 400)
-            
-            if ballCarrier.isdigit() == False:
-                return Response("Ball carrier must be a number from 0,99", status = 400)
-            
-            if event not in events:
-                return Response("Event must be in list {}".format(events))
-            
-            if result not in range(-99,100):
-                return Response("Result must be a number from -99 to 99", status = 400)
-            if resultX not in range(1,4):
-                return Response("Invalid Geometry", status = 400)
-            if resultY not in range(0,11):
-                return Response("Invalid Geometry", status = 400)
-            if playX not in range(1,4):
-                return Response("Invalid Geometry", status = 400)
-            if playY not in range(0,11):
-                return Response("Invalid Geometry", status = 400)
-        
-            db.session.query(Play).filter(Play.ID == id).update({"Game_ID": data['gameID'],"Play_Number":data["playNumber"],"Possession":data["possession"],
-                                                                   "Yard":data["yard"],"Hash":data["hash"], "Down":data["down"], "Distance" : data["distance"],
-                                                                   "Quarter":data["quarter"], "D_Formation" : data["dFormation"], "O_Formation" : data["oFormation"],
-                                                                   "Formation_Strength" : data["formationStrength"], "Play_Type" : data["playType"], "Play" : data["play"],
-                                                                   "Play_Type_Dir" : data["playTypeDir"], "Pass_Zone" : data["passZone"], "Coverage" : data["coverage"],
-                                                                   "Pressure_Left" : data["pressureLeft"], "Pressure_Middle" : data["pressureMiddle"], "Pressure_Right" : data["pressureRight"],
-                                                                   "Ball_Carrier" : data["ballCarrier"], })
-            db.session.commit()
-    except Exception as e:
-        print(e)
-        return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
-
-@login_required
 @utils_api.route("/endzone/utils/play/delete", methods = ["POST"])
 def deletePlay():
     try:
@@ -344,8 +237,8 @@ def deletePlay():
 @utils_api.route("/endzone/utils/play/get", methods = ["GET"])
 def getPlay():
     if request.method == "GET":
-        if request.args.get("gameId"):
-            game_id = request.args.get("gameId")
+        if request.args.get("gameId"): # Heres the changes I made for the data viewer bug
+            game_id = request.args.get("gameId") # and here
             query = db.session.query(Play, Game).filter(Play.Game_ID == game_id).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
         else:
             query = db.session.query(Play, Game).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
@@ -374,3 +267,26 @@ def addPenalty():
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+    
+@utils_api.route("/endzone/utils/play/update", methods = ['POST'])
+def updateViewer():
+    try:
+        if request.method == "POST":
+            data = json.loads(request.get_data())
+            id = data["id"]
+            column = data["column"]
+            value = data["value"]
+            if "Pressure" in column:
+                value = str(value).lower().strip() == "true"
+            play = db.session.query(Play).filter(Play.ID == id).first()
+            if play:
+                setattr(play, column, value)
+                db.session.commit()
+                return Response("Successfully updated {}".format(id), status = 200)
+            else:
+                return Response("Error Code 500: That play does not exist", status = 500)
+    except Exception as e:
+        print(e)
+        return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+        
+        
