@@ -322,6 +322,8 @@ def updateViewer():
             id = data["id"]
             column = data["column"]
             value = data["value"]
+            if "Pressure" in column:
+                value = str(value).lower().strip() == "true"
             play = db.session.query(Play).filter(Play.ID == id).first()
             if play:
                 setattr(play, column, value)
