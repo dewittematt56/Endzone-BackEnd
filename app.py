@@ -16,6 +16,8 @@ from io import BytesIO
 from reports_api.reports.pregame_report import PregameReport
 from org_api.om_profile_api import om_profile_api
 from org_api.om_members_api import om_members_api
+from team_api.tm_profile_api import tm_profile_api
+from team_api.tm_members_api import tm_members_api
 import json
 import re
 from io import BytesIO
@@ -34,6 +36,8 @@ application.register_blueprint(reports_api)
 application.register_blueprint(profile_api)
 application.register_blueprint(om_profile_api)
 application.register_blueprint(om_members_api)
+application.register_blueprint(tm_profile_api)
+application.register_blueprint(tm_members_api)
 
 # Executors
 

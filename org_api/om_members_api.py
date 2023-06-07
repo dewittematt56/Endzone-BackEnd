@@ -36,25 +36,34 @@ def getMembers():
 def updateRole():
     if request.method != 'PUT':
         return make_response("Error: Incorrect request method", 405)
-    data = json.loads(request.get_data())
+    
     try:
+        data = json.loads(request.get_data())
+        userOrgMember = db.session.query(Org_Member).filter((Org_Member.User_ID == data['id']) and (Org_Member.Role == "Admin" or Org_Member.Role == "Owner")).first()
+        if userOrgMember == None:
+            return make_response("You are not an admin of your current team", 400)
+        
         if data['role'] == "null":
             return make_response("Error: Please select a valid 'Role' option", 299)
+        
+        target = db.session.query(Org_Member).filter(Org_Member.User_ID == data['id']).first()
+        oldRole = target.Role
         
         db.session.query(Org_Member).filter(Org_Member.User_ID == data['id']).update({"Role": data['role']})
         db.session.commit()
 
-        members = db.session.query(Org_Member).filter(Org_Member.Org_Code == current_user.Org_Code).all()
-        status = False
-        for role in members:
-            if role.Role == "Owner":
-                status = True
-                break
+        if oldRole == "Owner":
+            members = db.session.query(Org_Member).filter(Org_Member.Org_Code == userOrgMember.Org_Code).all()
+            status = False
+            for role in members:
+                if role.Role == "Owner":
+                    status = True
+                    break
 
-        if status == False:
-            db.session.query(Org_Member).filter(Org_Member.User_ID == data['id']).update({"Role": "Owner"})
-            db.session.commit()
-            return make_response("Error: The org needs at least 1 owner", 299)
+            if status == False:
+                db.session.query(Org_Member).filter(Org_Member.User_ID == data['id']).update({"Role": "Owner"})
+                db.session.commit()
+                return make_response("Error: The org needs at least 1 owner", 299)
 
         return make_response("Success: user's org role has been updated.", 200)
     except Exception as e:
