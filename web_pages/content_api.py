@@ -114,3 +114,8 @@ def DataViewer():
 @login_required
 def PreGameReportPage():
     return render_template("/pregame/report/pregame_report.html")
+
+@content_api.route("/endzone/pregame/hub", methods = ["GET"])
+@login_required
+def PreGameHub():
+    return render_template("/pregame/hub/pregame_hub.html")
