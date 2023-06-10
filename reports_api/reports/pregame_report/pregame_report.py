@@ -27,6 +27,8 @@ class PregameReport():
         self.pages = []
         self.pdf_write = PyPDF2.PdfWriter()
 
+        self.reportType = "Defense"
+
         # Temp Overriding
         self.team_of_interest = "Burnsville"
         self.team_code = "Endzone-System"
