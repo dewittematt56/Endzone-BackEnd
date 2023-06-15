@@ -242,11 +242,15 @@ def deletePlay():
 def getPlay():
     if request.method == "GET":
         if request.args.get("gameId"): # Heres the changes I made for the data viewer bug
-            game_id = request.args.get("gameId") # and here
-            query = db.session.query(Play, Game).filter(Play.Game_ID == game_id).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
+            game_ids = request.args.get("gameId") # and here
+            if "," in game_ids:
+                game_ids = game_ids.split(",")
+                query = db.session.query(Play, Game).filter(Play.Game_ID.in_(game_ids)).join(Game, Game.Game_ID == Play.Game_ID).filter(Game.Team_Code == current_user.Current_Team).order_by(desc(Play.Play_Number))
+            else:
+                game_id = game_ids
+                query = db.session.query(Play, Game).filter(Play.Game_ID == game_id).join(Game, Game.Game_ID == Play.Game_ID).filter(Game.Team_Code == current_user.Current_Team).order_by(desc(Play.Play_Number))
         else:
-            query = db.session.query(Play, Game).join(Game, Game.Game_ID == Play.Game_ID).order_by(desc(Play.Play_Number))
-    print(query.all())
+            query = db.session.query(Play, Game).join(Game, Game.Game_ID == Play.Game_ID).filter(Game.Team_Code == current_user.Current_Team).order_by(desc(Play.Play_Number))
     return jsonify(load_play_json(query.all()))
 
 @login_required
