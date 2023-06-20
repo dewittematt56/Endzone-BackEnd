@@ -124,3 +124,8 @@ def PregameHub():
 @login_required
 def PregameDashboard():
     return render_template("/pregame/dashboard/pregame_dashboard.html")
+
+@content_api.route("/endzone/pregame/models", methods = ["GET"])
+@login_required
+def PregameModelBuilder():
+    return render_template("/pregame/models/model_builder.html")

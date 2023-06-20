@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from database.models import *
 import json
 from utils_api.utils import *
-from utils_api.server_utils import *
+from server_utils import check_required_params, validate_play_input
 
 utils_api = Blueprint("utils_api", __name__, template_folder="pages", static_folder="pages")
 
@@ -91,7 +91,6 @@ def formationImage(imageId):
 def getFormation():
     query = db.session.query(Formations).filter(Formations.Org_Code == current_user.Org_Code) .\
         filter(Formations.Team_Code == current_user.Current_Team).order_by(asc(Formations.Formation))
-    
     return jsonify(load_formation_json(query.all()))
 
 @login_required

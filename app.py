@@ -9,14 +9,14 @@ from login_api.login_persona import LoggedInPersona
 
 # Endzone API's
 from reports_api.reports_api import reports_api
-from utils_api import server_utils
+import server_utils
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
 from profile_api.profile_api import profile_api
 from org_api.om_profile_api import om_profile_api
 from org_api.om_members_api import om_members_api
-
+from api_tars.tars_api import tars_api
 
 application = Flask(__name__, template_folder="web_pages/pages")
 
@@ -32,6 +32,7 @@ application.register_blueprint(reports_api)
 application.register_blueprint(profile_api)
 application.register_blueprint(om_profile_api)
 application.register_blueprint(om_members_api)
+application.register_blueprint(tars_api)
 
 # Executors
 
