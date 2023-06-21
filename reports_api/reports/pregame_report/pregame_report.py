@@ -30,9 +30,9 @@ class PregameReport():
         self.reportType = "Defense"
 
         # Temp Overriding
-        self.team_of_interest = "Burnsville"
-        self.team_code = "Endzone-System"
-        self.game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e"]
+        # self.team_of_interest = "Burnsville"
+        # self.team_code = "Endzone-System"
+        # self.game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e"]
         # Get game-based & play-based data from database.
         self.get_data()
         self.split_data()

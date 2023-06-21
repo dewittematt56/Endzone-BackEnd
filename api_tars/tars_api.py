@@ -68,3 +68,15 @@ def modelGet():
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
     else:
         return Response("No Models Found", status = 400)
+
+@tars_api.route("/endzone/models/delete", methods = ["POST"])
+def modelsDelete():
+    try:
+        payload_data = json.loads(request.data)
+        model_id = payload_data["modelID"] 
+        db.session.query(Models).filter(Models.Model_ID == model_id).delete()
+        db.session.commit()
+        return Response("Successfully deleted")
+    except Exception as e:
+        print(e)
+        return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
