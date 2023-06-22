@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/pages/pregame/report/static/css/main.6f35735f.css",
-    "main.js": "/pages/pregame/report/static/js/main.9d9db563.js",
+    "main.css": "/pages/pregame/report/static/css/main.81815896.css",
+    "main.js": "/pages/pregame/report/static/js/main.6d4bc97e.js",
     "static/media/Endzone_Shield.png": "/pages/pregame/report/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
     "static/media/EndzoneMainLogo.png": "/pages/pregame/report/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/pregame/report/index.html",
-    "main.6f35735f.css.map": "/pages/pregame/report/static/css/main.6f35735f.css.map",
-    "main.9d9db563.js.map": "/pages/pregame/report/static/js/main.9d9db563.js.map"
+    "main.81815896.css.map": "/pages/pregame/report/static/css/main.81815896.css.map",
+    "main.6d4bc97e.js.map": "/pages/pregame/report/static/js/main.6d4bc97e.js.map"
   },
   "entrypoints": [
-    "static/css/main.6f35735f.css",
-    "static/js/main.9d9db563.js"
+    "static/css/main.81815896.css",
+    "static/js/main.6d4bc97e.js"
   ]
 }

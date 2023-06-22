@@ -70,7 +70,7 @@ def pregame_report_run():
             io.BytesIO(response),
             mimetype='application/pdf',
             as_attachment=True,
-            attachment_filename='output.pdf'
+            download_name='output.pdf'
         )
 
 # To-Do create route for /endzone/reports/thunderbolt/run
