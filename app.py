@@ -169,9 +169,10 @@ def register():
                 elif len(team_query) == 1:
                     org_query = db.session.query(Org).filter(Org.Org_Code == team_query[0].Org_Code).all()
                     if len(org_query) == 1:
+                        new_user = User(first, last, email, phone, password1, team_query[0].Team_Code, "Complete")
                         db.session.add(Team_Member(team_query[0].Team_Code, new_user.get_id(), "Coach"))
                         db.session.add(Org_Member(org_query[0].Org_Code, new_user.get_id(), "Coach"))
-                        db.session.add(User(first, last, email, phone, password1, "null", "Complete"))
+                        db.session.add(new_user)
                         db.session.commit()
                         login_user(load_user(new_user.Email))
                         return redirect("/endzone/hub")
