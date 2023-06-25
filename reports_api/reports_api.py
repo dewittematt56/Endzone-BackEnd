@@ -5,6 +5,7 @@ import io
 from flask import Blueprint, send_file
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
+from reports_api.reports.thunderbolt_report.thunderbolt_report import ThunderboltReport
 
 reports_api = Blueprint('reports_api', __name__)
 report_executor = ThreadPoolExecutor()
@@ -19,6 +20,11 @@ def __run_pregame_report__(requested_pages: 'list[str]', requested_team: str, re
         return pdf
 
 # To-Do create function to actually run the report w/ thread lock called __run_thunderbolt_report__ (similar to above)
+def __run_thunderbolt_report__(team_of_interest: str, game_IDs: str, user_team_code: str, report_type: str):
+    with thread_lock:
+        report = ThunderboltReport(team_of_interest, game_IDs, user_team_code, report_type)
+        pdf = report.combine_reports()
+        return pdf
 
 @reports_api.route("/endzone/reports/pregame/metadata")
 @login_required
@@ -71,6 +77,25 @@ def pregame_report_run():
             mimetype='application/pdf',
             as_attachment=True,
             attachment_filename='output.pdf'
+        )
+
+
+@reports_api.route("/endzone/reports/thunderbolt/run", methods = ["GET"]) # confirm with mater
+@login_required
+def thunderbolt_report_run():
+    current_team = current_user.Current_Team
+    requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
+    requestedGameIDs = request.args.get('requestedGameIDs')
+    requestedGame_list = requestedGameIDs.split(",") # make the games a list
+    requested_report_type = request.args.get("requestedReportType")
+
+    executor_job = report_executor.submit(__run_thunderbolt_report__, current_team, requestedTeamOfInterest, requestedGame_list, requested_report_type)
+    response = executor_job.result()
+    return send_file( 
+            io.BytesIO(response),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name="pog.pdf"
         )
 
 # To-Do create route for /endzone/reports/thunderbolt/run
