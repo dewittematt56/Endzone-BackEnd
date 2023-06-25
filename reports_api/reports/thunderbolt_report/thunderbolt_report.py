@@ -113,7 +113,6 @@ class ThunderboltReport():
         if self.report_type == "Defense": self.play_data = self.play_data[(self.play_data["Possession"] != self.team_of_interest)]
         else: self.play_data = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
         self.play_data = prep_data(self.play_data)
-        print(self.play_data)
         
     
     def base_thunderbolt_page(self) -> None:
