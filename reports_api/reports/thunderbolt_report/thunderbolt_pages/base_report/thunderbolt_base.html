@@ -11,26 +11,28 @@
     }
     .title-div {
       width: 100%;
-      display: inline-block;
+      display: inline-flex;
       text-align: center;
     }
+
+    .title-div svg {
+      width: 64px;
+    }
+
     .title-div h2 {
+      width: auto;
       font-size: 25px;
       text-align: center;
       padding: 0;
       margin: 0;
       text-decoration: underline;
     }
-    .grid-container {
-      background-color: green;
-    }
     .bordered-table td {
       border: 1px solid black;
       padding: 8px;
-      background-color: green;
     }
     .grid-container {
-      height: auto;
+      height: 325px;
       width: 100%;
       padding: 1;
       display: flex;
@@ -46,7 +48,6 @@
     }
     .position {
       display: flex;
-      width: 30%;
       border: 2px solid black;
       padding: 5px;
       margin-left: auto;
@@ -62,7 +63,7 @@
       border: 2px solid black;
       padding: 5px;
       width: 33%;
-      font-size: 17px;
+      font-size: 13px;
       margin: auto;
     }
     .header-container {
@@ -75,10 +76,18 @@
       width: 100%;
       table-layout: fixed;
     }
-    .table1 {
-      display: flex;
-      justify-content: center;
-
+    .table th {
+      font-size: 13px;
+      margin: auto;
+    }
+    .good-td {
+        background-color: #1283e2
+    }
+    .netural-td {
+        background-color: transparent;
+    }
+    .bad-td {
+        background-color: #ed3a14;
     }
     .thunderbolt_hash_div {
       height: 100%;
@@ -89,22 +98,32 @@
       outline: 2px solid black;
       background-color: white;
     }
-    
+    .copyright-text {
+                margin-top: 5px;
+                position: relative;
+                bottom: 0;
+            }
   </style>
 </head>
 <body>
   <div class="whole-page">
     <div class="title-div">
-      <h2>Thunderbolt</h2>
+      <h2>Thunderbolt - {{team}}</h2>
     </div>
     
       
       
-      <div class="table1">
+      <div class="table1" style="margin-top: 10px">
         {% for field_position in thunderbolt_tables %}
-          <div class="grid-container">
-            <div class="position" style="text-align:center; justify-content: center; font-size: 13px; width: 30%">
-              Scoring Position
+          <div class="grid-container" style="margin-bottom: 80px">
+            <div class="position" style="text-align:center; justify-content: center; font-size: 13px; width: 50%">
+              {% if loop.index  == 1 %}
+                Scoring Position (Opponent 33 -> Opponent Endzone)
+              {% elif loop.index  == 2 %}
+                Midfield (Own 33 -> Opponent 33)
+              {% elif loop.index  == 3 %}
+                Backed Up (Own Endzone -> Own 33)
+              {% endif %}
             </div>
             <div class="header-container" style="text-align:center; justify-content: center">
               <table>
@@ -112,33 +131,37 @@
               </table>
             </div>
             {% for hash in field_position %}
-              
               <div class = "thunderbolt_hash_div">
                 <table>
-                  {% for down in hash %}
-                    <thead>
-                      <tr>
-                        {% for column in down.columns %}
+                  <thead>
+                    <tr>
+                      {% for column in hash[0].columns %}
+                        {% if column == "Thunderbolt_Down" %}
+                          <th>Down</th>
+                        {% else %}
                           <th>{{ column | replace("_", " ") }}</th>
-                        {% endfor %}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for index, row in down.iterrows() %}
-                      {% if index }
-                        <tr>
-                          {% for column in down.columns %}
-                            {% if column == "Thunderbolt_Play" %}
-                            <td><b>{{ row[column] | replace(".0", "") }}</b></td>
-                            {% else %}
-                              <td>
-                                {{ row[column] }}
-                              </td>
-                            {% endif %}
-                          {% endfor %}
-                        </tr>
+                        {% endif %}
                       {% endfor %}
-                    </tbody>
+                    </tr>
+                  </thead>
+                  {% for down in hash %}
+                    <table style="margin-top: 5px;">
+                      <tbody>
+                        {% for index, row in down.iterrows() %}
+                          <tr>
+                            {% for column in down.columns %}
+                              {% if column == "Thunderbolt_Down" %}
+                              <td><b>{{ row[column] | replace(".0", "") }}</b></td>
+                              {% else %}
+                                <td class="{% if row[column]  >= 60  %}good-td{% else %}netural-td{% endif %}">
+                                  {{ row[column] | int }}%
+                                </td>
+                              {% endif %}
+                            {% endfor %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
                   {% endfor %}
                 </table>
               </div>
@@ -146,6 +169,7 @@
           </div>
         {% endfor %}
       </div>
+      <div id="copyright" align="center" className='copyright-text'>&copy; 2023 - {{ current_year }} endzone-analytics.com</div>
   </div>
 </body>
 </html>

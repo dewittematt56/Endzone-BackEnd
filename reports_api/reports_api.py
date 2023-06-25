@@ -83,19 +83,23 @@ def pregame_report_run():
 @reports_api.route("/endzone/reports/thunderbolt/run", methods = ["GET"]) # confirm with mater
 @login_required
 def thunderbolt_report_run():
-    current_team = current_user.Current_Team
-    requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
-    requestedGameIDs = request.args.get('requestedGameIDs')
-    requestedGame_list = requestedGameIDs.split(",") # make the games a list
-    requested_report_type = request.args.get("requestedReportType")
+    try:
+        current_team = current_user.Current_Team
+        requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
+        requestedGameIDs = request.args.get('requestedGames')
+        requestedGame_list = requestedGameIDs.split(",")
+        requested_report_type = request.args.get("requestedReportType")
 
-    executor_job = report_executor.submit(__run_thunderbolt_report__, current_team, requestedTeamOfInterest, requestedGame_list, requested_report_type)
-    response = executor_job.result()
-    return send_file( 
-            io.BytesIO(response),
-            mimetype='application/pdf',
-            as_attachment=True,
-            download_name="pog.pdf"
-        )
+        executor_job = report_executor.submit(__run_thunderbolt_report__, requestedTeamOfInterest, requestedGame_list, current_team, requested_report_type)
+        response = executor_job.result()
+        return send_file( 
+                io.BytesIO(response),
+                mimetype='application/pdf',
+                as_attachment=True,
+                download_name="pog.pdf"
+            )
+    except Exception as e:
+        print(e)
+        return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
 # To-Do create route for /endzone/reports/thunderbolt/run

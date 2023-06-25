@@ -119,3 +119,8 @@ def PreGameReportPage():
 @login_required
 def PreGameHub():
     return render_template("/pregame/hub/pregame_hub.html")
+
+@content_api.route("/endzone/pregame/thunderbolt", methods = ["GET"])
+@login_required
+def PreGameThunderbolt():
+    return render_template("/pregame/thunderbolt/thunderbolt.html")
