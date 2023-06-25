@@ -13,6 +13,7 @@ from ..utils.graphing_utils import *
 from ..utils.utils import *
 from .d_report_utils import *
 import sys
+import datetime
 
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports'))
 env.globals.update(static='./reports_api/reports/static')
@@ -85,7 +86,7 @@ class PregameReport():
 
     def title_page(self) -> None:
         title_template = env.get_template('pregame_report/report_pages/title/title_page.html')
-        html = title_template.render(title="Pregame Report", team=self.team_of_interest, games = self.game_data.to_dict(orient='records'))
+        html = title_template.render(title="Pregame Report", team=self.team_of_interest, games = self.game_data.to_dict(orient='records'), current_year = datetime.datetime.now().year)
         # Render this sucker!
         self.template_to_pdf(html, True)
     
