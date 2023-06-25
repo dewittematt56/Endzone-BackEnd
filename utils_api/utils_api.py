@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, jsonify
+from flask import Blueprint, Response, request, jsonify, current_app
 from flask_login import login_required, current_user
 from database.models import *
 import json
@@ -18,7 +18,6 @@ def hasLetter(parameter):
         return True
     else:
         return False
-
 
 @login_required
 @utils_api.route("/getuser", methods = ["GET"])
@@ -239,6 +238,9 @@ def deletePlay():
 @login_required
 @utils_api.route("/endzone/utils/play/get", methods = ["GET"])
 def getPlay():
+    temp = current_app.config["message_queue"]
+    current_app.config["message_queue"] = 'luffy'
+    
     if request.method == "GET":
         if request.args.get("gameId"): # Heres the changes I made for the data viewer bug
             game_ids = request.args.get("gameId") # and here

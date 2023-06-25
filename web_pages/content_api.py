@@ -129,3 +129,7 @@ def PregameDashboard():
 @login_required
 def PregameModelBuilder():
     return render_template("/pregame/models/model_builder.html")
+
+@content_api.route("/endzone/ingame/autopilot", methods = ["GET"])
+def AutoPilot():
+    return render_template("/ingame/autopilot/autopilot.html")

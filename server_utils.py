@@ -1,5 +1,22 @@
 from flask import Response
 from typing import Optional, Union
+from database.models import Game
+
+def load_game_json(games: "list[Game]"):
+    i = 0
+    json = []
+    for game in games: 
+        json.append({
+            "id" : i,
+            "Home_Team" : game.Home_Team,
+            "Away_Team" : game.Away_Team,
+            "Game_Date" : game.Game_Date,
+            "Game_Type" : game.Game_Type,
+            "Creation_Date" : game.Creation_Date,
+            "Game_ID" : game.Game_ID
+        }) 
+        i = i + 1
+    return json
 
 def check_required_params(required_params: 'list[str]', recieved_params: 'list[str]') -> Optional[Union[Response, None]]:
     for param in required_params:
@@ -60,3 +77,4 @@ def validate_play_input(json_data: dict) -> Optional[Union[Response, None]]:
             if int(json_data[key]) < 0:
                 return Response("Scores must be positive integers", status = 400)
     return None
+

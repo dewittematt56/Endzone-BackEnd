@@ -16,14 +16,16 @@ from data_api.data_api import data_api
 from profile_api.profile_api import profile_api
 from org_api.om_profile_api import om_profile_api
 from org_api.om_members_api import om_members_api
-from api_tars.tars_api import tars_api
+
+from api_tools.tars_api import tars_api
+from api_tools.autopilot_api import autopilot_api, socketio
 
 application = Flask(__name__, template_folder="web_pages/pages")
 
 application.config['SECRET_KEY'] = 'secret key'
 application.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+application.config["message_queue"] = {}
 
 application.register_blueprint(content_api)
 application.register_blueprint(utils_api)
@@ -33,14 +35,17 @@ application.register_blueprint(profile_api)
 application.register_blueprint(om_profile_api)
 application.register_blueprint(om_members_api)
 application.register_blueprint(tars_api)
+application.register_blueprint(autopilot_api)
 
 # Executors
-
 db.init_app(application)
+
 
 # builds database if not existing
 with application.app_context():
     db.create_all()
+
+socketio.init_app(application)
 
 # set up login system
 login_manager = LoginManager()
