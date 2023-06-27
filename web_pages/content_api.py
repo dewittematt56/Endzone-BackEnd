@@ -129,7 +129,7 @@ def TMProfile():
 @login_required
 def TMMembers():
     return render_template("/team/tm_members/tm_members.html")
-=======
+
 @content_api.route("/endzone/pregame/hub", methods = ["GET"])
 @login_required
 def PregameHub():

@@ -16,6 +16,8 @@ from data_api.data_api import data_api
 from profile_api.profile_api import profile_api
 from org_api.om_profile_api import om_profile_api
 from org_api.om_members_api import om_members_api
+from team_api.tm_members_api import tm_members_api
+from team_api.tm_profile_api import tm_profile_api
 
 from api_tools.tars_api import tars_api
 from api_tools.autopilot_api import autopilot_api, socketio
@@ -34,6 +36,8 @@ application.register_blueprint(reports_api)
 application.register_blueprint(profile_api)
 application.register_blueprint(om_profile_api)
 application.register_blueprint(om_members_api)
+application.register_blueprint(tm_members_api)
+application.register_blueprint(tm_profile_api)
 application.register_blueprint(tars_api)
 application.register_blueprint(autopilot_api)
 

@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/pages/team/tm_home/static/css/main.0ad7e976.css",
-    "main.js": "/pages/team/tm_home/static/js/main.05de5c9a.js",
+    "main.css": "/pages/team/tm_home/static/css/main.75fa6a6c.css",
+    "main.js": "/pages/team/tm_home/static/js/main.1f8a6390.js",
     "static/media/profile.jpg": "/pages/team/tm_home/static/media/profile.1f47d855185f67709e4e.jpg",
     "static/media/members.jpg": "/pages/team/tm_home/static/media/members.65931912c6dfc0de530d.jpg",
     "static/media/EndzoneMainLogo.png": "/pages/team/tm_home/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/team/tm_home/index.html",
-    "main.0ad7e976.css.map": "/pages/team/tm_home/static/css/main.0ad7e976.css.map",
-    "main.05de5c9a.js.map": "/pages/team/tm_home/static/js/main.05de5c9a.js.map"
+    "main.75fa6a6c.css.map": "/pages/team/tm_home/static/css/main.75fa6a6c.css.map",
+    "main.1f8a6390.js.map": "/pages/team/tm_home/static/js/main.1f8a6390.js.map"
   },
   "entrypoints": [
-    "static/css/main.0ad7e976.css",
-    "static/js/main.05de5c9a.js"
+    "static/css/main.75fa6a6c.css",
+    "static/js/main.1f8a6390.js"
   ]
 }
