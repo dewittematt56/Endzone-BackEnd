@@ -1,15 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/org/om_members/static/css/main.bb36ee5e.css",
-    "main.js": "/pages/org/om_members/static/js/main.5b647c35.js",
-    "static/media/org.jpg": "/pages/org/om_members/static/media/org.f5fc90b4da8b97620feb.jpg",
-    "static/media/EndzoneMainLogo.png": "/pages/org/om_members/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "main.css": "/pages/org/om_members/static/css/main.8c804644.css",
+    "main.js": "/pages/org/om_members/static/js/main.6dfe5e3e.js",
+    "static/media/EndzoneMainLogo.png": "/pages/org/om_members/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/org/om_members/index.html",
-    "main.bb36ee5e.css.map": "/pages/org/om_members/static/css/main.bb36ee5e.css.map",
-    "main.5b647c35.js.map": "/pages/org/om_members/static/js/main.5b647c35.js.map"
+    "main.8c804644.css.map": "/pages/org/om_members/static/css/main.8c804644.css.map",
+    "main.6dfe5e3e.js.map": "/pages/org/om_members/static/js/main.6dfe5e3e.js.map"
   },
   "entrypoints": [
-    "static/css/main.bb36ee5e.css",
-    "static/js/main.5b647c35.js"
+    "static/css/main.8c804644.css",
+    "static/js/main.6dfe5e3e.js"
   ]
 }
