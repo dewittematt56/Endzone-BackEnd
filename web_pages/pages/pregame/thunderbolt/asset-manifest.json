@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/pages/pregame/thunderbolt/static/css/main.a439ecac.css",
-    "main.js": "/pages/pregame/thunderbolt/static/js/main.882ad2ce.js",
+    "main.css": "/pages/pregame/thunderbolt/static/css/main.b5c437ef.css",
+    "main.js": "/pages/pregame/thunderbolt/static/js/main.19352698.js",
     "static/media/Endzone_Shield.png": "/pages/pregame/thunderbolt/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
     "static/media/EndzoneMainLogo.png": "/pages/pregame/thunderbolt/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/pregame/thunderbolt/index.html",
-    "main.a439ecac.css.map": "/pages/pregame/thunderbolt/static/css/main.a439ecac.css.map",
-    "main.882ad2ce.js.map": "/pages/pregame/thunderbolt/static/js/main.882ad2ce.js.map"
+    "main.b5c437ef.css.map": "/pages/pregame/thunderbolt/static/css/main.b5c437ef.css.map",
+    "main.19352698.js.map": "/pages/pregame/thunderbolt/static/js/main.19352698.js.map"
   },
   "entrypoints": [
-    "static/css/main.a439ecac.css",
-    "static/js/main.882ad2ce.js"
+    "static/css/main.b5c437ef.css",
+    "static/js/main.19352698.js"
   ]
 }
