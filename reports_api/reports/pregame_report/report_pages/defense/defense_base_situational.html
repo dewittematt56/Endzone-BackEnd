@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+            }
+            .title-div {
+                width: 100%;
+                display: inline-block;
+                text-align: center;
+            }
+            .title-div h2{
+                font-size: 25px;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: underline;
+            }
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                width: 100%;
+                
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 20px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+                font-size: 15px;
+            }
+
+            .bad-td {
+                background-color: #ed3a14;
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .good-td {
+                background-color: #1283e2
+            }
+            p {
+                text-align: left;
+            }
+            .piechart {
+                height: 300px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+            }
+            .ridgechart {
+                border: 0px;
+                z-index: -1;
+                background-color: red;
+                width: auto;
+                width: 600px;
+                margin-top: 10px;
+                margin-right: 50px;
+            }
+            .chart-div {
+                width: 100%;
+                display: inline-flex;
+                justify-content: space-evenly;
+                border-bottom: 1px solid black;
+                text-align: center;
+            }
+            .barchart {
+                margin: 5px;
+                border: 0px;
+                z-index: -1;
+                width: 66%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "title-div">
+            <h2>{{ team }} - Defense Situational: {{ title }}</h2>
+        </div>
+        <p style="text-align: center;">Plays Included: {{ count }}</p>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in coverage_by_down_group.columns %}
+                            <th> {{ column |  replace("_", " ") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in coverage_by_down_group.iterrows() %}
+                        <tr>
+                            {% for column in coverage_by_down_group.columns %}
+                                {% if column == "Down_Group" %}
+                                <td><b>{{ row[column] }}</b></td>
+                                {% else %}
+                                <td class="{% if row[column]  >= 50  %}good-td{% else %}netural-td{% endif %}">
+                                        {{ row[column] | round(2) }}%
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ pressure_pie_chart }}" alt="Pie Chart of Pressure" class="piechart">
+            <img src="data:image/png;base64, {{ coverage_pie_chart }}" alt="Pie Chart of Coverage" class="piechart">
+        </div>
+        <div class="chart-div">
+            <img src="data:image/png;base64, {{ pressure_down_group_bar }}" alt="Stacked Bar Chart of Pressure" class="barchart">
+        </div>
+        <div class="table-div">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in d_yards_data.columns %}
+                            <th> {{ column | replace("_", "") }} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in d_yards_data.iterrows() %}
+                        <tr>
+                            {% for column in d_yards_data.columns %}
+                                {% if column == "Play Type" %}
+                                    <th>{{ row[column]}}</th>
+                                {% elif column == "Total Yards" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% elif column == "Yards Per Attempt" %}
+                                    <td>{{ row[column] | round(2) }}</td>
+                                {% elif column == "Efficient Stops" %}
+                                    <td class="{% if row[column]  >= 66  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}%</td>
+                                {% elif column == "Attempts" %}
+                                    <td>{{ row[column] | int }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="border: 2px solid black; padding: 5px;">
+            <p style="margin: 0px; padding: 5px;"><u>Efficient Stops:</u> Plays where the offense is prevented from performing a efficient play</p>
+        </div>
+    </body>
+</html>

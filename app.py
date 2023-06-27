@@ -1,26 +1,23 @@
 from flask import Flask, request, Response, redirect, make_response, render_template, send_file
 from flask_login import login_manager, LoginManager, login_user, current_user, logout_user, login_required
+import json
+import re
+
 from database.db import db, db_uri
 from database.models import *
 from login_api.login_persona import LoggedInPersona
+
+# Endzone API's
 from reports_api.reports_api import reports_api
 from utils_api import server_utils
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
-# from reports_api.reports_api import report_api, report_executor
 from profile_api.profile_api import profile_api
-from flask_executor import Executor
-from threading import Lock
-from io import BytesIO
-from reports_api.reports.pregame_report import PregameReport
 from org_api.om_profile_api import om_profile_api
 from org_api.om_members_api import om_members_api
 from team_api.tm_profile_api import tm_profile_api
 from team_api.tm_members_api import tm_members_api
-import json
-import re
-from io import BytesIO
 
 application = Flask(__name__, template_folder="web_pages/pages")
 

@@ -112,7 +112,7 @@ def DataViewer():
 
 @content_api.route("/endzone/pregame/report", methods = ["GET"])
 @login_required
-def PreGameReportPage():
+def PregameReportPage():
     return render_template("/pregame/report/pregame_report.html")
 
 @content_api.route("/endzone/team/home", methods = ["GET"])
@@ -129,3 +129,13 @@ def TMProfile():
 @login_required
 def TMMembers():
     return render_template("/team/tm_members/tm_members.html")
+=======
+@content_api.route("/endzone/pregame/hub", methods = ["GET"])
+@login_required
+def PregameHub():
+    return render_template("/pregame/hub/pregame_hub.html")
+
+@content_api.route("/endzone/pregame/dashboard", methods = ["GET"])
+@login_required
+def PregameDashboard():
+    return render_template("/pregame/dashboard/pregame_dashboard.html")

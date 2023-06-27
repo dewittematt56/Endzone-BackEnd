@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+            }
+            .title-div {
+                width: 100%;
+                display: inline-block;
+                text-align: center;
+            }
+            .title-div h2{
+                font-size: 25px;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                text-decoration: underline;
+            }
+
+            .boundary-div {
+                width: 100%;
+                height: auto;
+            }
+            .left-div, .right-div {
+                width: 50%;
+                height: auto;
+                text-align: center;
+                padding: 5px;
+            }
+
+            .left-div {
+                position: absolute;
+                border-right: 2px solid black;
+                left: 0;
+                z-index: 1;
+            }
+
+            .right-div {
+                position: absolute;
+                right: 0;
+            }
+            .chart-div {
+                display: inline-flex;
+                width: 100%;
+                justify-content: space-evenly;
+                text-align: center;
+            }
+
+            .piechart {
+                height: 300px;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+            }
+
+            .passZoneChart {
+                height: 400px;
+                width: auto;
+                margin: auto;
+                padding: 0px;
+                z-index: 0;
+            }
+            .table-div {
+                display: inline-block;
+                text-align: center;
+                max-width: 400px;
+                height: 200px;
+            }
+
+            .table-div table {
+                position: relative;
+                border: 1px solid black;                
+                padding: 5px;
+                margin: auto;
+                margin-top: 20px;
+                
+            }
+            .table-div th {
+                border: 1px solid black;
+                padding: 3px;
+                font-size: 15px;
+            }
+
+            .table-div td {
+                border: 1px solid black;
+                margin: 2px;
+                font-size: 15px;
+            }
+
+            .bad-td {
+                background-color: #1283e2;
+            }
+            .netural-td {
+                background-color: transparent;
+            }
+            .good-td {
+                background-color: #ed3a14;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "title-div">
+            <h2>{{team}} Field Boundary Overview</h2>
+        </div>
+        <div class="boundary-div">
+            <div class="left-div">
+                <h3>Left Hash</h3>
+                <div class="chart-div">
+                    <img src="data:image/png;base64, {{ left_into_boundary_chart }}" alt="Into Boundary Pie Chart" class="piechart">
+                </div>
+                <div class="table-div">
+                    <table>
+                        <thead>
+                            <tr>
+                                {% for column in left_play_type_by_down.columns %}
+                                    <th> {{ column }} </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, row in left_play_type_by_down.iterrows() %}
+                                <tr>
+                                    {% for column in left_play_type_by_down.columns %}
+                                        {% if column == "Down" %}
+                                        <td><b>{{ row[column] | int }}</b></td>
+                                        {% else %}
+                                            <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
+                                                {{ row[column] | round(2) }}%
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chart-div">
+                    <img src="data:image/png;base64, {{ left_strength_boundary_chart }}" alt="Into Boundary Pie Chart" class="piechart">
+                </div>
+                <div class="chart-div">
+                    <img src="data:image/png;base64, {{ data_left_passZone_graph }}" alt="Left Hash Pass Zones" class="passZoneChart">
+                </div>
+            </div>
+            <div class="right-div">
+                <h3>Right Hash</h3>
+                <div class="chart-div">
+                    <img src="data:image/png;base64, {{ right_into_boundary_chart }}" alt="Into Boundary Pie Chart" class="piechart">
+                </div>
+                <div class="table-div" style="margin-left: 40px;">
+                    <table >
+                        <thead>
+                            <tr>
+                                {% for column in right_play_type_by_down.columns %}
+                                    <th> {{ column }} </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, row in right_play_type_by_down.iterrows() %}
+                                <tr>
+                                    {% for column in right_play_type_by_down.columns %}
+                                        {% if column == "Down" %}
+                                        <td><b>{{ row[column] | int }}</b></td>
+                                        {% else %}
+                                            <td class="{% if row[column]  >= 75  %}good-td{% elif row[column]  > 25  %}netural-td{% else %}bad-td{% endif %}">
+                                                {{ row[column] | round(2) }}%
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chart-div">
+                    <img src="data:image/png;base64, {{ right_strength_boundary_chart }}" alt="Into Boundary Pie Chart" class="piechart">
+                </div>
+                <div class="chart-div">
+                    <img src="data:image/png;base64, {{ data_right_passZone_graph }}" alt="Right Hash Pass Zones" class="passZoneChart">
+                </div>
+            </div>
+        </div>
+        
+    </body>
+</html>
