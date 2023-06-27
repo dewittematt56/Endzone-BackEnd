@@ -108,7 +108,7 @@ class Formations(db.Model):
     Creator = db.Column(db.String(36), unique = False, nullable = False)
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
 
-    def __init__(self, formation: str, wideReceivers: int, tightEnds: int, runningBacks: int, image: str)-> None:
+    def __init__(self, formation: str, wideReceivers: int, tightEnds: int, runningBacks: int, image: bytes)-> None:
         self.Formation = formation
         self.Wide_Receivers = wideReceivers
         self.Tight_Ends = tightEnds
@@ -231,8 +231,6 @@ class Team(db.Model):
     Args:
         db (_type_): _description_
     """
-
-
     __tablename__ = "Team"
     Team_Code = db.Column(db.String(36), primary_key= True, nullable = False, unique= True)
     Team_Name = db.Column(db.String(50), unique= False, nullable = False)
@@ -287,6 +285,37 @@ class Game(db.Model):
         self.Away_Team = away_team
         self.Game_Date = game_date
         self.Game_Type = type
+        self.Team_Code = current_user.Current_Team
+        self.Creator = current_user.id
+        self.Creation_Date = datetime.datetime.utcnow()
+
+class Models(db.Model):
+    __tablename__ = 'Models'
+    Model_ID = db.Column(db.String(36), primary_key = True)
+    Model_Name = db.Column(db.String(36), unique = False, nullable = False)
+    Model_Class = db.Column(db.String(36), unique = False, nullable = False)
+    Model_Type = db.Column(db.String(36), unique = False, nullable = False)
+    Model_Predictor = db.Column(db.String(36), unique = False, nullable = False)
+    Model_Preprocessor = db.Column(db.LargeBinary, nullable = False, unique = False)
+    Model = db.Column(db.LargeBinary, nullable = False, unique = False)
+    Model_Accuracy = db.Column(db.Float(35), nullable = False, unique = False)
+    Model_Training_Size = db.Column(db.Integer, nullable = False, unique = False)
+    Team_Code = db.Column(db.String(36), unique = False, nullable = False)
+    Creator = db.Column(db.String(36), unique = False, nullable = False)
+    Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow, nullable = False)
+
+
+    def __init__(self, model_name: str, model_class: str, model_type: str, model_predictor: str, model_preprocessor: bytes, model_model: bytes, model_accuracy: float, training_size: int) -> None:
+        self.Model_ID = gen_primary_key()
+        self.Model_Name = model_name
+        self.Model_Class = model_class
+        self.Model_Type = model_type
+        self.Model_Predictor = model_predictor
+        self.Model_Preprocessor = model_preprocessor
+        self.Model_Accuracy = model_accuracy
+        self.Model_Training_Size = training_size
+        self.Model = model_model
+        # Metadata
         self.Team_Code = current_user.Current_Team
         self.Creator = current_user.id
         self.Creation_Date = datetime.datetime.utcnow()

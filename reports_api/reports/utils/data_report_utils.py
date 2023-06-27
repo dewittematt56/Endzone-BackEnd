@@ -285,10 +285,13 @@ def breakdown_yardage(df: pd.DataFrame) -> dict:
     return yardage_dict
 
 def isHomeTeam(game, team_of_interest) -> bool:
-    if game["Home_Team"][0] == team_of_interest:
-        return True
-    return False
-
+    try:
+        if game.loc[0]["Home_Team"] == team_of_interest:
+            return True
+        return False
+    except Exception:
+        return False
+    
 def points_package(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
     total_points_allowed = get_total_points(df, team_of_interest, game_data)
     total_games = len(df["Game_ID"].unique())
@@ -302,11 +305,15 @@ def points_package(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFr
 
 def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
     grouped_df = df.groupby('Game_ID')
+    print(grouped_df)
     max_rows = grouped_df.apply(lambda x: x.loc[x['Play_Number'].idxmax()])
+    print(max_rows)
     points = 0
     for index, row in max_rows.iterrows():
         game_id = row['Game_ID']
+        print(game_id)
         game_info = game_data.loc[game_data['Game_ID'] == game_id]
+        print(game_info)
         if isHomeTeam(game_info, team_of_interest):
             points += row["Home_Score"]
         else:

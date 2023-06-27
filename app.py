@@ -9,22 +9,23 @@ from login_api.login_persona import LoggedInPersona
 
 # Endzone API's
 from reports_api.reports_api import reports_api
-from utils_api import server_utils
+import server_utils
 from web_pages.content_api import content_api  
 from utils_api.utils_api import utils_api
 from data_api.data_api import data_api
 from profile_api.profile_api import profile_api
 from org_api.om_profile_api import om_profile_api
 from org_api.om_members_api import om_members_api
-from team_api.tm_profile_api import tm_profile_api
-from team_api.tm_members_api import tm_members_api
+
+from api_tools.tars_api import tars_api
+from api_tools.autopilot_api import autopilot_api, socketio
 
 application = Flask(__name__, template_folder="web_pages/pages")
 
 application.config['SECRET_KEY'] = 'secret key'
 application.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+application.config["message_queue"] = {}
 
 application.register_blueprint(content_api)
 application.register_blueprint(utils_api)
@@ -33,16 +34,18 @@ application.register_blueprint(reports_api)
 application.register_blueprint(profile_api)
 application.register_blueprint(om_profile_api)
 application.register_blueprint(om_members_api)
-application.register_blueprint(tm_profile_api)
-application.register_blueprint(tm_members_api)
+application.register_blueprint(tars_api)
+application.register_blueprint(autopilot_api)
 
 # Executors
-
 db.init_app(application)
+
 
 # builds database if not existing
 with application.app_context():
     db.create_all()
+
+socketio.init_app(application)
 
 # set up login system
 login_manager = LoginManager()
@@ -171,9 +174,10 @@ def register():
                 elif len(team_query) == 1:
                     org_query = db.session.query(Org).filter(Org.Org_Code == team_query[0].Org_Code).all()
                     if len(org_query) == 1:
+                        new_user = User(first, last, email, phone, password1, team_query[0].Team_Code, "Complete")
                         db.session.add(Team_Member(team_query[0].Team_Code, new_user.get_id(), "Coach"))
                         db.session.add(Org_Member(org_query[0].Org_Code, new_user.get_id(), "Coach"))
-                        db.session.add(User(first, last, email, phone, password1, "null", "Complete"))
+                        db.session.add(new_user)
                         db.session.commit()
                         login_user(load_user(new_user.Email))
                         return redirect("/endzone/hub")

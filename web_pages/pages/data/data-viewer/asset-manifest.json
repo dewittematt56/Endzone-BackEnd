@@ -1,16 +1,15 @@
 {
   "files": {
-    "main.css": "/pages/data/data-viewer/static/css/main.77a82f1b.css",
-    "main.js": "/pages/data/data-viewer/static/js/main.b5210b97.js",
-    "static/js/787.942d2aa2.chunk.js": "/pages/data/data-viewer/static/js/787.942d2aa2.chunk.js",
-    "static/media/EndzoneMainLogo.png": "/pages/data/data-viewer/static/media/EndzoneMainLogo.415d73c38881b3e13f40.png",
+    "main.css": "/pages/data/data-viewer/static/css/main.0c20682a.css",
+    "main.js": "/pages/data/data-viewer/static/js/main.3d751135.js",
+    "static/media/FootballField.png": "/pages/data/data-viewer/static/media/FootballField.cb53e6c025621de7c9f5.png",
+    "static/media/EndzoneMainLogo.png": "/pages/data/data-viewer/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/data/data-viewer/index.html",
-    "main.77a82f1b.css.map": "/pages/data/data-viewer/static/css/main.77a82f1b.css.map",
-    "main.b5210b97.js.map": "/pages/data/data-viewer/static/js/main.b5210b97.js.map",
-    "787.942d2aa2.chunk.js.map": "/pages/data/data-viewer/static/js/787.942d2aa2.chunk.js.map"
+    "main.0c20682a.css.map": "/pages/data/data-viewer/static/css/main.0c20682a.css.map",
+    "main.3d751135.js.map": "/pages/data/data-viewer/static/js/main.3d751135.js.map"
   },
   "entrypoints": [
-    "static/css/main.77a82f1b.css",
-    "static/js/main.b5210b97.js"
+    "static/css/main.0c20682a.css",
+    "static/js/main.3d751135.js"
   ]
 }

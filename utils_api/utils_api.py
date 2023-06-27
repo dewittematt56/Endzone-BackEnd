@@ -1,9 +1,9 @@
-from flask import Blueprint, Response, request, jsonify
+from flask import Blueprint, Response, request, jsonify, current_app
 from flask_login import login_required, current_user
 from database.models import *
 import json
 from utils_api.utils import *
-from utils_api.server_utils import *
+from server_utils import check_required_params, validate_play_input
 
 utils_api = Blueprint("utils_api", __name__, template_folder="pages", static_folder="pages")
 
@@ -18,7 +18,6 @@ def hasLetter(parameter):
         return True
     else:
         return False
-
 
 @login_required
 @utils_api.route("/getuser", methods = ["GET"])
@@ -91,7 +90,6 @@ def formationImage(imageId):
 def getFormation():
     query = db.session.query(Formations).filter(Formations.Org_Code == current_user.Org_Code) .\
         filter(Formations.Team_Code == current_user.Current_Team).order_by(asc(Formations.Formation))
-    
     return jsonify(load_formation_json(query.all()))
 
 @login_required
@@ -240,6 +238,9 @@ def deletePlay():
 @login_required
 @utils_api.route("/endzone/utils/play/get", methods = ["GET"])
 def getPlay():
+    temp = current_app.config["message_queue"]
+    current_app.config["message_queue"] = 'luffy'
+    
     if request.method == "GET":
         if request.args.get("gameId"): # Heres the changes I made for the data viewer bug
             game_ids = request.args.get("gameId") # and here

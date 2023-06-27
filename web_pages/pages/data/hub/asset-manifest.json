@@ -1,14 +1,15 @@
 {
   "files": {
-    "main.css": "/pages/data/hub/static/css/main.cdcbac11.css",
-    "main.js": "/pages/data/hub/static/js/main.4ad76a89.js",
+    "main.css": "/pages/data/hub/static/css/main.b71f2b91.css",
+    "main.js": "/pages/data/hub/static/js/main.cb96ddb7.js",
+    "static/media/FootballField.png": "/pages/data/hub/static/media/FootballField.cb53e6c025621de7c9f5.png",
     "static/media/EndzoneMainLogo.png": "/pages/data/hub/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/data/hub/index.html",
-    "main.cdcbac11.css.map": "/pages/data/hub/static/css/main.cdcbac11.css.map",
-    "main.4ad76a89.js.map": "/pages/data/hub/static/js/main.4ad76a89.js.map"
+    "main.b71f2b91.css.map": "/pages/data/hub/static/css/main.b71f2b91.css.map",
+    "main.cb96ddb7.js.map": "/pages/data/hub/static/js/main.cb96ddb7.js.map"
   },
   "entrypoints": [
-    "static/css/main.cdcbac11.css",
-    "static/js/main.4ad76a89.js"
+    "static/css/main.b71f2b91.css",
+    "static/js/main.cb96ddb7.js"
   ]
 }

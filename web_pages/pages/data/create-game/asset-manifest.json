@@ -1,16 +1,17 @@
 {
   "files": {
-    "main.css": "/pages/data/create-game/static/css/main.b02eb21f.css",
-    "main.js": "/pages/data/create-game/static/js/main.a11a1c70.js",
+    "main.css": "/pages/data/create-game/static/css/main.36c12b2c.css",
+    "main.js": "/pages/data/create-game/static/js/main.9bf941b6.js",
     "static/media/auto-player.jpg": "/pages/data/create-game/static/media/auto-player.64cfec634cb01117db77.jpg",
     "static/media/manual-player.jpg": "/pages/data/create-game/static/media/manual-player.eb1c7568191eaa20a701.jpg",
+    "static/media/FootballField.png": "/pages/data/create-game/static/media/FootballField.cb53e6c025621de7c9f5.png",
     "static/media/EndzoneMainLogo.png": "/pages/data/create-game/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/data/create-game/index.html",
-    "main.b02eb21f.css.map": "/pages/data/create-game/static/css/main.b02eb21f.css.map",
-    "main.a11a1c70.js.map": "/pages/data/create-game/static/js/main.a11a1c70.js.map"
+    "main.36c12b2c.css.map": "/pages/data/create-game/static/css/main.36c12b2c.css.map",
+    "main.9bf941b6.js.map": "/pages/data/create-game/static/js/main.9bf941b6.js.map"
   },
   "entrypoints": [
-    "static/css/main.b02eb21f.css",
-    "static/js/main.a11a1c70.js"
+    "static/css/main.36c12b2c.css",
+    "static/js/main.9bf941b6.js"
   ]
 }

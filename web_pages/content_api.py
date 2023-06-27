@@ -139,3 +139,17 @@ def PregameHub():
 @login_required
 def PregameDashboard():
     return render_template("/pregame/dashboard/pregame_dashboard.html")
+
+@content_api.route("/endzone/pregame/models", methods = ["GET"])
+@login_required
+def PregameModelBuilder():
+    return render_template("/pregame/models/model_builder.html")
+
+@content_api.route("/endzone/ingame/autopilot", methods = ["GET"])
+def AutoPilot():
+    return render_template("/ingame/autopilot/autopilot.html")
+
+@content_api.route("/endzone/pregame/thunderbolt", methods = ["GET"])
+@login_required
+def PreGameThunderbolt():
+    return render_template("/pregame/thunderbolt/thunderbolt.html")
