@@ -22,3 +22,8 @@ reports_api/reports/__pycache__/pregame_report.cpython-38.pyc
 *.pyc
 *.pyc
 reports_api/__pycache__/reports_api.cpython-38.pyc
+database/__pycache__/
+login_api/__pycache__/
+profile_api/__pycache__/
+utils_api/__pycache__/
+web_pages/__pycache__/
