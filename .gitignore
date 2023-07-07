@@ -27,3 +27,4 @@ login_api/__pycache__/
 profile_api/__pycache__/
 utils_api/__pycache__/
 web_pages/__pycache__/
+*/__pycache__/
