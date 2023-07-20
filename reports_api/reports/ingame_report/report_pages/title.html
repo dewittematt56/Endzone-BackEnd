@@ -31,26 +31,16 @@
 
             /* Style for the team box */
             .team-box {
-                background-color: white;
                 height: 30px;
                 position: relative;
                 flex-grow: 1;
             }
-
-            /* Style for the extending box */
-            .team-value1 {
-                background-color: green;
+        
+            .team-value {
                 height: 100%;
-                position: absolute;
 
             }
-
-            .team-value2 {
-                background-color: blue;
-                height: 100%;
-                position: absolute;
-
-            }
+            
                 /* Style for the value text */
             .value-text {
                 position: absolute;
@@ -63,7 +53,7 @@
                 left: 0;
             }
 
-            /* Style for the right value text */
+            
             .value-right {
                 right: 0;
             }
@@ -75,6 +65,8 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                padding-left: 10px;
+                padding-right: 10px;
             }
         </style>
     </head>
@@ -86,36 +78,37 @@
 
         <div class="container">
             <div class="team-box">
-              <div class="team-value1" style="left: 0; width: 80%;"></div>
+              <div class="team-value" style="left: 0; width: 50%; background-color: green;"></div>
               <div class="value-text value-left">69</div>
+              <div class="value-text">69</div>
             </div>
             <div class="label-box">Stat</div>
             <div class="team-box">
-              <div class="team-value2" style="right: 0; width: 80%;"></div>
+              <div class="team-value" style="right: 0; width: 20%; background-color: blue;"></div>
               <div class="value-text value-right">420</div>
             </div>
         </div>
 
         <div class="container">
             <div class="team-box">
-              <div class="team-value1" style="left: 0; width: 80%;"></div>
+              <div class="team-value" style="left: 0; width: 50%; background-color: green"></div>
               <div class="value-text value-left">69</div>
             </div>
             <div class="label-box">Stat</div>
             <div class="team-box">
-              <div class="team-value2" style="right: 0; width: 80%;"></div>
+              <div class="team-value" style="right: 0; width: 50%; background-color: blue;"></div>
               <div class="value-text value-right">420</div>
             </div>
         </div>
 
         <div class="container">
             <div class="team-box">
-              <div class="team-value1" style="left: 0; width: 80%;"></div>
+              <div class="team-value" style="left: 0; width: 35%; background-color: green;"></div>
               <div class="value-text value-left">69</div>
             </div>
             <div class="label-box">Stat</div>
             <div class="team-box">
-              <div class="team-value2" style="right: 0; width: 80%;"></div>
+              <div class="team-value" style="right: 0; width: 20%; background-color: blue;"></div>
               <div class="value-text value-right">420</div>
             </div>
         </div>
