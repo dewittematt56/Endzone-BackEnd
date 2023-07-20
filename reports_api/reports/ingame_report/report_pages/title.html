@@ -38,7 +38,6 @@
         
             .team-value {
                 height: 100%;
-
             }
             
                 /* Style for the value text */
@@ -47,15 +46,6 @@
                 top: 50%;
                 transform: translateY(-50%);
                 padding: 0 5px;
-            }
-
-            .value-left {
-                left: 0;
-            }
-
-            
-            .value-right {
-                right: 0;
             }
 
             /* Style for the label box */
@@ -73,43 +63,42 @@
     <body>
         <div class = "title-div">
             <h2>Report Overview</h2>
-            <img src="{{ images/endzone_shield.png }}" alt="Endzone Shield">
+            
         </div>
 
         <div class="container">
-            <div class="team-box">
-              <div class="team-value" style="left: 0; width: 50%; background-color: green;"></div>
-              <div class="value-text value-left">69</div>
-              <div class="value-text">69</div>
+            <div class="team-box" style="transform: scale(-1)">
+              <div class="team-value" style="width: 25%; background-color: green;"></div>
+              <div class="value-text" style="right: 0; transform: scale(-1) translateY(50%)">69</div>
             </div>
             <div class="label-box">Stat</div>
             <div class="team-box">
-              <div class="team-value" style="right: 0; width: 20%; background-color: blue;"></div>
-              <div class="value-text value-right">420</div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="team-box">
-              <div class="team-value" style="left: 0; width: 50%; background-color: green"></div>
-              <div class="value-text value-left">69</div>
-            </div>
-            <div class="label-box">Stat</div>
-            <div class="team-box">
-              <div class="team-value" style="right: 0; width: 50%; background-color: blue;"></div>
-              <div class="value-text value-right">420</div>
+              <div class="team-value" style="width: 20%; background-color: blue;"></div>
+              <div class="value-text" style="right: 0;">420</div>
             </div>
         </div>
 
         <div class="container">
-            <div class="team-box">
-              <div class="team-value" style="left: 0; width: 35%; background-color: green;"></div>
-              <div class="value-text value-left">69</div>
+            <div class="team-box" style="transform: scale(-1)">
+              <div class="team-value" style="width: 50%; background-color: green"></div>
+              <div class="value-text" style="right: 0; transform: scale(-1) translateY(50%)">69</div>
             </div>
             <div class="label-box">Stat</div>
             <div class="team-box">
-              <div class="team-value" style="right: 0; width: 20%; background-color: blue;"></div>
-              <div class="value-text value-right">420</div>
+              <div class="team-value" style="width: 50%; background-color: blue;"></div>
+              <div class="value-text" style="right: 0">420</div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="team-box" style="transform: scale(-1)">
+              <div class="team-value" style=" width: 100%; background-color: green;"></div>
+              <div class="value-text" style="right: 0; transform: scale(-1) translateY(50%)">40</div>
+            </div>
+            <div class="label-box">Stat</div>
+            <div class="team-box">
+              <div class="team-value" style="width: 20%; background-color: blue;"></div>
+              <div class="value-text" style="right: 0">420</div>
             </div>
         </div>
     </body>
