@@ -108,6 +108,8 @@ class IngameReport():
         return [totalDict, rushDict, passDict]
     
     def getBar(self, val, total) -> str:
+        if total <= 0:
+            return "0%"
         return str((val / total) * 100) + "%"
     
     def getEfficiency(self) -> list:
@@ -140,6 +142,37 @@ class IngameReport():
         passDict = {"stat": "Pass Efficiency", "val1": oPassEff, "val2": dPassEff, "bar1": oPassBar, "bar2": dPassBar}
 
         return [totalDict, rushDict, passDict]
+    
+    def getSackRate(self) -> list:
+        temp = self.dData.query('Pass_Zone == "Not Thrown"')
+        print(len(temp))
+        teamSackPlays = self.dData.query('Pass_Zone == "Not Thrown" & Result < 0')
+        enemySackPlays = self.oData.query('Pass_Zone == "Not Thrown" & Result < 0')
+        teamPassPlays = self.oData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        enemyPassPlays = self.dData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+
+        try:
+            teamSackRate = (len(teamSackPlays) / len(enemyPassPlays)) * 100
+            teamSackRateStr = str(teamSackRate) + "%"
+        except ZeroDivisionError as err:
+            teamSackRateStr = "Invalid"
+
+        try:
+            enemySackRate = (len(enemySackPlays) / len(teamPassPlays)) * 100
+            enemySackRateStr = str(enemySackRate) + "%"
+        except ZeroDivisionError as err:
+            enemySackRateStr = "Invalid"
+
+        totalSackRate = teamSackRate + enemySackRate
+    
+        teamBar = self.getBar(teamSackRate, totalSackRate)
+        enemyBar = self.getBar(enemySackRate, totalSackRate)
+
+        sackDict = {"stat": "Sack Rate", "val1": teamSackRateStr, "val2": enemySackRateStr, "bar1": teamBar, "bar2": enemyBar}
+        # Returning list in case we want to add stuff later on down the road to this function
+        return [sackDict]
+
+
         
     
     def title_page(self) -> None:
@@ -155,7 +188,8 @@ class IngameReport():
 
         yardList = self.getYardage()
         effList = self.getEfficiency()
-        data_list = yardList + effList
+        sackRateList = self.getSackRate()
+        data_list = yardList + effList + sackRateList
 
         html = title_template.render(title="Ingame Report", img_path="images/endzone_shield.png", data_list=data_list)
         # Render this sucker!
