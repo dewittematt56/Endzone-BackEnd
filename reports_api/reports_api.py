@@ -19,7 +19,6 @@ def __run_pregame_report__(requested_pages: 'list[str]', requested_team: str, re
         pdf = report.combine_reports()
         return pdf
 
-# To-Do create function to actually run the report w/ thread lock called __run_thunderbolt_report__ (similar to above)
 def __run_thunderbolt_report__(team_of_interest: str, game_IDs: str, user_team_code: str, report_type: str):
     with thread_lock:
         report = ThunderboltReport(team_of_interest, game_IDs, user_team_code, report_type)
@@ -78,7 +77,6 @@ def pregame_report_run():
             as_attachment=True,
             download_name='output.pdf'
         )
-
 
 @reports_api.route("/endzone/reports/thunderbolt/run", methods = ["GET"]) # confirm with mater
 @login_required

@@ -37,7 +37,6 @@ def getActiveRooms():
 
 @socketio.on('add_play', namespace="/endzone/ingame/palantir")
 def send_message_to_room(room, playData):
-    print(playData)
     emit('get_play', playData, room=room)
 
 @socketio.on('leave')
@@ -48,5 +47,6 @@ def on_leave(room):
 
 @socketio.on('join', namespace="/endzone/ingame/palantir")
 def on_join(room):
+    print(room)
     join_room(room)
     active_rooms.setdefault(room, datetime.utcnow())
