@@ -35,7 +35,7 @@ class IngameReport():
         self.reportType = "Offense"
         self.team_of_interest = "Burnsville"
         self.team_code = "Endzone-System"
-        self.game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e"]
+        self.game_id = "643ad3ef-8b71-422d-ba03-f150637f148e"
 
 
         self.get_data()
@@ -62,9 +62,6 @@ class IngameReport():
         self.dData = enrich_data(dPlays, self.team_of_interest)
 
 
-    def down3Page(self, data: pd.DataFrame) -> None:
-        print("hi")
-
     def combine_reports(self) -> None:
         return combine_pdf_pages(self.pdfs)
     
@@ -79,6 +76,71 @@ class IngameReport():
         
         if appendToFront: self.pdfs.insert(0, pdf_reader)
         else: self.pdfs.append(pdf_reader)
+
+    def getYardage(self) -> list:
+        oTotalYards = sum(self.oData["Result"])
+        dTotalYards = sum(self.dData["Result"])
+
+        oRushPlays = self.oData.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
+        dRushPlays = self.dData.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
+        oRushYards = sum(oRushPlays["Result"])
+        dRushYards = sum(dRushPlays["Result"])
+
+        oPassPlays = self.oData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        dPassPlays = self.dData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        oPassYards = sum(oPassPlays["Result"])
+        dPassYards = sum(dPassPlays["Result"])
+
+        bothTotal = oTotalYards + dTotalYards
+        rushTotal = oRushYards + dRushYards
+        passTotal = oPassYards + dPassYards
+        oBarTotal = self.getBar(oTotalYards, bothTotal)
+        dBarTotal = self.getBar(dTotalYards, bothTotal)
+        oBarRush = self.getBar(oRushYards, rushTotal) 
+        dBarRush = self.getBar(dRushYards, rushTotal)
+        oBarPass = self.getBar(oPassYards, passTotal)
+        dBarPass = self.getBar(dPassYards, passTotal)
+
+        totalDict = {"stat": "Total Yards", "val1": oTotalYards, "val2": dTotalYards, "bar1": oBarTotal, "bar2": dBarTotal}
+        rushDict = {"stat": "Rush Yards", "val1": oRushYards, "val2": dRushYards, "bar1": oBarRush, "bar2": dBarRush}
+        passDict = {"stat": "Pass Yards", "val1": oPassYards, "val2": dPassYards, "bar1": oBarPass, "bar2": dBarPass}
+
+        return [totalDict, rushDict, passDict]
+    
+    def getBar(self, val, total) -> str:
+        return str((val / total) * 100) + "%"
+    
+    def getEfficiency(self) -> list:
+        oTotalEff = get_nfl_efficiency(self.oData)[0]
+        dTotalEff = get_nfl_efficiency(self.dData)[0]
+
+        oRushPlays = self.oData.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
+        dRushPlays = self.dData.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
+        oPassPlays = self.oData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        dPassPlays = self.dData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+
+        oRushEff = get_nfl_efficiency(oRushPlays)[0]
+        dRushEff = get_nfl_efficiency(dRushPlays)[0]
+        oPassEff = get_nfl_efficiency(oPassPlays)[0]
+        dPassEff = get_nfl_efficiency(dPassPlays)[0]
+
+        bothTotal = oTotalEff + dTotalEff
+        rushTotal = oRushEff + dRushEff
+        passTotal = oPassEff + dPassEff
+
+        oBarTotal = self.getBar(oTotalEff, bothTotal)
+        dBarTotal = self.getBar(dTotalEff, bothTotal)
+        oBarRush = self.getBar(oRushEff, rushTotal)
+        dBarRush = self.getBar(dRushEff, rushTotal)
+        oPassBar = self.getBar(oPassEff, passTotal)
+        dPassBar = self.getBar(dPassEff, passTotal)
+
+        totalDict = {"stat": "Overall Efficiency", "val1": oTotalEff, "val2": dTotalEff, "bar1": oBarTotal, "bar2": dBarTotal}
+        rushDict = {"stat": "Run Efficiency", "val1": oRushEff, "val2": dRushEff, "bar1": oBarRush, "bar2": dBarRush}
+        passDict = {"stat": "Pass Efficiency", "val1": oPassEff, "val2": dPassEff, "bar1": oPassBar, "bar2": dPassBar}
+
+        return [totalDict, rushDict, passDict]
+        
     
     def title_page(self) -> None:
         """_summary_
@@ -90,7 +152,12 @@ class IngameReport():
             _type_: _description_
         """
         title_template = env.get_template('ingame_report/report_pages/title.html')
-        html = title_template.render(title="Ingame Report", img_path="images/endzone_shield.png")
+
+        yardList = self.getYardage()
+        effList = self.getEfficiency()
+        data_list = yardList + effList
+
+        html = title_template.render(title="Ingame Report", img_path="images/endzone_shield.png", data_list=data_list)
         # Render this sucker!
         self.template_to_pdf(html, True)
 
