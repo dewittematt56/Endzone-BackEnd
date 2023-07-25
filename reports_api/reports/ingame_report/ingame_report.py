@@ -15,10 +15,10 @@ from ..utils.data_report_utils import *
 from ..utils.graphing_utils import *
 from ..utils.spatial_utils import *
 import sys
-import datetime
+import os
 
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports'))
-env.globals.update(static='./reports_api/reports/static')
+env.globals.update(static='./reports_api/reports/ingame_report/static')
 
 class IngameReport():
     def __init__(self, team_of_interest: str, game: str, team_code: str) -> None:
@@ -68,7 +68,7 @@ class IngameReport():
     def template_to_pdf(self, html, appendToFront: bool = False) -> None:
         # Used for ease of development
         if sys.platform.startswith('win'):
-            pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='dependencies/wkhtmltopdf.exe'))
+            pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='dependencies/wkhtmltopdf.exe'), options={'margin-top': '0', 'margin-right': '0', 'margin-bottom': '0', 'margin-left': '0'})
         # Means it is being run on docker docker jr docker
         else:
             pdf = pdfkit.from_string(html, False)
@@ -191,7 +191,8 @@ class IngameReport():
         sackRateList = self.getSackRate()
         data_list = yardList + effList + sackRateList
 
-        html = title_template.render(title="Ingame Report", img_path="images/endzone_shield.png", data_list=data_list)
+        image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
+        html = title_template.render(title="Ingame Report", data_list=data_list, image_path = image_path)
         # Render this sucker!
         self.template_to_pdf(html, True)
 
