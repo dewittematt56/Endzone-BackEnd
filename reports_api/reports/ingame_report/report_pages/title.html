@@ -68,13 +68,13 @@
         {% for item in data_list %}
             <div class="container">
                 <div class="team-box" style="transform: scale(-1)">
-                    <div class="team-value" style="width: {{ item.bar1 }}; background-color: green;"></div>
-                    <div class="value-text" style="right: 0; transform: scale(-1) translateY(50%)">{{ item.val1 }}</div>
+                    <div class="team-value" style="width: {{ item.teamBar }}; background-color: green;"></div>
+                    <div class="value-text" style="right: 0; transform: scale(-1) translateY(50%)">{{ item.teamVal }}</div>
                 </div>
                 <div class="label-box">{{ item.stat }}</div>
                 <div class="team-box">
-                    <div class="team-value" style="width: {{ item.bar2 }}; background-color: blue;"></div>
-                    <div class="value-text" style="right: 0;">{{ item.val2 }}</div>
+                    <div class="team-value" style="width: {{ item.enemyBar }}; background-color: blue;"></div>
+                    <div class="value-text" style="right: 0;">{{ item.enemyVal }}</div>
                 </div>
             </div>
         {% endfor %}

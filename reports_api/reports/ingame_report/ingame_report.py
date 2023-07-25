@@ -77,6 +77,13 @@ class IngameReport():
         if appendToFront: self.pdfs.insert(0, pdf_reader)
         else: self.pdfs.append(pdf_reader)
 
+    def getBar(self, val, total) -> str:
+        try:
+            val = str((val / total) * 100) + "%"
+        except:
+            val = "0%"
+        return val
+
     def getYardage(self) -> list:
         oTotalYards = sum(self.oData["Result"])
         dTotalYards = sum(self.dData["Result"])
@@ -85,6 +92,18 @@ class IngameReport():
         dRushPlays = self.dData.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
         oRushYards = sum(oRushPlays["Result"])
         dRushYards = sum(dRushPlays["Result"])
+
+        try:
+            oAvgRush = round(oRushYards / len(oRushPlays), 1)
+        except ZeroDivisionError:
+            oAvgRush = "Invalid"
+
+        try:    
+            dAvgRush = round(dRushYards / len(dRushPlays), 1)
+        except ZeroDivisionError:
+            dAvgRush = "Invalid"
+
+        totalAvgRush = oAvgRush + dAvgRush
 
         oPassPlays = self.oData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
         dPassPlays = self.dData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
@@ -100,17 +119,16 @@ class IngameReport():
         dBarRush = self.getBar(dRushYards, rushTotal)
         oBarPass = self.getBar(oPassYards, passTotal)
         dBarPass = self.getBar(dPassYards, passTotal)
+        oBarAvgRush = self.getBar(oAvgRush, totalAvgRush)
+        dBarAvgRush = self.getBar(dAvgRush, totalAvgRush)
 
-        totalDict = {"stat": "Total Yards", "val1": oTotalYards, "val2": dTotalYards, "bar1": oBarTotal, "bar2": dBarTotal}
-        rushDict = {"stat": "Rush Yards", "val1": oRushYards, "val2": dRushYards, "bar1": oBarRush, "bar2": dBarRush}
-        passDict = {"stat": "Pass Yards", "val1": oPassYards, "val2": dPassYards, "bar1": oBarPass, "bar2": dBarPass}
+        totalDict = {"stat": "Total Yards", "teamVal": oTotalYards, "enemyVal": dTotalYards, "teamBar": oBarTotal, "enemyBar": dBarTotal}
+        rushDict = {"stat": "Rush Yards", "teamVal": oRushYards, "enemyVal": dRushYards, "teamBar": oBarRush, "enemyBar": dBarRush}
+        passDict = {"stat": "Pass Yards", "teamVal": oPassYards, "enemyVal": dPassYards, "teamBar": oBarPass, "enemyBar": dBarPass}
+        avgRushDict = {"stat": "Yards Per Carry", "teamVal": oAvgRush, "enemyVal": dAvgRush, "teamBar": oBarAvgRush, "enemyBar": dBarAvgRush}
 
-        return [totalDict, rushDict, passDict]
+        return [totalDict, rushDict, passDict, avgRushDict]
     
-    def getBar(self, val, total) -> str:
-        if total <= 0:
-            return "0%"
-        return str((val / total) * 100) + "%"
     
     def getEfficiency(self) -> list:
         oTotalEff = get_nfl_efficiency(self.oData)[0]
@@ -137,30 +155,29 @@ class IngameReport():
         oPassBar = self.getBar(oPassEff, passTotal)
         dPassBar = self.getBar(dPassEff, passTotal)
 
-        totalDict = {"stat": "Overall Efficiency", "val1": oTotalEff, "val2": dTotalEff, "bar1": oBarTotal, "bar2": dBarTotal}
-        rushDict = {"stat": "Run Efficiency", "val1": oRushEff, "val2": dRushEff, "bar1": oBarRush, "bar2": dBarRush}
-        passDict = {"stat": "Pass Efficiency", "val1": oPassEff, "val2": dPassEff, "bar1": oPassBar, "bar2": dPassBar}
+        totalDict = {"stat": "Overall Efficiency", "teamVal": oTotalEff, "enemyVal": dTotalEff, "teamBar": oBarTotal, "enemyBar": dBarTotal}
+        rushDict = {"stat": "Run Efficiency", "teamVal": oRushEff, "enemyVal": dRushEff, "teamBar": oBarRush, "enemyBar": dBarRush}
+        passDict = {"stat": "Pass Efficiency", "teamVal": oPassEff, "enemyVal": dPassEff, "teamBar": oPassBar, "enemyBar": dPassBar}
 
         return [totalDict, rushDict, passDict]
     
     def getSackRate(self) -> list:
         temp = self.dData.query('Pass_Zone == "Not Thrown"')
-        print(len(temp))
         teamSackPlays = self.dData.query('Pass_Zone == "Not Thrown" & Result < 0')
         enemySackPlays = self.oData.query('Pass_Zone == "Not Thrown" & Result < 0')
         teamPassPlays = self.oData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
         enemyPassPlays = self.dData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
 
         try:
-            teamSackRate = (len(teamSackPlays) / len(enemyPassPlays)) * 100
+            teamSackRate = round((len(teamSackPlays) / len(enemyPassPlays)) * 100)
             teamSackRateStr = str(teamSackRate) + "%"
-        except ZeroDivisionError as err:
+        except ZeroDivisionError:
             teamSackRateStr = "Invalid"
 
         try:
-            enemySackRate = (len(enemySackPlays) / len(teamPassPlays)) * 100
+            enemySackRate = round((len(enemySackPlays) / len(teamPassPlays)) * 100)
             enemySackRateStr = str(enemySackRate) + "%"
-        except ZeroDivisionError as err:
+        except ZeroDivisionError:
             enemySackRateStr = "Invalid"
 
         totalSackRate = teamSackRate + enemySackRate
@@ -168,10 +185,101 @@ class IngameReport():
         teamBar = self.getBar(teamSackRate, totalSackRate)
         enemyBar = self.getBar(enemySackRate, totalSackRate)
 
-        sackDict = {"stat": "Sack Rate", "val1": teamSackRateStr, "val2": enemySackRateStr, "bar1": teamBar, "bar2": enemyBar}
+        sackDict = {"stat": "Sack Rate", "teamVal": teamSackRateStr, "enemyVal": enemySackRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
         # Returning list in case we want to add stuff later on down the road to this function
         return [sackDict]
+    
+    def getBlitzRate(self) -> list:
+        enemyPressurePlays = self.oData.query('Pressure_Existence == True')
+        teamPressurePlays = self.dData.query('Pressure_Existence == True')
 
+        try:
+            teamBlitzRate = round((len(teamPressurePlays) / len(self.dData)) * 100)
+            teamBlitzRateStr = str(teamBlitzRate) + "%"
+        except ZeroDivisionError:
+            teamBlitzRateStr = "Invalid"
+
+        try:
+            enemyBlitzRate = round((len(enemyPressurePlays) / len(self.oData)) * 100)
+            enemyBlitzRateStr = str(enemyBlitzRate) + "%"
+        except ZeroDivisionError:
+            teamBlitzRateStr = "Invalid"
+
+        totalBlitzRate = teamBlitzRate + enemyBlitzRate
+
+        teamBar = self.getBar(teamBlitzRate, totalBlitzRate)
+        enemyBar = self.getBar(enemyBlitzRate, totalBlitzRate)
+
+        sackDict = {"stat": "Blitz Rate", "teamVal": teamBlitzRateStr, "enemyVal": enemyBlitzRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
+        # Returning list in case we want to add stuff later on down the road to this function
+        return [sackDict]
+    
+
+    def getForcedTurnovers(self) -> list:
+        teamTurnovers = len(self.oData.query('Event == "Interception" | Event == "Fumble"'))
+        enemyTurnovers = len(self.dData.query('Event == "Interception" | Event == "Fumble"'))
+        totalTurnovers = teamTurnovers + enemyTurnovers
+    
+        teamBar = self.getBar(teamTurnovers, totalTurnovers)
+        enemyBar = self.getBar(enemyTurnovers, totalTurnovers)
+        
+        turnoverDict = {"stat": "Forced Turnovers", "teamVal": teamTurnovers, "enemyVal": enemyTurnovers, "teamBar": teamBar, "enemyBar": enemyBar}
+        return [turnoverDict]
+    
+    def get3rdConv(self) -> list:
+        teamConv = get_nfl_efficiency(self.oData.query('Down == 3'))[0]
+        enemyConv = get_nfl_efficiency(self.dData.query('Down == 3'))[0]
+        totalConv = teamConv + enemyConv
+
+        teamConvStr = str(teamConv) + "%"
+        enemyConvStr = str(enemyConv) + "%"
+
+        teamBar = self.getBar(teamConv, totalConv)
+        enemyBar = self.getBar(enemyConv, totalConv)
+        turnoverDict = {"stat": "3rd Down Conv", "teamVal": teamConvStr, "enemyVal": enemyConvStr, "teamBar": teamBar, "enemyBar": enemyBar}
+        return [turnoverDict]
+    
+    def getStartingFieldPos(self) -> list:
+        try:
+            teamDriveList = []
+            teamTotalStartPos = 0
+            teamNumDrives = 0
+            for i in self.oData['Drive']:
+                if i not in teamDriveList:
+                    teamDriveList.append(i)
+            for driveNum in teamDriveList:
+                driveData = self.oData.query('Drive == @driveNum')
+                playNum = min(driveData['Play_Number'])
+                val = self.oData.query(f'Drive == {driveNum} & Play_Number == {playNum}')['Yard'].iloc[0]
+                teamTotalStartPos += val
+                teamNumDrives += 1
+            teamStartPos = round(teamTotalStartPos / teamNumDrives)
+        except:
+            enemyStartPos = "invalid"
+
+        try:
+            enemyDriveList = []
+            enemyTotalStartPos = 0
+            enemyNumDrives = 0
+            for i in self.dData['Drive']:
+                if i not in enemyDriveList:
+                    enemyDriveList.append(i)
+            for driveNum in enemyDriveList:
+                driveData = self.dData.query('Drive == @driveNum')
+                playNum = min(driveData['Play_Number'])
+                val = self.dData.query(f'Drive == {driveNum} & Play_Number == {playNum}')['Yard'].iloc[0]
+                enemyTotalStartPos += val
+                enemyNumDrives += 1
+            enemyStartPos = round(enemyTotalStartPos / enemyNumDrives)
+        except:
+            enemyStartPos = "invalid"
+
+        totalStartPos = teamStartPos + enemyStartPos
+        teamBar = self.getBar(teamStartPos, totalStartPos)
+        enemyBar = self.getBar(enemyStartPos, totalStartPos)
+
+        startPosDict = {"stat": "Avg Starting Field Pos", "teamVal": teamStartPos, "enemyVal": enemyStartPos, "teamBar": teamBar, "enemyBar": enemyBar}
+        return [startPosDict]
 
         
     
@@ -189,7 +297,11 @@ class IngameReport():
         yardList = self.getYardage()
         effList = self.getEfficiency()
         sackRateList = self.getSackRate()
-        data_list = yardList + effList + sackRateList
+        blitzRateList = self.getBlitzRate()
+        turnoverList = self.getForcedTurnovers()
+        conv3rdList = self.get3rdConv()
+        startPosList = self.getStartingFieldPos()
+        data_list = yardList + effList + sackRateList + blitzRateList + turnoverList + conv3rdList + startPosList
 
         html = title_template.render(title="Ingame Report", img_path="images/endzone_shield.png", data_list=data_list)
         # Render this sucker!
