@@ -133,6 +133,8 @@ class IngameReport():
     def getEfficiency(self) -> list:
         oTotalEff = get_nfl_efficiency(self.oData)[0]
         dTotalEff = get_nfl_efficiency(self.dData)[0]
+        oTotalEffStr = str(oTotalEff) + "%"
+        dTotalEffStr = str(dTotalEff) + "%"
 
         oRushPlays = self.oData.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
         dRushPlays = self.dData.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
@@ -143,6 +145,11 @@ class IngameReport():
         dRushEff = get_nfl_efficiency(dRushPlays)[0]
         oPassEff = get_nfl_efficiency(oPassPlays)[0]
         dPassEff = get_nfl_efficiency(dPassPlays)[0]
+        oRushEffStr = str(oRushEff) + "%"
+        dRushEffStr = str(dRushEff) + "%"
+        oPassEffStr = str(oPassEff) + "%"
+        dPassEffStr = str(dPassEff) + "%"
+        
 
         bothTotal = oTotalEff + dTotalEff
         rushTotal = oRushEff + dRushEff
@@ -155,9 +162,9 @@ class IngameReport():
         oPassBar = self.getBar(oPassEff, passTotal)
         dPassBar = self.getBar(dPassEff, passTotal)
 
-        totalDict = {"stat": "Overall Efficiency", "teamVal": oTotalEff, "enemyVal": dTotalEff, "teamBar": oBarTotal, "enemyBar": dBarTotal}
-        rushDict = {"stat": "Run Efficiency", "teamVal": oRushEff, "enemyVal": dRushEff, "teamBar": oBarRush, "enemyBar": dBarRush}
-        passDict = {"stat": "Pass Efficiency", "teamVal": oPassEff, "enemyVal": dPassEff, "teamBar": oPassBar, "enemyBar": dPassBar}
+        totalDict = {"stat": "Overall Efficiency", "teamVal": oTotalEffStr, "enemyVal": dTotalEffStr, "teamBar": oBarTotal, "enemyBar": dBarTotal}
+        rushDict = {"stat": "Run Efficiency", "teamVal": oRushEffStr, "enemyVal": dRushEffStr, "teamBar": oBarRush, "enemyBar": dBarRush}
+        passDict = {"stat": "Pass Efficiency", "teamVal": oPassEffStr, "enemyVal": dPassEffStr, "teamBar": oPassBar, "enemyBar": dPassBar}
 
         return [totalDict, rushDict, passDict]
     
