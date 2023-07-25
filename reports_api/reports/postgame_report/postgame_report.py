@@ -14,7 +14,7 @@ from ..utils.utils import *
 from ..utils.data_report_utils import *
 import sys
 from reports_api.reports.pregame_report.pregame_report import PregameReport
-# To-Do make class of Thunderbolt
+import os
 
 env = jinja2.Environment(loader = jinja2.FileSystemLoader("./reports_api/reports"))
 
@@ -48,8 +48,6 @@ def get_coverage(coverage: str) -> pd.DataFrame:
     else:
         return None
     
-          
-
 def prep_data(df: pd.DataFrame) -> pd.DataFrame:
     df["Down_Group"] = ""
     df["Thunderbolt_Play"] = ""
@@ -78,8 +76,6 @@ def crossTabQuery(df_x: pd.Series, df_y: pd.Series, down: str, report_type: str)
     return crossTab
 
 
-
-
 class PostgameReport():
     def __init__(self, team_of_interest: str, gameId: str, user_team_code: str) -> None: 
         self.team_of_interest = team_of_interest
@@ -92,15 +88,16 @@ class PostgameReport():
         self.pdfs = []
         self.get_data()
         self.split_data()
-        
         self.title_page()
-        
-
+        self.quarterback_page()
+        # To-DO add for loop for ball carriers and receivers
+        self.runningBack_page(6)
+        self.receiver_page(22)
 
     def template_to_pdf(self, html, appendToFront: bool = False) -> None:
                 # Used for ease of development
                 if sys.platform.startswith('win'):
-                    pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='dependencies/wkhtmltopdf.exe'))
+                    pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='dependencies/wkhtmltopdf.exe'), options={'margin-top': '0', 'margin-right': '0', 'margin-bottom': '0', 'margin-left': '0'})
                 # Means it is being run on docker docker jr docker
                 else:
                     pdf = pdfkit.from_string(html, False)
@@ -133,16 +130,35 @@ class PostgameReport():
         self.defensive_data = enrich_data(defense, self.team_of_interest)
 
     def title_page(self) -> None:
+        image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
+        title_template = env.get_template('postgame_report/report_pages/title.html')
+        html = title_template.render(image_path = image_path)
+        # Render
+        self.template_to_pdf(html, True) 
+    
+    def quarterback_page(self) -> None:
+        image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
+        svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/quarterback.html')
-        html = title_template.render()
-        # Render this sucker!
-        self.template_to_pdf(html, True)
-    
-    
-    
-    
-    
-    
-              
+        html = title_template.render(image_path = image_path, svg_path = svg_path)
+        # Render
+        self.template_to_pdf(html, False)
 
+    ## THIS SHOULD BE DOWN FOR EACH RUNNING BACK! so you'll need to use a for loop on distinct ball_carriers
+    def runningBack_page(self, ball_carrier: int) -> None:
+        
+        image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
+        svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
+        title_template = env.get_template('postgame_report/report_pages/runningBack.html')
+        html = title_template.render(image_path = image_path, svg_path = svg_path, ball_carrier = ball_carrier)
+        # Render
+        self.template_to_pdf(html, False)
 
+    ## THIS SHOULD BE DOWN FOR EACH RECEIVER! so you'll need to use a for loop on distinct ball_carriers
+    def receiver_page(self, receiver: int) -> None:
+        image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
+        svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
+        title_template = env.get_template('postgame_report/report_pages/receiver.html')
+        html = title_template.render(image_path = image_path, svg_path = svg_path, receiver = receiver)
+        # Render
+        self.template_to_pdf(html, False)
