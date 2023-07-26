@@ -88,13 +88,12 @@ class PostgameReport():
         self.pdfs = []
         self.get_data()
         self.split_data()
-        # self.title_page()
+        self.overview_page()
         self.quarterback_page()
-        # To-DO add for loop for ball carriers and receivers
 
-        for ballCarrier in self.o_data["Ball_Carrier"].unique():
+        for ballCarrier in self.run_data["Ball_Carrier"].unique():
             self.runningBack_page(ballCarrier)
-        for reciever in self.o_data["Ball_Carrier"].unique():
+        for reciever in self.pass_data["Ball_Carrier"].unique():
             self.receiver_page(reciever)
          
 
@@ -355,12 +354,12 @@ class PostgameReport():
     
     def split_data(self) -> None:
         #Filter to singular possession 
-        o_data = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
-        d_data = self.play_data[(self.play_data["Possession"] != self.team_of_interest)]
 
-        self.o_data = enrich_data(o_data, self.team_of_interest)
-        self.d_data = enrich_data(d_data, self.team_of_interest)
-    
+        self.report_data = enrich_data(self.play_data, self.team_of_interest)
+        o_data = self.report_data[(self.report_data["Possession"] == self.team_of_interest)]
+        d_data = self.report_data[(self.report_data["Possession"] != self.team_of_interest)]
+        self.run_data = self.report_data[(self.report_data["Play_Type"].isin(["Inside Run", "Outside Run", "Option"]))]
+        self.pass_data = self.report_data[(self.report_data["Play_Type"].isin(["Pass", "Pocket Pass"]))]
     def overview_page(self) -> None:
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         title_template = env.get_template('postgame_report/report_pages/title.html')
