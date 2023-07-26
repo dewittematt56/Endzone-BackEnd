@@ -88,23 +88,25 @@ class PostgameReport():
         self.pdfs = []
         self.get_data()
         self.split_data()
-        self.title_page()
+        self.overview_page()
         self.quarterback_page()
-        # To-DO add for loop for ball carriers and receivers
-        self.runningBack_page(6)
+
+        for ball_carrier in self.offensive_data["Ball_Carrier"].unique():
+
+            self.runningBack_page(ball_carrier)
         self.receiver_page(22)
 
     def template_to_pdf(self, html, appendToFront: bool = False) -> None:
-                # Used for ease of development
-                if sys.platform.startswith('win'):
-                    pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='dependencies/wkhtmltopdf.exe'), options={'margin-top': '0', 'margin-right': '0', 'margin-bottom': '0', 'margin-left': '0'})
-                # Means it is being run on docker docker jr docker
-                else:
-                    pdf = pdfkit.from_string(html, False)
-                pdf_reader = PyPDF2.PdfReader(BytesIO(pdf))
+        # Used for ease of development
+        if sys.platform.startswith('win'):
+            pdf = pdfkit.from_string(html, False, configuration = pdfkit.configuration(wkhtmltopdf='dependencies/wkhtmltopdf.exe'), options={'margin-top': '0', 'margin-right': '0', 'margin-bottom': '0', 'margin-left': '0'})
+        # Means it is being run on docker docker jr docker
+        else:
+            pdf = pdfkit.from_string(html, False)
+        pdf_reader = PyPDF2.PdfReader(BytesIO(pdf))
 
-                if appendToFront: self.pdfs.insert(0, pdf_reader)
-                else: self.pdfs.append(pdf_reader)
+        if appendToFront: self.pdfs.insert(0, pdf_reader)
+        else: self.pdfs.append(pdf_reader)
                 
     def combine_reports(self) -> None:
         return combine_pdf_pages(self.pdfs)
@@ -124,12 +126,11 @@ class PostgameReport():
         self.play_data = pd.merge(df_plays, self.game_data, on='Game_ID', how='inner')
     
     def split_data(self) -> None:
-        defense = self.play_data[(self.play_data["Possession"] != self.team_of_interest)]
-        offense = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
-        self.offensive_data = enrich_data(offense, self.team_of_interest)
-        self.defensive_data = enrich_data(defense, self.team_of_interest)
+        #Filter to singular possession 
+        report_data = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
+        self.report_data = enrich_data(report_data, self.team_of_interest)
 
-    def title_page(self) -> None:
+    def overview_page(self) -> None:
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         title_template = env.get_template('postgame_report/report_pages/title.html')
         html = title_template.render(image_path = image_path)
@@ -137,11 +138,13 @@ class PostgameReport():
         self.template_to_pdf(html, True) 
     
     def quarterback_page(self) -> None:
+        # To-Do Calculate Stats
+
+
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/quarterback.html')
         html = title_template.render(image_path = image_path, svg_path = svg_path)
-        # Render
         self.template_to_pdf(html, False)
 
     ## THIS SHOULD BE DOWN FOR EACH RUNNING BACK! so you'll need to use a for loop on distinct ball_carriers
