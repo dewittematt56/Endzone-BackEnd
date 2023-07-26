@@ -87,11 +87,16 @@ class PostgameReport():
         self.pdf_write = PyPDF2.PdfWriter()
         self.pdfs = []
         self.get_data()
+        print(self.play_data)
         self.split_data()
+        self.offensive_data["Play_Type"]
         self.title_page()
         self.quarterback_page()
         # To-DO add for loop for ball carriers and receivers
-        self.runningBack_page(6)
+        for ballCarrier in self.offensive_data["Ball_Carrier"].unique():
+            if self.offensive_data["Play_Type"] == "Inside Run" or self.offensive_data["Play_Type"] == "Outside":
+                self.runningBack_page(ballCarrier)
+        
         self.receiver_page(22)
 
     def template_to_pdf(self, html, appendToFront: bool = False) -> None:
