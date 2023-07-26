@@ -88,12 +88,15 @@ class PostgameReport():
         self.pdfs = []
         self.get_data()
         self.split_data()
-        self.overview_page()
+        # self.title_page()
         self.quarterback_page()
+        # To-DO add for loop for ball carriers and receivers
 
-        for ball_carrier in self.o_data["Ball_Carrier"].unique():
-            self.runningBack_page(ball_carrier)
-        self.receiver_page(22)
+        for ballCarrier in self.o_data["Ball_Carrier"].unique():
+            self.runningBack_page(ballCarrier)
+        for reciever in self.o_data["Ball_Carrier"].unique():
+            self.receiver_page(reciever)
+         
 
     def getBar(self, val, total) -> str:
         try:
