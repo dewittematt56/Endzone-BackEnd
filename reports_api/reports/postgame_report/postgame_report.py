@@ -356,8 +356,8 @@ class PostgameReport():
         #Filter to singular possession 
 
         self.report_data = enrich_data(self.play_data, self.team_of_interest)
-        o_data = self.report_data[(self.report_data["Possession"] == self.team_of_interest)]
-        d_data = self.report_data[(self.report_data["Possession"] != self.team_of_interest)]
+        self.o_data = self.report_data[(self.report_data["Possession"] == self.team_of_interest)]
+        self.d_data = self.report_data[(self.report_data["Possession"] != self.team_of_interest)]
         self.run_data = self.report_data[(self.report_data["Play_Type"].isin(["Inside Run", "Outside Run", "Option"]))]
         self.pass_data = self.report_data[(self.report_data["Play_Type"].isin(["Pass", "Pocket Pass"]))]
     def overview_page(self) -> None:
