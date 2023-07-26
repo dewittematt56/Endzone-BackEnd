@@ -87,17 +87,16 @@ class PostgameReport():
         self.pdf_write = PyPDF2.PdfWriter()
         self.pdfs = []
         self.get_data()
-        print(self.play_data)
         self.split_data()
-        self.offensive_data["Play_Type"]
-        self.title_page()
+        # self.title_page()
         self.quarterback_page()
         # To-DO add for loop for ball carriers and receivers
-        for ballCarrier in self.offensive_data["Ball_Carrier"].unique():
-            if self.offensive_data["Play_Type"] == "Inside Run" or self.offensive_data["Play_Type"] == "Outside":
-                self.runningBack_page(ballCarrier)
-        
-        self.receiver_page(22)
+
+        for ballCarrier in self.run_data["Ball_Carrier"].unique():
+            self.runningBack_page(ballCarrier)
+        for reciever in self.pass_data["Ball_Carrier"].unique():
+            self.receiver_page(reciever)
+         
 
     def template_to_pdf(self, html, appendToFront: bool = False) -> None:
         # Used for ease of development
@@ -132,7 +131,8 @@ class PostgameReport():
         #Filter to singular possession 
         report_data = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
         self.report_data = enrich_data(report_data, self.team_of_interest)
-
+        self.run_data = self.report_data[(self.report_data["Play_Type"].isin(["Inside Run", "Outside Run", "Option"]))]
+        self.pass_data = self.report_data[(self.report_data["Play_Type"].isin(["Pass", "Pocket Pass"]))]
     def overview_page(self) -> None:
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         title_template = env.get_template('postgame_report/report_pages/title.html')
