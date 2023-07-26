@@ -264,12 +264,14 @@ def addPenalty():
             if param_check: 
                 return param_check
             else:
+                play_number = str(data["play_number"])
                 game_id = str(data["game_id"])
                 penalty_name = str(data["penalty_name"])
+                side_of_ball = str(data["side_of_ball"])
                 offending_team = str(data["offending_team"])
                 offending_player = str(data["offending_player"])
                 penalty_yards = int(data["penalty_yards"])
-                new_penalty = Penalty(game_id, penalty_name, offending_team, offending_player, penalty_yards) 
+                new_penalty = Penalty(play_number, game_id, penalty_name, side_of_ball, offending_team, offending_player, penalty_yards) 
                 db.session.add(new_penalty)
                 db.session.commit()       
                 return Response("Penalty Added", status = 200)   

@@ -91,10 +91,235 @@ class PostgameReport():
         self.overview_page()
         self.quarterback_page()
 
-        for ball_carrier in self.offensive_data["Ball_Carrier"].unique():
-
+        for ball_carrier in self.o_data["Ball_Carrier"].unique():
             self.runningBack_page(ball_carrier)
         self.receiver_page(22)
+
+    def getBar(self, val, total) -> str:
+        try:
+            val = str((val / total) * 100) + "%"
+        except:
+            val = "0%"
+        return val
+
+    def getEfficiency(self) -> list:
+        oTotalEff = get_nfl_efficiency(self.o_data)[0]
+        dTotalEff = get_nfl_efficiency(self.d_data)[0]
+        oTotalEffStr = str(oTotalEff) + "%"
+        dTotalEffStr = str(dTotalEff) + "%"
+
+        oRushPlays = self.o_data.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
+        dRushPlays = self.d_data.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
+        oPassPlays = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        dPassPlays = self.d_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+
+        oRushEff = get_nfl_efficiency(oRushPlays)[0]
+        dRushEff = get_nfl_efficiency(dRushPlays)[0]
+        oPassEff = get_nfl_efficiency(oPassPlays)[0]
+        dPassEff = get_nfl_efficiency(dPassPlays)[0]
+        oRushEffStr = str(oRushEff) + "%"
+        dRushEffStr = str(dRushEff) + "%"
+        oPassEffStr = str(oPassEff) + "%"
+        dPassEffStr = str(dPassEff) + "%"
+        
+
+        bothTotal = oTotalEff + dTotalEff
+        rushTotal = oRushEff + dRushEff
+        passTotal = oPassEff + dPassEff
+
+        oBarTotal = self.getBar(oTotalEff, bothTotal)
+        dBarTotal = self.getBar(dTotalEff, bothTotal)
+        oBarRush = self.getBar(oRushEff, rushTotal)
+        dBarRush = self.getBar(dRushEff, rushTotal)
+        oPassBar = self.getBar(oPassEff, passTotal)
+        dPassBar = self.getBar(dPassEff, passTotal)
+
+        totalDict = {"stat": "Overall Efficiency", "teamVal": oTotalEffStr, "enemyVal": dTotalEffStr, "teamBar": oBarTotal, "enemyBar": dBarTotal}
+        rushDict = {"stat": "Run Efficiency", "teamVal": oRushEffStr, "enemyVal": dRushEffStr, "teamBar": oBarRush, "enemyBar": dBarRush}
+        passDict = {"stat": "Pass Efficiency", "teamVal": oPassEffStr, "enemyVal": dPassEffStr, "teamBar": oPassBar, "enemyBar": dPassBar}
+
+        return [totalDict, rushDict, passDict]
+    
+    def getSackRate(self) -> list:
+        teamSackPlays = self.d_data.query('Pass_Zone == "Not Thrown" & Result < 0')
+        enemySackPlays = self.o_data.query('Pass_Zone == "Not Thrown" & Result < 0')
+        teamPassPlays = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        enemyPassPlays = self.d_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+
+        try:
+            teamSackRate = round((len(teamSackPlays) / len(enemyPassPlays)) * 100)
+            teamSackRateStr = str(teamSackRate) + "%"
+        except ZeroDivisionError:
+            teamSackRateStr = "Invalid"
+
+        try:
+            enemySackRate = round((len(enemySackPlays) / len(teamPassPlays)) * 100)
+            enemySackRateStr = str(enemySackRate) + "%"
+        except ZeroDivisionError:
+            enemySackRateStr = "Invalid"
+
+        totalSackRate = teamSackRate + enemySackRate
+    
+        teamBar = self.getBar(teamSackRate, totalSackRate)
+        enemyBar = self.getBar(enemySackRate, totalSackRate)
+
+        sackDict = {"stat": "Sack Rate", "teamVal": teamSackRateStr, "enemyVal": enemySackRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
+        # Returning list in case we want to add stuff later on down the road to this function
+        return [sackDict]
+    
+    def getBlitzRate(self) -> list:
+        enemyPressurePlays = self.o_data.query('Pressure_Existence == True')
+        teamPressurePlays = self.d_data.query('Pressure_Existence == True')
+
+        try:
+            teamBlitzRate = round((len(teamPressurePlays) / len(self.d_data)) * 100)
+            teamBlitzRateStr = str(teamBlitzRate) + "%"
+        except ZeroDivisionError:
+            teamBlitzRateStr = "Invalid"
+
+        try:
+            enemyBlitzRate = round((len(enemyPressurePlays) / len(self.o_data)) * 100)
+            enemyBlitzRateStr = str(enemyBlitzRate) + "%"
+        except ZeroDivisionError:
+            teamBlitzRateStr = "Invalid"
+
+        totalBlitzRate = teamBlitzRate + enemyBlitzRate
+
+        teamBar = self.getBar(teamBlitzRate, totalBlitzRate)
+        enemyBar = self.getBar(enemyBlitzRate, totalBlitzRate)
+
+        sackDict = {"stat": "Blitz Rate", "teamVal": teamBlitzRateStr, "enemyVal": enemyBlitzRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
+        # Returning list in case we want to add stuff later on down the road to this function
+        return [sackDict]
+    
+    def getForcedTurnovers(self) -> list:
+        teamTurnovers = len(self.o_data.query('Event == "Interception" | Event == "Fumble"'))
+        enemyTurnovers = len(self.d_data.query('Event == "Interception" | Event == "Fumble"'))
+        totalTurnovers = teamTurnovers + enemyTurnovers
+    
+        teamBar = self.getBar(teamTurnovers, totalTurnovers)
+        enemyBar = self.getBar(enemyTurnovers, totalTurnovers)
+        
+        turnoverDict = {"stat": "Forced Turnovers", "teamVal": teamTurnovers, "enemyVal": enemyTurnovers, "teamBar": teamBar, "enemyBar": enemyBar}
+        return [turnoverDict]
+    
+    def get3rdConv(self) -> list:
+        teamConv = get_nfl_efficiency(self.o_data.query('Down == 3'))[0]
+        enemyConv = get_nfl_efficiency(self.d_data.query('Down == 3'))[0]
+        totalConv = teamConv + enemyConv
+
+        teamConvStr = str(teamConv) + "%"
+        enemyConvStr = str(enemyConv) + "%"
+
+        teamBar = self.getBar(teamConv, totalConv)
+        enemyBar = self.getBar(enemyConv, totalConv)
+        turnoverDict = {"stat": "3rd Down Conv", "teamVal": teamConvStr, "enemyVal": enemyConvStr, "teamBar": teamBar, "enemyBar": enemyBar}
+        return [turnoverDict]
+    
+    def getStartingFieldPos(self) -> list:
+        try:
+            teamDriveList = []
+            teamTotalStartPos = 0
+            teamNumDrives = 0
+            for i in self.o_data['Drive']:
+                if i not in teamDriveList:
+                    teamDriveList.append(i)
+            for driveNum in teamDriveList:
+                driveData = self.o_data.query('Drive == @driveNum')
+                playNum = min(driveData['Play_Number'])
+                val = self.o_data.query(f'Drive == {driveNum} & Play_Number == {playNum}')['Yard'].iloc[0]
+                teamTotalStartPos += val
+                teamNumDrives += 1
+            teamStartPos = round(teamTotalStartPos / teamNumDrives)
+        except:
+            enemyStartPos = "invalid"
+
+        try:
+            enemyDriveList = []
+            enemyTotalStartPos = 0
+            enemyNumDrives = 0
+            for i in self.d_data['Drive']:
+                if i not in enemyDriveList:
+                    enemyDriveList.append(i)
+            for driveNum in enemyDriveList:
+                driveData = self.d_data.query('Drive == @driveNum')
+                playNum = min(driveData['Play_Number'])
+                val = self.d_data.query(f'Drive == {driveNum} & Play_Number == {playNum}')['Yard'].iloc[0]
+                enemyTotalStartPos += val
+                enemyNumDrives += 1
+            enemyStartPos = round(enemyTotalStartPos / enemyNumDrives)
+        except:
+            enemyStartPos = "invalid"
+
+        totalStartPos = teamStartPos + enemyStartPos
+        teamBar = self.getBar(teamStartPos, totalStartPos)
+        enemyBar = self.getBar(enemyStartPos, totalStartPos)
+
+        startPosDict = {"stat": "Avg Starting Field Pos", "teamVal": teamStartPos, "enemyVal": enemyStartPos, "teamBar": teamBar, "enemyBar": enemyBar}
+        return [startPosDict]
+
+    def getYardage(self) -> list:
+        oTotalPlays = len(self.o_data)
+        dTotalPlays = len(self.d_data)
+
+        oTotalYards = sum(self.o_data["Result"])
+        dTotalYards = sum(self.d_data["Result"])
+
+        oInsideRushPlays = self.o_data.query('Play_Type == "Inside Run"')
+        oOutsideRushPlays = self.o_data.query('Play_Type == "Outside Run"')
+
+        dInsideRushPlays = self.d_data.query('Play_Type == "Inside Run"')
+        dOutsideRushPlays = self.d_data.query('Play_Type == "Outside Run"')
+
+        oRushYards = sum(oInsideRushPlays["Result"]) + sum(oOutsideRushPlays["Result"])
+        dRushYards = sum(dInsideRushPlays["Result"]) + sum(dOutsideRushPlays["Result"])
+
+        try: oAvgRush = round(oRushYards / (len(oInsideRushPlays) + len(oOutsideRushPlays)), 1)
+        except ZeroDivisionError:oAvgRush = 0
+
+        try: oYardsPerAttempt = round(oTotalYards / oTotalPlays, 1)
+        except ZeroDivisionError: oYardsPerAttempt = 0
+
+        try: dYardsPerAttempt = round(dTotalYards / dTotalPlays, 1)
+        except ZeroDivisionError: dYardsPerAttempt = 0
+
+        try: dAvgRush = round(dRushYards / (len(dInsideRushPlays) + len(dOutsideRushPlays)), 1)
+        except ZeroDivisionError: dAvgRush = 0
+
+        totalAvgRush = oAvgRush + dAvgRush
+
+        oPassPlays = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        dPassPlays = self.d_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        oPassYards = sum(oPassPlays["Result"])
+        dPassYards = sum(dPassPlays["Result"])
+
+        bothTotal = oTotalYards + dTotalYards
+        rushTotal = oRushYards + dRushYards
+        passTotal = oPassYards + dPassYards
+        oBarTotal = self.getBar(oTotalYards, bothTotal)
+        dBarTotal = self.getBar(dTotalYards, bothTotal)
+        oBarRush = self.getBar(oRushYards, rushTotal) 
+        dBarRush = self.getBar(dRushYards, rushTotal)
+        oBarPass = self.getBar(oPassYards, passTotal)
+        dBarPass = self.getBar(dPassYards, passTotal)
+        oBarAvgRush = self.getBar(oAvgRush, totalAvgRush)
+        dBarAvgRush = self.getBar(dAvgRush, totalAvgRush)
+
+        totalPlays = {"stat": "Plays Ran", "teamVal": oTotalPlays, "enemyVal": dTotalPlays, "teamBar":  self.getBar(oTotalPlays, oTotalPlays + dTotalPlays), "enemyBar": self.getBar(dTotalPlays, oTotalPlays + dTotalPlays)}
+        totalDict = {"stat": "Total Yards", "teamVal": oTotalYards, "enemyVal": dTotalYards, "teamBar": oBarTotal, "enemyBar": dBarTotal}
+        avgYardDict = {"stat": "Yards Per Attempt", "teamVal": oYardsPerAttempt, "enemyVal": dYardsPerAttempt, "teamBar": self.getBar(oYardsPerAttempt, oYardsPerAttempt + dYardsPerAttempt), "enemyBar": self.getBar(dYardsPerAttempt, oYardsPerAttempt + dYardsPerAttempt)}
+        rushDict = {"stat": "Rush Yards", "teamVal": oRushYards, "enemyVal": dRushYards, "teamBar": oBarRush, "enemyBar": dBarRush}
+        
+        insideRushDict = {"stat": "Inside Run Yards", "teamVal": sum(oInsideRushPlays["Result"]), "enemyVal": sum(dInsideRushPlays["Result"]), "teamBar": self.getBar(sum(oInsideRushPlays["Result"]), sum(oInsideRushPlays["Result"]) + sum(dInsideRushPlays["Result"])), "enemyBar": self.getBar(sum(dInsideRushPlays["Result"]), sum(oInsideRushPlays["Result"]) + sum(dInsideRushPlays["Result"]))}
+        outsideRushDict = {"stat": "Outside Run Yards", "teamVal": sum(oOutsideRushPlays["Result"]), "enemyVal": sum(dOutsideRushPlays["Result"]), "teamBar": self.getBar(sum(oOutsideRushPlays["Result"]), sum(oOutsideRushPlays["Result"]) + sum(dOutsideRushPlays["Result"])), "enemyBar": self.getBar(sum(dOutsideRushPlays["Result"]), sum(oOutsideRushPlays["Result"]) + sum(dOutsideRushPlays["Result"]))}
+
+        passDict = {"stat": "Pass Yards", "teamVal": oPassYards, "enemyVal": dPassYards, "teamBar": oBarPass, "enemyBar": dBarPass}
+        avgRushDict = {"stat": "Yards Per Carry", "teamVal": oAvgRush, "enemyVal": dAvgRush, "teamBar": oBarAvgRush, "enemyBar": dBarAvgRush}
+
+        return [totalPlays, totalDict, avgYardDict, rushDict, insideRushDict, outsideRushDict, passDict, avgRushDict]
+
+    def getEfficiencies(self):
+        pass
 
     def template_to_pdf(self, html, appendToFront: bool = False) -> None:
         # Used for ease of development
@@ -127,20 +352,25 @@ class PostgameReport():
     
     def split_data(self) -> None:
         #Filter to singular possession 
-        report_data = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
-        self.report_data = enrich_data(report_data, self.team_of_interest)
+        o_data = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
+        d_data = self.play_data[(self.play_data["Possession"] != self.team_of_interest)]
 
+        self.o_data = enrich_data(o_data, self.team_of_interest)
+        self.d_data = enrich_data(d_data, self.team_of_interest)
+    
     def overview_page(self) -> None:
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         title_template = env.get_template('postgame_report/report_pages/title.html')
-        html = title_template.render(image_path = image_path)
+
+        data_list = self.getYardage() + self.getEfficiency() + self.getSackRate() + self.getBlitzRate() + self.get3rdConv() + self.getStartingFieldPos() + self.getForcedTurnovers()
+
+        print()
+        html = title_template.render(image_path = image_path, data_list = data_list, home_team = self.o_data['Home_Team'].iloc[0], away_team = self.o_data['Away_Team'].iloc[0], away_score = self.play_data["Home_Score"].iloc[len(self.play_data) - 1], home_score = self.play_data["Away_Score"].iloc[len(self.play_data) - 1])
         # Render
         self.template_to_pdf(html, True) 
     
     def quarterback_page(self) -> None:
         # To-Do Calculate Stats
-
-
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/quarterback.html')

@@ -208,17 +208,21 @@ class Play(db.Model):
 class Penalty(db.Model):
     __tablename__ = "Penalty"
     ID = db.Column(db.Integer, autoincrement = True, primary_key= True)
+    Play_Number = db.Column(db.Integer, autoincrement = False, nullable = False)
     Game_ID = db.Column(db.String(36), unique = False, nullable = False)
     Penalty_Name = db.Column(db.String(50), unique = False, nullable = False)
+    Penalty_Offending_Side = db.Column(db.String(50), unique = False, nullable = False)
     Penalty_Offending_Team = db.Column(db.String(50), unique = False, nullable = False)
     Penalty_Offending_Player = db.Column(db.Integer, nullable = False, default = -99)
     Penalty_Yards = db.Column(db.Integer, nullable = False) 
     Creator = db.Column(db.String(36), unique = False, nullable = False)
     Creation_Date = db.Column(DateTime(), default=datetime.datetime.utcnow)
 
-    def __init__(self, game_id, penalty_name: str, offending_team: str, offending_player: int, penalty_yards: int):
+    def __init__(self, play_number: str, game_id, penalty_name: str, side_of_ball: str, offending_team: str, offending_player: int, penalty_yards: int):
+        self.Play_Number = play_number
         self.Game_ID = game_id
         self.Penalty_Name = penalty_name
+        self.Penalty_Offending_Side = side_of_ball
         self.Penalty_Offending_Team = offending_team
         self.Penalty_Offending_Player = offending_player
         self.Penalty_Yards = penalty_yards
