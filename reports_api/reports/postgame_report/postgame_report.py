@@ -373,15 +373,20 @@ class PostgameReport():
     
     def quarterback_page(self) -> None:
         # To-Do Calculate Stats
+        self.o_data['Pass_Zone'] = self.o_data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
+        thrown_passes = (self.o_data[self.o_data['Pass_Zone'] != 'Not Thrown'])
+        quarterback_bar = groupedBarGraph(thrown_passes, "Pass_Zone","Ball_Carrier", "POGGERS")
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/quarterback.html')
-        html = title_template.render(image_path = image_path, svg_path = svg_path)
+        html = title_template.render(image_path = image_path, svg_path = svg_path, quarterback_bar = quarterback_bar)
+        
         self.template_to_pdf(html, False)
 
     ## THIS SHOULD BE DOWN FOR EACH RUNNING BACK! so you'll need to use a for loop on distinct ball_carriers
     def runningBack_page(self, ball_carrier: int) -> None:
-        
+        rush_data = (self.o_data[~self.o_data['Run_Type'].isnull()])
+        print(rush_data)
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/runningBack.html')
