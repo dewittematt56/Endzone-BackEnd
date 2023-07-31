@@ -347,14 +347,6 @@ class IngameReport():
 
     
     def title_page(self) -> None:
-        """_summary_
-
-        Args:
-            hi (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
         title_template = env.get_template('ingame_report/report_pages/title.html')
 
         totalPlays = self.getTotalPlays()
@@ -376,8 +368,30 @@ class IngameReport():
         # Render this sucker!
         self.template_to_pdf(html, True)
 
+    
+    def buildBarGraph(self, data, x, y, title, uniqueId_col, y_label) -> BytesIO:
+        return groupedBarGraph(data, x, y, title, uniqueId_col, y_label)
+
+
+    def o_overview_page(self) -> None:
+        o_overview_template = env.get_template('ingame_report/report_pages/offense_overview.html')
+        play_formation = self.buildBarGraph(self.oData, "Formation", "Play_Type", "Play Type", "Result", "Average Yards Gained")
+        down_coverage = self.buildBarGraph(self.oData, "Down", "Coverage", "Coverage", "Play_Number", "Occurences")
+        distance_coverage = self.buildBarGraph(self.oData, "Distance", "Coverage", "Coverage", "Play_Number", "Occurences")
+        o_formation_coverage = self.buildBarGraph(self.oData, "O_Formation", "Coverage", "Coverage", "Play_Number", "Occurences")
+        field_pos_coverage = self.buildBarGraph(self.oData, "Field_Group", "Coverage", "Coverage", "Play_Number", "Occurences")
+        graphList = [{"title": "Avg Yards Gained for each Formation and Play Type", "graph": play_formation}, {"title": "Down by Coverage", "graph": down_coverage}, \
+                     {"title": "Distance by Coverage", "graph": distance_coverage}, {"title": "O Formation by Coverage", "graph": o_formation_coverage}, \
+                     {"title": "Field Position by Coverage", "graph": field_pos_coverage}]
+
+        image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
+        html = o_overview_template.render(image_path = image_path, data = graphList)
+        # Render this sucker!
+        self.template_to_pdf(html, True)
+
     def run_report(self):
-        self.title_page()
+        # self.title_page()
+        self.o_overview_page()
 
         
 if __name__ == "__main__":
