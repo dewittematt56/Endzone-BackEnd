@@ -408,7 +408,7 @@ class IngameReport():
                                 {"title": "Formation by Pressure", "graph": during_formation_pressure}
         ]
 
-        data = beforeDuringList
+        data = barGraphList + downCoverageList + downGroupCoverageList + beforeDuringList
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         html = o_overview_template.render(image_path = image_path, data = data)
@@ -452,8 +452,8 @@ class IngameReport():
 
         tempData = self.dData
         tempData['To_Boundary'] = tempData["Play_Type_Dir"] == tempData['Hash']
-        boundary_before = categorical_pieChart_wrapper(tempData, "To_Boundary", "Before: Plays into Strength")
-        boundary_during = categorical_pieChart_wrapper(tempData, "To_Boundary", "During: Plays into Strength")
+        boundary_before = categorical_pieChart_wrapper(tempData, "To_Boundary", "Before: Plays into Boundary")
+        boundary_during = categorical_pieChart_wrapper(tempData, "To_Boundary", "During: Plays into Boundary")
 
         beforeDuringList = [{"title": "Before: Formation by Play Type", "graph": before_formation_play}, \
                                 {"title": "During: Formation by Play Type", "graph": during_formation_play}, \
@@ -464,7 +464,7 @@ class IngameReport():
         ]
 
 
-        data = beforeDuringList
+        data = page1List + downPlayList + downGroupPlayList + beforeDuringList
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         html = o_overview_template.render(image_path = image_path, data = data)
