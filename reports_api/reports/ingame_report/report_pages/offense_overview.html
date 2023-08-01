@@ -74,8 +74,8 @@
 
             {% for item in data %}
                 <div class="chart-div">
-                    <img src="data:image/png;base64, {{ item.graph }}" alt="Bar Graph" class="barchart">
                     <p>{{item.title}}</p>
+                    <img src="data:image/png;base64, {{ item.graph }}" alt="Bar Graph" class="barchart">
                 </div>
             {% endfor %}
         </div>
