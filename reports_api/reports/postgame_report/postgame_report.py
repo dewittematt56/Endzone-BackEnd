@@ -94,6 +94,7 @@ class PostgameReport():
         for ballCarrier in self.run_data["Ball_Carrier"].unique():
             self.runningBack_page(ballCarrier)
         for reciever in self.pass_data["Ball_Carrier"].unique():
+            print(reciever)
             self.receiver_page(reciever)
          
     def getBar(self, val, total) -> str:
@@ -439,29 +440,58 @@ class PostgameReport():
     
     def quarterback_page(self) -> None:
         # To-Do Calculate Stats
+        pass_attempts = 0
+        pass_yards = 0
+        touchdowns = 0
+        interceptions = 0
+
         self.o_data['Pass_Zone'] = self.o_data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
         thrown_passes = (self.o_data[self.o_data['Pass_Zone'] != 'Not Thrown'])
+        thrown_passes["Distance"] = pd.to_numeric(thrown_passes["Distance"], errors='coerce')
+        for throw in thrown_passes["Distance"]: # Get total yardage
+            pass_yards += throw
+        for event in thrown_passes["Event"]: # Get total touchdowns
+            if event == "Touchdown":
+                touchdowns += 1
+            elif event == "Interception": # Find interceptions
+                interceptions += 1
         quarterback_bar = groupedBarGraph(thrown_passes, "Pass_Zone","Ball_Carrier", "POGGERS")
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/quarterback.html')
-        html = title_template.render(image_path = image_path, svg_path = svg_path, quarterback_bar = quarterback_bar)
+        html = title_template.render(image_path = image_path, svg_path = svg_path, quarterback_bar = quarterback_bar, pass_yards = pass_yards,
+                                    touchdowns = touchdowns, interceptions = interceptions)
         
         self.template_to_pdf(html, False)
 
     ## THIS SHOULD BE DOWN FOR EACH RUNNING BACK! so you'll need to use a for loop on distinct ball_carriers
     def runningBack_page(self, ball_carrier: int) -> None:
+        total_runs = 0
+        total_yards = 0
+        touchdowns = 0
+        fumbles = 0
         rush_data = (self.o_data[~self.o_data['Run_Type'].isnull()])
-        print(rush_data)
+        for run in rush_data["Distance"]:
+            total_runs += 1
+            total_yards += run
+        average = total_yards / total_runs
+        for event in rush_data["Event"]:
+            if event == "Touchdown":
+                touchdowns += 1
+            elif event == "Fumble":
+                fumbles += 1
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/runningBack.html')
-        html = title_template.render(image_path = image_path, svg_path = svg_path, ball_carrier = ball_carrier)
+        html = title_template.render(image_path = image_path, svg_path = svg_path, ball_carrier = ball_carrier, total_runs = total_runs,
+                                     total_yards = total_yards, touchdowns = touchdowns, fumbles = fumbles, average = average)
         # Render
         self.template_to_pdf(html, False)
 
     ## THIS SHOULD BE DOWN FOR EACH RECEIVER! so you'll need to use a for loop on distinct ball_carriers
     def receiver_page(self, receiver: int) -> None:
+        pass_data = (self.o_data[self.o_data["Run_Type"].isnull()])
+        print(pass_data["Result"])
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/receiver.html')
