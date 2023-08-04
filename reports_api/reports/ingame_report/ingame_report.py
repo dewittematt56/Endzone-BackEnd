@@ -21,9 +21,10 @@ env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports')
 env.globals.update(static='./reports_api/reports/ingame_report/static')
 
 class IngameReport():
-    def __init__(self, team_of_interest: str, game: str, team_code: str) -> None:
+    def __init__(self, team_of_interest: str, game: str, team_code: str, prior_games: list) -> None:
         self.team_of_interest = team_of_interest ## either self team or opponent
         self.game_id = game
+        self.prior_game_ids = prior_games
         self.team_code = team_code
         self.pdfs = []
         self.pages = []
@@ -36,10 +37,12 @@ class IngameReport():
         self.team_of_interest = "Burnsville"
         self.team_code = "Endzone-System"
         self.game_id = "643ad3ef-8b71-422d-ba03-f150637f148e"
+        self.prior_game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e", "a8ebe210-8ae1-4554-baef-9e73b35052ae", "35903bf5-dc8d-4512-b7ba-ed6d18ecca76"]
 
 
         self.get_data()
         self.split_data()
+        self.get_prior_game_data()
         self.run_report()
 
     def get_data(self) -> None:
@@ -61,6 +64,24 @@ class IngameReport():
         oPlays = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
         self.oData = enrich_data(oPlays, self.team_of_interest)
         self.dData = enrich_data(dPlays, self.team_of_interest)
+
+    
+    def get_prior_game_data(self) -> None:
+        db_engine = create_engine(db_uri)
+        Session = sessionmaker(db_engine)
+        session = Session()
+        team_game_data = pd.read_sql(session.query(Game).filter(Game.Game_ID.in_(self.prior_game_ids)).statement, db_engine)
+        team_game_data['Game_Date'] = pd.to_datetime(team_game_data['Game_Date'])
+        team_game_data['Game_Date'] = team_game_data['Game_Date'].dt.strftime('%A, %d %B %Y')
+        temp_plays = pd.read_sql(session.query(Play).filter(Play.Game_ID.in_(self.prior_game_ids)).statement, db_engine)
+        df_forms = pd.read_sql(session.query(Formations).filter(Formations.Team_Code == self.team_code).statement, db_engine)
+        df_plays = pd.merge(temp_plays, df_forms, left_on='O_Formation', right_on="Formation", how='inner')
+        team_play_data = pd.merge(df_plays, team_game_data, on='Game_ID', how='inner')
+        self.prior_penalties = pd.read_sql(session.query(Penalty).filter(Penalty.Game_ID.in_(self.prior_game_ids)).statement, db_engine)
+        dPlays = team_play_data[(team_play_data["Possession"] != self.team_of_interest)]
+        oPlays = team_play_data[(team_play_data["Possession"] == self.team_of_interest)]
+        self.oPriorData = enrich_data(oPlays, self.team_of_interest)
+        self.dPriorData = enrich_data(dPlays, self.team_of_interest)
 
 
     def combine_reports(self) -> None:
@@ -398,17 +419,17 @@ class IngameReport():
                                 {"title": "Long Coverage Frequency", "graph": long_coverage}
         ]
 
-        before_coverage_play = groupedBarGraph(self.oData, "Coverage", "Play_Type", "Play Type")
+        prior_coverage_play = groupedBarGraph(self.oData, "Coverage", "Play_Type", "Play Type")
         during_coverage_play = groupedBarGraph(self.oData, "Coverage", "Play_Type", "Play Type")
-        before_formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "Formation by Pressure")
+        prior_formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "Formation by Pressure")
         during_formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "Formation by Pressure")
-        beforeDuringList = [{"title": "Before: Coverage by Play Type", "graph": before_coverage_play}, \
+        priorDuringList = [{"title": "Prior: Coverage by Play Type", "graph": prior_coverage_play}, \
                                 {"title": "During: Coverage by Play Type", "graph": during_coverage_play}, \
-                                {"title": "Before: Formation by Pressure", "graph": before_formation_pressure}, \
+                                {"title": "Prior: Formation by Pressure", "graph": prior_formation_pressure}, \
                                 {"title": "Formation by Pressure", "graph": during_formation_pressure}
         ]
 
-        data = barGraphList + downCoverageList + downGroupCoverageList + beforeDuringList
+        data = barGraphList + downCoverageList + downGroupCoverageList + priorDuringList
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         html = o_overview_template.render(image_path = image_path, data = data)
@@ -445,26 +466,29 @@ class IngameReport():
                                 {"title": "Long Play Type Frequency", "graph": long_play}
         ]
 
-        before_formation_play = groupedBarGraph(self.dData, "Formation", "Play_Type", "Play Type")
+        prior_formation_play = groupedBarGraph(self.dPriorData, "Formation", "Play_Type", "Play Type")
         during_formation_play = groupedBarGraph(self.dData, "Formation", "Play_Type", "Play Type")
-        strength_before = categorical_pieChart_wrapper(self.dData, "To_Strength", "Before: Plays into Strength")
+        strength_prior = categorical_pieChart_wrapper(self.dPriorData, "To_Strength", "Prior: Plays into Strength")
         strength_during = categorical_pieChart_wrapper(self.dData, "To_Strength", "During: Plays into Strength")
 
-        tempData = self.dData
-        tempData['To_Boundary'] = tempData["Play_Type_Dir"] == tempData['Hash']
-        boundary_before = categorical_pieChart_wrapper(tempData, "To_Boundary", "Before: Plays into Boundary")
-        boundary_during = categorical_pieChart_wrapper(tempData, "To_Boundary", "During: Plays into Boundary")
+        tempDataDuring = self.dData
+        tempDataDuring['To_Boundary'] = tempDataDuring["Play_Type_Dir"] == tempDataDuring['Hash']
+        boundary_during = categorical_pieChart_wrapper(tempDataDuring, "To_Boundary", "During: Plays into Boundary")
 
-        beforeDuringList = [{"title": "Before: Formation by Play Type", "graph": before_formation_play}, \
+        tempDataPrior = self.dPriorData
+        tempDataPrior['To_Boundary'] = tempDataPrior["Play_Type_Dir"] == tempDataPrior['Hash']
+        boundary_prior = categorical_pieChart_wrapper(tempDataPrior, "To_Boundary", "Prior: Plays into Boundary")
+
+        priorDuringList = [{"title": "Prior: Formation by Play Type", "graph": prior_formation_play}, \
                                 {"title": "During: Formation by Play Type", "graph": during_formation_play}, \
-                                {"title": "Before: Plays into Strength", "graph": strength_before}, \
+                                {"title": "Prior: Plays into Strength", "graph": strength_prior}, \
                                 {"title": "During: Plays into Strength", "graph": strength_during}, \
-                                {"title": "Before: Plays into Boundary", "graph": boundary_before}, \
+                                {"title": "Prior: Plays into Boundary", "graph": boundary_prior}, \
                                 {"title": "During: Plays into Boundary", "graph": boundary_during}
         ]
 
 
-        data = page1List + downPlayList + downGroupPlayList + beforeDuringList
+        data = page1List + downPlayList + downGroupPlayList + priorDuringList
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         html = o_overview_template.render(image_path = image_path, data = data)
