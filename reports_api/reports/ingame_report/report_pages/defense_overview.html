@@ -1,83 +1,106 @@
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Endzone Analytics</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
-        <style>
-            @page {
-                size: A4; /* Change from the default size of A4 */
-                margin: 0mm; /* Set margin on each page */
-            }
-            body {
-                font-family: "Audiowide";
-                overflow-y: hidden;
-                margin: 0px;
-            }
-
-            .header-div {
-                width: 100%;
-                background-color: black;
-                height: 100px;
-                margin-bottom: 10px;
-            }
-
-            .header-div h3 {
-                font-size: 30px;
-                font-weight: 200;
-                white-space: nowrap;
-                color: white;
-            }
-
-            h4 {
-                text-align: center;
-                font-size: 25px;
-                font-weight: 200;
-                white-space: nowrap;
-                color: black;
-            }
-
-            .chart-div {
-                display: inline-flex;
-                justify-content: space-evenly;
-                border-bottom: 1px solid black;
-                text-align: center;
-            }
-
-            .barchart {
-                border: 0px;
-                z-index: -1;
-                width: 600px;
-                margin-top: 5px;
-            }
-
-        </style>
-    </head>
-    <body>
-        <div class="header-div">
-            <table style="width: 100%;">
-                <tr style="width: 100%;">
-                    <td style="width: 100px;">
-                        <img style="width: 100px; margin-left: 5px; margin-top: 2.5px;" src="{{ image_path }}" alt="Endzone Shield">
-                    </td>
-                    <td>
-                        <h3 style="color: white">In-Game Report</h3>
-                    </td>
-                    <td>
-                        <h4 style="margin-left: auto; color: white; text-align: right; margin-right: 10px;">Overview</h4>
-                    </td>
-                </tr>
-            </table>
+<head>
+    <title>Endzone Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 0mm;
+        }
+        body {
+            font-family: "Audiowide";
+            overflow-y: hidden;
+            margin: 0px;
+        }
+        .header-div {
+            width: 100%;
+            background-color: black;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        .header-div h3 {
+            font-size: 30px;
+            font-weight: 200;
+            white-space: nowrap;
+            color: white;
+        }
+        h4 {
+            text-align: center;
+            font-size: 25px;
+            font-weight: 200;
+            white-space: nowrap;
+            color: black;
+        }
+        .body-div {
+            width: 100%;
+            height: auto;
+        }
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            border-bottom: 1px solid black;
+            text-align: center;
+            width: 100%;
+            background-color: blue;
+            height: auto;
+        }
+        .barchart {
+            border: 0px;
+            z-index: -1;
+            width: 100%;
+        }
+        /* Set a maximum width for images in side-by-side charts */
+        .side-by-side-chart img {
+            max-width: 300px; /* Adjust this value as needed */
+            display: flex;
+        }
+    </style>
+</head>
+<!-- frontPage + downPlayList + downGroupPlayList + priorDuringList -->
+<body>
+    <div class="header-div">
+        <table style="width: 100%;">
+            <tr style="width: 100%;">
+                <td style="width: 100px;">
+                    <img style="width: 100px; margin-left: 5px; margin-top: 2.5px;" src="{{ image_path }}" alt="Endzone Shield">
+                </td>
+                <td>
+                    <h3 style="color: white">In-Game Report</h3>
+                </td>
+                <td>
+                    <h4 style="margin-left: auto; color: white; text-align: right; margin-right: 10px;">Overview</h4>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="body-div">
+        <div class="chart-container">
+            <div class="chart-div">
+                <p>{{ frontPage[0].title }}</p>
+                <img src="data:image/png;base64, {{ frontPage[0].graph }}" alt="Bar Graph" class="barchart">
+            </div>
         </div>
-        <div>
-
-            {% for item in data %}
+        <div class="chart-container">
+            <div class="side-by-side-chart">
                 <div class="chart-div">
-                    <p>{{item.title}}</p>
-                    <img src="data:image/png;base64, {{ item.graph }}" alt="Bar Graph" class="barchart">
+                    <p>{{ frontPage[1].title }}</p>
+                    <img src="data:image/png;base64, {{ frontPage[1].graph }}" alt="Bar Graph" class="barchart">
                 </div>
-            {% endfor %}
+                <div class="chart-div">
+                    <p>{{ frontPage[2].title }}</p>
+                    <img src="data:image/png;base64, {{ frontPage[2].graph }}" alt="Bar Graph" class="barchart">
+                </div>
+            </div>
         </div>
-    </body>
+        <div class="chart-container">
+            <div class="chart-div">
+                <p>{{ frontPage[3].title }}</p>
+                <img src="data:image/png;base64, {{ frontPage[3].graph }}" alt="Bar Graph" class="barchart">
+            </div>
+        </div>
+    </div>
+</body>
 </html>
