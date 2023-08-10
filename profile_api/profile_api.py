@@ -46,6 +46,7 @@ def setProfile():
         try:
             db.session.query(User).filter(User.ID == current_user.id).update({"First_Name": data['first_name'], "Last_Name": data['last_name']})
             db.session.commit()
+            print(current_user.id)
             return make_response("Success: user's name has been updated.", 200)
         except Exception as e:
             return make_response("Error: failed to update 'first name' and/or 'last name' in database.", 500)

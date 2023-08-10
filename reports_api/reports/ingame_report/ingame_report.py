@@ -443,8 +443,8 @@ class IngameReport():
         down_play = groupedBarGraph(self.dData, "Down", "Coverage", "Coverage")
         personnel_formation = groupedBarGraph(self.dData, "Personnel", "Formation", "Formation")
         throw_attempts = categorical_pieChart_wrapper(self.dData.query('Pass_Zone != "Non-Passing-Play"'), "Pass_Zone", "Pass Zone Frequency")
-        formation_field_pos = groupedBarGraph(self.dData, "Formation", "Field_Group", "Formation")
-        page1List = [{"title": "Down by Play Type", "graph": down_play}, \
+        formation_field_pos = groupedBarGraph(self.dData, "Formation", "Field_Group", "Field Position")
+        frontPage = [{"title": "Down by Play Type", "graph": down_play}, \
                      {"title": "Personnel by Formation", "graph": personnel_formation}, \
                      {"title": "Pass Zone Frequency", "graph": throw_attempts}, \
                      {"title": "Formation by Field Position", "graph": formation_field_pos}
@@ -488,10 +488,10 @@ class IngameReport():
         ]
 
 
-        data = page1List + downPlayList + downGroupPlayList + priorDuringList
+        data = frontPage + downPlayList + downGroupPlayList + priorDuringList
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
-        html = o_overview_template.render(image_path = image_path, data = data)
+        html = o_overview_template.render(image_path = image_path, frontPage=frontPage, downPlayList=downPlayList, downGroupPlayList=downGroupPlayList, priorDuringList=priorDuringList)
         # Render this sucker!
         self.template_to_pdf(html, True)
 
