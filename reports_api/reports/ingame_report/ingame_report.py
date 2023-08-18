@@ -99,6 +99,9 @@ class IngameReport():
         if appendToFront: self.pdfs.insert(0, pdf_reader)
         else: self.pdfs.append(pdf_reader)
 
+    # Will take calculate the percentage the val is of the total
+    # Used to dictate how big the bar for a specific stat should be
+    # Pass it as a percentage to the frontend
     def getBar(self, val, total) -> str:
         try:
             val = str((val / total) * 100) + "%"
