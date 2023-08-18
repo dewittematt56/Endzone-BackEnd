@@ -394,7 +394,10 @@ class IngameReport():
 
     def o_overview_page(self) -> None:
         o_overview_template = env.get_template('ingame_report/report_pages/offense_overview.html')
+
+        # This graph isn't working correctly, need the y axis to be the yards gained (outcome), not occurences
         formation_play = groupedBarGraph(self.oData, "Formation", "Play_Type", "Play Type", "Result", "Average Yards Gained")
+        
         down_coverage = groupedBarGraph(self.oData, "Down", "Coverage", "Coverage")
         distance_coverage = groupedBarGraph(self.oData, "Distance", "Coverage", "Coverage")
         o_formation_coverage = groupedBarGraph(self.oData, "O_Formation", "Coverage", "Coverage")
