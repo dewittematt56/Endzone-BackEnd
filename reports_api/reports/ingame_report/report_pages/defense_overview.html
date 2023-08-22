@@ -16,6 +16,7 @@
         }
         .page-container {
             width: 100%;
+            height: 1403px;
         }
         .header-div {
             width: 100%;
@@ -36,18 +37,12 @@
             white-space: nowrap;
             color: black;
         }
-        .body-div {
-            width: 100%;
-            height: auto;
-        }
         .chart-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-evenly;
             border-bottom: 1px solid black;
             text-align: center;
-            width: 100%;
-            height: 100%;
         }
         .barchart {
             border: 0px;
@@ -80,122 +75,124 @@
 
 
 
-    <div class="body-div">
-        <div class="page-container" style="height: 1293px; background-color: red;">
-            <table style="width: 100%; height: 100%">
-                <tr style="width: 100%;">
+    <div>
+        <div class="page-container" style="height: 1293px;">
+            <table style="width: 100%;">
+                <tr>
                     <td>
                         <div class="chart-container">
                             <p>{{ frontPage[0].title }}</p>
-                            <img src="data:image/png;base64, {{ frontPage[0].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ frontPage[0].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 350px;">
                         </div>
                     </td>
                 </tr>
-                <tr style="width: 100%;">
+                <tr>
                     <td style="width: 50%;">
                         <div class="chart-container">
                             <p>{{ frontPage[1].title }}</p>
-                            <img src="data:image/png;base64, {{ frontPage[1].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ frontPage[1].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 350px;">
                         </div>
                     </td>
                     <td style="width: 50%;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ frontPage[2].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ frontPage[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; height: 350px;">
                         </div>
                     </td>
                 </tr>
-                <tr style="width: 100%;">
+                <tr>
                     <td>
                         <div class="chart-container">
                             <p>{{ frontPage[3].title }}</p>
-                            <img src="data:image/png;base64, {{ frontPage[3].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ frontPage[3].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 350px;">
                         </div>
                     </td>
                 </tr>
             </table>
         </div>
 
-        <div class="page-container" style="height: 1403px; background-color: blue">
-            <table style="width: 100%; height:700px; background-color: green;">
-                <!-- <tr style="width: 100%; height: 33%; border: 1px solid black;">
-                    <td style="width: 50%; height: 100%; height: 100%; border: 1px solid black;">
+        <div class="page-container">
+            <table style="width: 100%;">
+                <tr style="border: 1px solid black;">
+                    <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downPlayList[0].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ downPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
                         </div>
                     </td>
-                    <td style="width: 50%; height: 100%; height: 100%; border: 1px solid black;">
+                    <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupPlayList[0].graph }}" alt="Bar Graph" class="barchart">
-                        </div>
-                    </td>
-                </tr>
-    
-                <tr style="width: 100%; height: 33%; border: 1px solid black;">
-                    <td style="width: 50%; height: 100%; border: 1px solid black;">
-                        <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downPlayList[1].graph }}" alt="Bar Graph" class="barchart">
-                        </div>
-                    </td>
-                    <td style="width: 50%; height: 100%; border: 1px solid black;">
-                        <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupPlayList[1].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ downGroupPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
                         </div>
                     </td>
                 </tr>
     
-                <tr style="width: 100%; height: 33%; border: 1px solid black;">
-                    <td style="width: 50%; height: 100%; border: 1px solid black;">
+                <tr style="border: 1px solid black;">
+                    <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downPlayList[2].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ downPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
                         </div>
                     </td>
-                    <td style="width: 50%; height: 100%; border: 1px solid black;">
+                    <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupPlayList[2].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ downGroupPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
                         </div>
                     </td>
-                </tr> -->
-            </table>
-
-            <!-- <table style="width: 100%; height: 30%;">
-                <tr style="width: 100%; border: 1px solid black;">
-                    <td style="width: 100px; border: 1px solid black;">
+                </tr>
+    
+                <tr style="border: 1px solid black;">
+                    <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ priorDuringList[0].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ downPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
                         </div>
                     </td>
-                    <td style="width: 100px; border: 1px solid black;">
+                    <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ priorDuringList[1].graph }}" alt="Bar Graph" class="barchart">
+                            <img src="data:image/png;base64, {{ downGroupPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
                         </div>
                     </td>
                 </tr>
             </table>
 
-            <table style="width: 100%; height: 20%;">
-                <tr style="width: 100%; border: 1px solid black;">
-                    <td style="width: 300px; border: 1px solid black;">
+            <table style="width: 100%;">
+                <tr>
+                    <td>
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ priorDuringList[2].graph }}" alt="Bar Graph" class="barchart">
+                            <p>{{ priorDuringList[0].title }}</p>
+                            <img src="data:image/png;base64, {{ priorDuringList[0].graph }}" alt="Bar Graph" class="barchart" style="width: 100%; height: 350px;">>
                         </div>
                     </td>
-                    <td style="width: 300px; border: 1px solid black;">
+                    <td>
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ priorDuringList[3].graph }}" alt="Bar Graph" class="barchart">
-                        </div>
-                    </td>
-                    <td style="width: 300px; border: 1px solid black;">
-                        <div class="chart-container">
-                            <img src="data:image/png;base64, {{ priorDuringList[4].graph }}" alt="Bar Graph" class="barchart">
-                        </div>
-                    </td>
-                    <td style="width: 300px; border: 1px solid black;">
-                        <div class="chart-container">
-                            <img src="data:image/png;base64, {{ priorDuringList[5].graph }}" alt="Bar Graph" class="barchart">
+                            <p>{{ priorDuringList[1].title }}</p>
+                            <img src="data:image/png;base64, {{ priorDuringList[1].graph }}" alt="Bar Graph" class="barchart" style="width: 100%; height: 350px;">>
                         </div>
                     </td>
                 </tr>
-            </table> -->
+            </table>
+
+            <table style="width: 100%;">
+                <tr>
+                    <td>
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDuringList[2].graph }}" alt="Bar Graph" class="barchart" style="height: 200px;">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDuringList[3].graph }}" alt="Bar Graph" class="barchart" style="height: 200px;">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDuringList[4].graph }}" alt="Bar Graph" class="barchart" style="height: 200px;">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDuringList[5].graph }}" alt="Bar Graph" class="barchart" style="height: 200px;">
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>
