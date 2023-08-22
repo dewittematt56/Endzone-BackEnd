@@ -16,6 +16,7 @@ import sys
 from reports_api.reports.pregame_report.pregame_report import PregameReport
 import os
 
+pd.set_option("display.max_rows", None)
 env = jinja2.Environment(loader = jinja2.FileSystemLoader("./reports_api/reports"))
 
 def get_down_group(distance: int) -> str:
@@ -26,6 +27,14 @@ def get_down_group(distance: int) -> str:
 # TODO - Convert man or zone variations to simple man or zone
 # TODO - do a cross tab query on the data. 
 # TODO - Write a function that does certain field sections
+
+def get_qb_efficiency(completion_percentage: bool, yards: int, pass_attempts: int, touchdowns: int, interceptions: int) -> bool:
+    factor1 = completion_percentage
+    factor2 = (yards/pass_attempts) * 8.4
+    factor3 = (touchdowns/pass_attempts) * 100 * 3.3
+    factor4 = (interceptions/pass_attempts) * 100 * 2
+    efficiency = factor1 + factor2 + factor3 - factor4
+    return efficiency
 
 def get_play_type(playType: str) -> pd.DataFrame:
     run_plays = ["Inside Run", "Outside Run", "Option"] # inside, outside, option
@@ -90,11 +99,12 @@ class PostgameReport():
         self.split_data()
         self.overview_page()
         self.quarterback_page()
-
+        # Create dataframe of ball carriers who have more than 6 carries
+        # Same for wr 3 or more catches and pass zone has to be valid
         for ballCarrier in self.run_data["Ball_Carrier"].unique():
+            # filter this like above
             self.runningBack_page(ballCarrier)
         for reciever in self.pass_data["Ball_Carrier"].unique():
-            print(reciever)
             self.receiver_page(reciever)
          
     def getBar(self, val, total) -> str:
@@ -142,6 +152,8 @@ class PostgameReport():
 
         return [totalDict, rushDict, passDict]
     
+    
+
     def getSackRate(self) -> list:
         teamSackPlays = self.d_data.query('Pass_Zone == "Not Thrown" & Result < 0')
         enemySackPlays = self.o_data.query('Pass_Zone == "Not Thrown" & Result < 0')
@@ -441,13 +453,19 @@ class PostgameReport():
     def quarterback_page(self) -> None:
         # To-Do Calculate Stats
         pass_attempts = 0
+        complete_passes = 0
         pass_yards = 0
         touchdowns = 0
         interceptions = 0
-
-        self.o_data['Pass_Zone'] = self.o_data['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
-        thrown_passes = (self.o_data[self.o_data['Pass_Zone'] != 'Not Thrown'])
+        thrown_passes = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        pass_attempts = len(thrown_passes)
         thrown_passes["Distance"] = pd.to_numeric(thrown_passes["Distance"], errors='coerce')
+        thrown_passes['Pass_Zone'] = thrown_passes['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')
+        self.o_data['is_sack'] = (self.o_data['Pass_Zone'].isin(['Non-Passing-Play'])) & (self.o_data["Result"] <= 0) # true= sack, false = scramble take sum of this and divide length of dataframe
+        thrown_passes['Complete_Pass'] = (~thrown_passes['Pass_Zone'].isin(['Not Thrown', 'Unknown'])) & (thrown_passes["Result"] != 0)
+        for completion in thrown_passes["Complete_Pass"]:
+            if completion == True:
+                complete_passes += 1
         for throw in thrown_passes["Distance"]: # Get total yardage
             pass_yards += throw
         for event in thrown_passes["Event"]: # Get total touchdowns
@@ -455,17 +473,22 @@ class PostgameReport():
                 touchdowns += 1
             elif event == "Interception": # Find interceptions
                 interceptions += 1
+        qbr = calculate_qbr(thrown_passes)
+        completion_percentage = round((complete_passes/pass_attempts) * 100)
+        efficiency = get_qb_efficiency(completion_percentage, pass_yards, pass_attempts, touchdowns, interceptions)
+        
         quarterback_bar = groupedBarGraph(thrown_passes, "Pass_Zone","Ball_Carrier", "POGGERS")
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/quarterback.html')
         html = title_template.render(image_path = image_path, svg_path = svg_path, quarterback_bar = quarterback_bar, pass_yards = pass_yards,
-                                    touchdowns = touchdowns, interceptions = interceptions)
+                                    touchdowns = touchdowns, interceptions = interceptions, pass_attempts=pass_attempts, completion_percentage=completion_percentage,
+                                    complete_passes = complete_passes, qbr=qbr, efficiency=efficiency)
         
         self.template_to_pdf(html, False)
 
     ## THIS SHOULD BE DOWN FOR EACH RUNNING BACK! so you'll need to use a for loop on distinct ball_carriers
-    def runningBack_page(self, ball_carrier: int) -> None:
+    def runningBack_page(self, ball_carrier: int) -> None: # long is max run
         total_runs = 0
         total_yards = 0
         touchdowns = 0
@@ -490,11 +513,14 @@ class PostgameReport():
 
     ## THIS SHOULD BE DOWN FOR EACH RECEIVER! so you'll need to use a for loop on distinct ball_carriers
     def receiver_page(self, receiver: int) -> None:
+
+
         pass_data = (self.o_data[self.o_data["Run_Type"].isnull()])
-        print(pass_data["Result"])
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/receiver.html')
         html = title_template.render(image_path = image_path, svg_path = svg_path, receiver = receiver)
         # Render
         self.template_to_pdf(html, False)
+    
+    

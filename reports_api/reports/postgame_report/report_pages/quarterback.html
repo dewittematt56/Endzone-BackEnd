@@ -145,19 +145,19 @@
                             <table class="statistic-table">
                                 <tr class="table-row">
                                     <th>Comp/Att</th>
-                                    <th>Comp %</th>
+                                    <th>%</th>
                                     <th>Yards</th>
                                     <th>TD</th>
                                     <th>Int</th>
                                     <th>QBR</th>
                                 </tr>
                                 <tr class="table-row">
-                                    <td>10/12</td>
-                                    <td>90%</td>
+                                    <td>{{ complete_passes }} / {{ pass_attempts }}</td>
+                                    <td>{{ completion_percentage }}</td>
                                     <td>{{ pass_yards }}</td>
                                     <td>{{ touchdowns }}</td>
                                     <td>{{ interceptions }}</td>
-                                    <td>121.7</td>
+                                    <td>{{ qbr }}</td>
                                 </tr>
                             </table>
                         </td>
@@ -176,7 +176,7 @@
                         <td>Turnover Rate</td>
                     </tr>
                     <tr class="table-row">
-                        <td>78%</td>
+                        <td>{{ efficiency }}</td>
                         <td>3%</td>
                         <td>21%</td>
                         <td>11.2</td>
