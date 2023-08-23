@@ -48,21 +48,20 @@ def updateRole():
             return make_response("Error: Please select a valid 'Role' option", 299)
         
         target = db.session.query(Org_Member).filter(Org_Member.Org_Code == userOrgMember.Org_Code, Org_Member.User_ID == data['id']).first()
-        match userOrgMember.Role:
-            case "Admin":
-                if target.Role == "Admin" or target.Role == "Owner":
-                    return make_response("You cannot make changes to admins or owners", 299)
-                else:
-                    db.session.query(Org_Member).filter(Org_Member.Org_Code == userOrgMember.Org_Code, Org_Member.User_ID == data['id']).update({"Role": data['role']})
-                    db.session.commit()
-            case "Owner":
-                if target.Role == "Owner":
-                    return make_response("You cannot make changes to admins or owners", 299)
-                else:
-                    db.session.query(Org_Member).filter(Org_Member.Org_Code == userOrgMember.Org_Code, Org_Member.User_ID == data['id']).update({"Role": data['role']})
-                    db.session.commit()
-            case _:
-                return make_response("Error", 400)
+        if userOrgMember.Role == "Admin":
+            if target.Role == "Admin" or target.Role == "Owner":
+                return make_response("You cannot make changes to admins or owners", 299)
+            else:
+                db.session.query(Org_Member).filter(Org_Member.Org_Code == userOrgMember.Org_Code, Org_Member.User_ID == data['id']).update({"Role": data['role']})
+                db.session.commit()
+        elif userOrgMember.Role == "Owner":
+            if target.Role == "Owner":
+                return make_response("You cannot make changes to admins or owners", 299)
+            else:
+                db.session.query(Org_Member).filter(Org_Member.Org_Code == userOrgMember.Org_Code, Org_Member.User_ID == data['id']).update({"Role": data['role']})
+                db.session.commit()
+        else:
+            return make_response("Error", 400)
 
         return make_response("Success: user's org role has been updated.", 200)
     except Exception as e:

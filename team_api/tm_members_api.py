@@ -48,21 +48,20 @@ def updateRole():
             return make_response("Error: Please select a valid 'Role' option", 299)
         
         target = db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).first()
-        match userTeamMember.Role:
-            case "Admin":
-                if target.Role == "Admin" or target.Role == "Owner":
-                    return make_response("You cannot make changes to admins or owners", 299)
-                else:
-                    db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).update({"Role": data['role']})
-                    db.session.commit()
-            case "Owner":
-                if target.Role == "Owner":
-                    return make_response("You cannot make changes to admins or owners", 299)
-                else:
-                    db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).update({"Role": data['role']})
-                    db.session.commit()
-            case _:
-                return make_response("Error", 400)
+        if userTeamMember.Role == "Admin":
+            if target.Role == "Admin" or target.Role == "Owner":
+                return make_response("You cannot make changes to admins or owners", 299)
+            else:
+                db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).update({"Role": data['role']})
+                db.session.commit()
+        elif userTeamMember.Role == "Owner":
+            if target.Role == "Owner":
+                return make_response("You cannot make changes to admins or owners", 299)
+            else:
+                db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).update({"Role": data['role']})
+                db.session.commit()
+        else:
+            return make_response("Error", 400)
 
         return make_response("Success: user's team role has been updated.", 200)
     except Exception as e:
@@ -87,21 +86,20 @@ def removeRole():
             return make_response("You are not an admin/owner of your current team", 400)
         target = db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).first()
 
-        match userTeamMember.Role:
-            case "Admin":
-                if target.Role == "Admin" or target.Role == "Owner":
-                    return make_response("You cannot make changes to admins or owners", 400)
-                else:
-                    db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).delete()
-                    db.session.commit()
-            case "Owner":
-                if target.Role == "Owner":
-                    return make_response("You cannot make changes to owners", 400)
-                else:
-                    db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).delete()
-                    db.session.commit()
-            case _:
-                return make_response("Error", 400)
+        if userTeamMember.Role == "Admin":
+            if target.Role == "Admin" or target.Role == "Owner":
+                return make_response("You cannot make changes to admins or owners", 400)
+            else:
+                db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).delete()
+                db.session.commit()
+        elif userTeamMember.Role == "Owner":
+            if target.Role == "Owner":
+                return make_response("You cannot make changes to owners", 400)
+            else:
+                db.session.query(Team_Member).filter(Team_Member.Team_Code == current_user.Current_Team, Team_Member.User_ID == data['id']).delete()
+                db.session.commit()
+        else:
+            return make_response("Error", 400)
 
 
         return make_response("Success: user's team role has been updated.", 200)
