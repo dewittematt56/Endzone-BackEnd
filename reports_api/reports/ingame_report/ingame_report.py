@@ -416,7 +416,7 @@ class IngameReport():
                         {"title": "2nd Down Coverage Frequency", "graph": down2_coverage}, \
                         {"title": "3rd Down Coverage Frequency", "graph": down3_coverage}
         ]
-
+ 
         short_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Short"'), "Coverage", "Coverage Frequency")
         medium_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Medium"'), "Coverage", "Coverage Frequency")
         long_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Long"'), "Coverage", "Coverage Frequency")
@@ -438,13 +438,13 @@ class IngameReport():
         data = barGraphList + downCoverageList + downGroupCoverageList + priorDuringList
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
-        html = o_overview_template.render(image_path = image_path, data = data)
+        html = o_overview_template.render(image_path = image_path, barGraphList=barGraphList, downCoverageList=downCoverageList, downGroupCoverageList=downGroupCoverageList, priorDuringList=priorDuringList)
         # Render this sucker!
         self.template_to_pdf(html, True)
 
 
     def d_overview_page(self) -> None:
-        o_overview_template = env.get_template('ingame_report/report_pages/defense_overview.html')
+        d_overview_template = env.get_template('ingame_report/report_pages/defense_overview.html')
 
         down_play = groupedBarGraph(self.dData, "Down", "Coverage", "Coverage")
         personnel_formation = groupedBarGraph(self.dData, "Personnel", "Formation", "Formation")
@@ -497,13 +497,14 @@ class IngameReport():
         data = frontPage + downPlayList + downGroupPlayList + priorDuringList
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
-        html = o_overview_template.render(image_path = image_path, frontPage=frontPage, downPlayList=downPlayList, downGroupPlayList=downGroupPlayList, priorDuringList=priorDuringList)
+        html = d_overview_template.render(image_path = image_path, frontPage=frontPage, downPlayList=downPlayList, downGroupPlayList=downGroupPlayList, priorDuringList=priorDuringList)
         # Render this sucker!
         self.template_to_pdf(html, True)
 
     def run_report(self):
-        # self.title_page()
         self.d_overview_page()
+        self.o_overview_page()
+        self.title_page()
 
         
 if __name__ == "__main__":

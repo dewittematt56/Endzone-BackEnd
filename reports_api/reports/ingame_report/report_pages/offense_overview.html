@@ -1,83 +1,195 @@
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Endzone Analytics</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
-        <style>
-            @page {
-                size: A4; /* Change from the default size of A4 */
-                margin: 0mm; /* Set margin on each page */
-            }
-            body {
-                font-family: "Audiowide";
-                overflow-y: hidden;
-                margin: 0px;
-            }
+<head>
+    <title>Endzone Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 0mm;
+        }
+        body {
+            font-family: "Audiowide";
+            overflow-y: hidden;
+            margin: 0px;
+        }
+        .page-container {
+            width: 100%;
+            height: 1403px;
+        }
+        .header-div {
+            width: 100%;
+            background-color: black;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        .header-div h3 {
+            font-size: 30px;
+            font-weight: 200;
+            white-space: nowrap;
+            color: white;
+        }
+        h4 {
+            text-align: center;
+            font-size: 25px;
+            font-weight: 200;
+            white-space: nowrap;
+            color: black;
+        }
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            border-bottom: 1px solid black;
+            text-align: center;
+        }
+        .barchart {
+            border: 0px;
+            width: 100%;
+        }
+        /* Set a maximum width for images in side-by-side charts */
+        .side-by-side-chart img {
+            max-width: 300px; /* Adjust this value as needed */
+            display: flex;
+        }
+    </style>
+</head>
 
-            .header-div {
-                width: 100%;
-                background-color: black;
-                height: 100px;
-                margin-bottom: 10px;
-            }
+<body>
+    <div class="header-div">
+        <table style="width: 100%;">
+            <tr style="width: 100%;">
+                <td style="width: 100px;">
+                    <img style="width: 100px; margin-left: 5px; margin-top: 2.5px;" src="{{ image_path }}" alt="Endzone Shield">
+                </td>
+                <td>
+                    <h3 style="color: white">In-Game Report</h3>
+                </td>
+                <td>
+                    <h4 style="margin-left: auto; color: white; text-align: right; margin-right: 10px;">Overview</h4>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-            .header-div h3 {
-                font-size: 30px;
-                font-weight: 200;
-                white-space: nowrap;
-                color: white;
-            }
 
-            h4 {
-                text-align: center;
-                font-size: 25px;
-                font-weight: 200;
-                white-space: nowrap;
-                color: black;
-            }
 
-            .chart-div {
-                display: inline-flex;
-                justify-content: space-evenly;
-                border-bottom: 1px solid black;
-                text-align: center;
-            }
-
-            .barchart {
-                border: 0px;
-                z-index: -1;
-                width: 600px;
-                margin-top: 5px;
-            }
-
-        </style>
-    </head>
-    <body>
-        <div class="header-div">
+    <div>
+        <div class="page-container" style="height: 1293px;">
             <table style="width: 100%;">
-                <tr style="width: 100%;">
-                    <td style="width: 100px;">
-                        <img style="width: 100px; margin-left: 5px; margin-top: 2.5px;" src="{{ image_path }}" alt="Endzone Shield">
-                    </td>
+                <tr>
                     <td>
-                        <h3 style="color: white">In-Game Report</h3>
+                        <div class="chart-container">
+                            <p>{{ barGraphList[0].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[0].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 450px;">
+                        </div>
                     </td>
-                    <td>
-                        <h4 style="margin-left: auto; color: white; text-align: right; margin-right: 10px;">Overview</h4>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">
+                        <div class="chart-container">
+                            <p>{{ barGraphList[1].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[1].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 300px;">
+                        </div>
+                    </td>
+                    <td style="width: 50%;">
+                        <div class="chart-container">
+                            <p>{{ barGraphList[2].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[1].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 300px;">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">
+                        <div class="chart-container">
+                            <p>{{ barGraphList[3].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[1].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 300px;">
+                        </div>
+                    </td>
+                    <td style="width: 50%;">
+                        <div class="chart-container">
+                            <p>{{ barGraphList[4].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[1].graph }}" alt="Bar Graph" class="barchart" style="max-width: 100%; height: 300px;">
+                        </div>
                     </td>
                 </tr>
             </table>
         </div>
-        <div>
 
-            {% for item in data %}
-                <div class="chart-div">
-                    <p>{{item.title}}</p>
-                    <img src="data:image/png;base64, {{ item.graph }}" alt="Bar Graph" class="barchart">
-                </div>
-            {% endfor %}
+        <div class="page-container">
+            <table style="width: 100%;">
+                <tr style="border: 1px solid black;">
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ downCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ downGroupCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                        </div>
+                    </td>
+                </tr>
+    
+                <tr style="border: 1px solid black;">
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ downCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ downGroupCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                        </div>
+                    </td>
+                </tr>
+    
+                <tr style="border: 1px solid black;">
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ downCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ downGroupCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table style="width: 100%;">
+                <tr>
+                    <td>
+                        <div class="chart-container">
+                            <p>{{ priorDuringList[0].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[0].graph }}" alt="Bar Graph" class="barchart" style="width: 100%; height: 300px;">>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="chart-container">
+                            <p>{{ priorDuringList[1].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[1].graph }}" alt="Bar Graph" class="barchart" style="width: 100%; height: 300px;">>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="chart-container">
+                            <p>{{ priorDuringList[2].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[0].graph }}" alt="Bar Graph" class="barchart" style="width: 100%; height: 300px;">>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="chart-container">
+                            <p>{{ priorDuringList[3].title }}</p>
+                            <img src="data:image/png;base64, {{ barGraphList[1].graph }}" alt="Bar Graph" class="barchart" style="width: 100%; height: 300px;">>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
-    </body>
+    </div>
+</body>
 </html>
