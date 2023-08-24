@@ -99,10 +99,19 @@ class PostgameReport():
         self.split_data()
         self.overview_page()
         self.quarterback_page()
+        print(self.o_data["Pass_Zone"])
+        rush_data = (self.o_data[~self.o_data['Run_Type'].isnull()])
+        value_counts = rush_data["Ball_Carrier"].value_counts()
+        values_to_keep = value_counts[value_counts > 6].index
+        valid_running_data = rush_data[rush_data["Ball_Carrier"].isin(values_to_keep)]
+
+        pass_data = (self.o_data[self.o_data["Run_Type"].isnull()])
+        value_counts = pass_data["Ball_Carrier"].value_counts()
+        values_to_keep = value_counts[value_counts > 6].index
+        valid_passing_data = pass_data[pass_data["Ball_Carrier"].isin(values_to_keep)]
         # Create dataframe of ball carriers who have more than 6 carries
         # Same for wr 3 or more catches and pass zone has to be valid
-        for ballCarrier in self.run_data["Ball_Carrier"].unique():
-            # filter this like above
+        for ballCarrier in valid_running_data["Ball_Carrier"].unique():
             self.runningBack_page(ballCarrier)
         for reciever in self.pass_data["Ball_Carrier"].unique():
             self.receiver_page(reciever)
