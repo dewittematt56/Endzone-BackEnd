@@ -112,15 +112,41 @@
 
         <div class="page-container">
             <table style="width: 100%;">
+                <tr>
+                    <td style="width: 25%">
+                        <p style="text-align: center;">Prior Play Type Frequency</p>
+                    </td>
+                    <td style="width: 25%;">
+                        <p style="text-align: center;">During Play Type Frequency</p>
+                    </td>
+                    <td style="width: 25%">
+                        <p style="text-align: center;">Prior Play Type Frequency</p>
+                    </td>
+                    <td style="width: 25%;">
+                        <p style="text-align: center;">During Play Type Frequency</p>
+                    </td>
+                </tr> 
+            </table>
+            <table style="width: 100%;">
                 <tr style="border: 1px solid black;">
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
+                            <img src="data:image/png;base64, {{ priorDownPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
                         </div>
                     </td>
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
+                            <img src="data:image/png;base64, {{ duringDownPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDownGroupPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ duringDownGroupPlayList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
                         </div>
                     </td>
                 </tr>
@@ -128,12 +154,22 @@
                 <tr style="border: 1px solid black;">
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
+                            <img src="data:image/png;base64, {{ priorDownPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
                         </div>
                     </td>
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
+                            <img src="data:image/png;base64, {{ duringDownPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDownGroupPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ duringDownGroupPlayList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
                         </div>
                     </td>
                 </tr>
@@ -141,12 +177,22 @@
                 <tr style="border: 1px solid black;">
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
+                            <img src="data:image/png;base64, {{ priorDownPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
                         </div>
                     </td>
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 233px;">
+                            <img src="data:image/png;base64, {{ duringDownPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDownGroupPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ duringDownGroupPlayList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 200px;">
                         </div>
                     </td>
                 </tr>
@@ -167,6 +213,23 @@
                         </div>
                     </td>
                 </tr>
+            </table>
+
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 25%">
+                        <p style="text-align: center;">Prior</p>
+                    </td>
+                    <td style="width: 25%;">
+                        <p style="text-align: center;">During</p>
+                    </td>
+                    <td style="width: 25%">
+                        <p style="text-align: center;">Prior</p>
+                    </td>
+                    <td style="width: 25%;">
+                        <p style="text-align: center;">During</p>
+                    </td>
+                </tr> 
             </table>
 
             <table style="width: 100%;">

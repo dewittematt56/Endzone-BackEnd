@@ -119,15 +119,41 @@
 
         <div class="page-container">
             <table style="width: 100%;">
+                <tr>
+                    <td style="width: 25%">
+                        <p style="text-align: center;">Prior Coverage Frequency</p>
+                    </td>
+                    <td style="width: 25%;">
+                        <p style="text-align: center;">During Coverage Frequency</p>
+                    </td>
+                    <td style="width: 25%">
+                        <p style="text-align: center;">Prior Coverage Frequency</p>
+                    </td>
+                    <td style="width: 25%;">
+                        <p style="text-align: center;">During Coverage Frequency</p>
+                    </td>
+                </tr> 
+            </table>
+            <table style="width: 100%;">
                 <tr style="border: 1px solid black;">
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                            <img src="data:image/png;base64, {{ priorDownCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
                         </div>
                     </td>
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                            <img src="data:image/png;base64, {{ duringDownCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDownGroupCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ duringDownGroupCoverageList[0].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
                         </div>
                     </td>
                 </tr>
@@ -135,12 +161,22 @@
                 <tr style="border: 1px solid black;">
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                            <img src="data:image/png;base64, {{ priorDownCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
                         </div>
                     </td>
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                            <img src="data:image/png;base64, {{ duringDownCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDownGroupCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ duringDownGroupCoverageList[1].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
                         </div>
                     </td>
                 </tr>
@@ -148,12 +184,22 @@
                 <tr style="border: 1px solid black;">
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                            <img src="data:image/png;base64, {{ priorDownCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
                         </div>
                     </td>
                     <td style="border: 1px solid black;">
                         <div class="chart-container">
-                            <img src="data:image/png;base64, {{ downGroupCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 195px;">
+                            <img src="data:image/png;base64, {{ duringDownCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ priorDownGroupCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
+                        </div>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <div class="chart-container">
+                            <img src="data:image/png;base64, {{ duringDownGroupCoverageList[2].graph }}" alt="Donut Graph" class="barchart" style="max-width: 100%; max-height: 170px;">
                         </div>
                     </td>
                 </tr>
