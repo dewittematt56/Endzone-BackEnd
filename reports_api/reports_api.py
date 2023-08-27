@@ -6,6 +6,7 @@ from flask import Blueprint, send_file
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from reports_api.reports.thunderbolt_report.thunderbolt_report import ThunderboltReport
+from reports_api.reports.ingame_report.ingame_report import IngameReport
 
 reports_api = Blueprint('reports_api', __name__)
 report_executor = ThreadPoolExecutor()
@@ -22,6 +23,12 @@ def __run_pregame_report__(requested_pages: 'list[str]', requested_team: str, re
 def __run_thunderbolt_report__(team_of_interest: str, game_IDs: str, user_team_code: str, report_type: str):
     with thread_lock:
         report = ThunderboltReport(team_of_interest, game_IDs, user_team_code, report_type)
+        pdf = report.combine_reports()
+        return pdf
+    
+def __run_ingame_report__(team_of_interest: str, game_ID: str, user_team_code: str, game_ids: list):
+    with thread_lock:
+        report = IngameReport(team_of_interest, game_ID, user_team_code, game_ids)
         pdf = report.combine_reports()
         return pdf
 
@@ -101,3 +108,25 @@ def thunderbolt_report_run():
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
 
 # To-Do create route for /endzone/reports/thunderbolt/run
+
+
+@reports_api.route("/endzone/reports/ingame/run", methods = ["GET"]) # confirm with mater
+@login_required
+def ingame_report_run():
+    try:
+        current_team = current_user.Current_Team
+        requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
+        requestedGame= request.args.get('requestedGame')
+        requestedPriorGames = request.args.get('requestedPriorGames')
+
+        executor_job = report_executor.submit(__run_ingame_report__, requestedTeamOfInterest, requestedGame, current_team, requestedPriorGames)
+        response = executor_job.result()
+        return send_file( 
+                io.BytesIO(response),
+                mimetype='application/pdf',
+                as_attachment=True,
+                download_name="pog.pdf"
+            )
+    except Exception as e:
+        print(e)
+        return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)

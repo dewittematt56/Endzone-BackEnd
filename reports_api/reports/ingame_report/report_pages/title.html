@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Endzone Analytics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+        <style>
+            @page {
+                size: A4; /* Change from the default size of A4 */
+                margin: 0mm; /* Set margin on each page */
+            }
+            body {
+                font-family: "Audiowide";
+                overflow-y: hidden;
+                margin: 0px;
+            }
+
+            .header-div {
+                width: 100%;
+                background-color: black;
+                height: 100px;
+                margin-bottom: 10px;
+            }
+
+            .header-div h3 {
+                font-size: 30px;
+                font-weight: 200;
+                white-space: nowrap;
+                color: white;
+            }
+
+            h4 {
+                text-align: center;
+                font-size: 25px;
+                font-weight: 200;
+                white-space: nowrap;
+                color: black;
+            }
+
+            /* Style for the team box */
+            .team-box {
+                height: 30px;
+                position: relative;
+                flex-grow: 1;
+            }
+        
+            .value-bar-div {
+                width: 1000px; 
+            }
+            .value-label {
+                text-align: center;
+                min-width: 75px;
+                padding: 2.5px;
+                white-space: nowrap;
+                border: 1px solid black;
+            }
+
+            .value-bar {
+                padding: 2.5px;
+                min-width: 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header-div">
+            <table style="width: 100%;">
+                <tr style="width: 100%;">
+                    <td style="width: 100px;">
+                        <img style="width: 100px; margin-left: 5px; margin-top: 2.5px;" src="{{ image_path }}" alt="Endzone Shield">
+                    </td>
+                    <td>
+                        <h3 style="color: white">In-Game Report</h3>
+                    </td>
+                    <td>
+                        <h4 style="margin-left: auto; color: white; text-align: right; margin-right: 10px;">Overview</h4>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="width: 100%;">
+            <h4>Game Statistics</h4>
+            {% for item in data_list %}
+                <table>
+                    <tr style="width: 100%;">
+                        <td class="value-bar-div">
+                            <div class="value-bar" style="border: 1px solid black; width: {{ item.teamBar }}; margin-left: auto; text-align: left; padding-left: 5px; background-color: #0984e3;">{{ item.teamVal }}</div>
+                        </td>
+                        <td class="value-label">{{ item.stat }}</td>
+                        <td class="value-bar-div">
+                            <div class="value-bar" style="border: 1px solid black; width: {{ item.enemyBar }}; text-align: right;  padding-right: 5px; background-color: #f5720d;">{{ item.enemyVal }}</div>
+                        </td>
+                    </tr>
+                </table>
+            {% endfor %}
+        </div>
+    </body>
+</html>

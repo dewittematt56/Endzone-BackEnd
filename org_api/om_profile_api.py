@@ -14,15 +14,12 @@ om_profile_api = Blueprint("om_profile_api", __name__, template_folder="pages", 
 @om_profile_api.route('/endzone/org/profile/info', methods = ['GET'])
 def getOrgProfile(): 
     try:
-        dbTeams = db.session.query(Org_Member).filter((Org_Member.User_ID == current_user.id) and (Org_Member.Role == "Admin" or Org_Member.Role == "Owner")).all()
-        if len(dbTeams) == 0:
-            return make_response("You are not an admin or owner of any org", 400)
-            
-        org_member = dbTeams[0]
-        orgs = db.session.query(Org).filter(Org.Org_Code == org_member.Org_Code).all()
-        org = orgs[0]
+        orgMember = db.session.query(Org_Member).filter(Org_Member.User_ID == current_user.id).first()
+        if orgMember.Role == "Member":
+            return make_response("You are not an admin of your current Org", 400)
 
-
+        org = db.session.query(Org).filter(Org.Org_Code == orgMember.Org_Code).first()
+     
         teams = db.session.query(Team).filter(Team.Org_Code == org.Org_Code).all()
         teamsList = ""
         for team in teams:
@@ -47,16 +44,13 @@ def setOrgProfile():
         return make_response("Error: Incorrect request method", 405)
     data = json.loads(request.get_data())
 
-    dbTeams = db.session.query(Org_Member).filter((Org_Member.User_ID == current_user.id) and (Org_Member.Role == "Admin")).all()
-    dbTeams2 = db.session.query(Org_Member).filter((Org_Member.User_ID == current_user.id) and (Org_Member.Role == "Owner")).all()
-    dbTeams.append(dbTeams2)
-    org = None
-    if len(dbTeams) == 0:
-        return make_response("You are not an admin or owner of any org", 400)
-    else:
-        org_member = dbTeams[0]
-        orgs = db.session.query(Org).filter(Org.Org_Code == org_member.Org_Code).all()
-        org = orgs[0]
+    orgMember = db.session.query(Org_Member).filter(Org_Member.User_ID == current_user.id).first()
+
+    if (orgMember.Role != "Owner") and (orgMember.Role != "Admin"):
+        return make_response("You are not an admin or owner of your current team", 400)
+    
+    org = db.session.query(Org).filter(Org.Org_Code == orgMember.Org_Code).first()
+
     if 'orgName' in data:
         try:
             db.session.query(Org).filter(Org.Org_Code == org.Org_Code).update({"Org_Name": data['orgName']})

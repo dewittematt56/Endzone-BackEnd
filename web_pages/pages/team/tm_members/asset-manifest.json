@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/team/tm_members/static/css/main.fa3ae624.css",
-    "main.js": "/pages/team/tm_members/static/js/main.09a14ff0.js",
+    "main.css": "/pages/team/tm_members/static/css/main.aec5eb99.css",
+    "main.js": "/pages/team/tm_members/static/js/main.e8afc9e4.js",
     "static/media/EndzoneMainLogo.png": "/pages/team/tm_members/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/team/tm_members/index.html",
-    "main.fa3ae624.css.map": "/pages/team/tm_members/static/css/main.fa3ae624.css.map",
-    "main.09a14ff0.js.map": "/pages/team/tm_members/static/js/main.09a14ff0.js.map"
+    "main.aec5eb99.css.map": "/pages/team/tm_members/static/css/main.aec5eb99.css.map",
+    "main.e8afc9e4.js.map": "/pages/team/tm_members/static/js/main.e8afc9e4.js.map"
   },
   "entrypoints": [
-    "static/css/main.fa3ae624.css",
-    "static/js/main.09a14ff0.js"
+    "static/css/main.aec5eb99.css",
+    "static/js/main.e8afc9e4.js"
   ]
 }
