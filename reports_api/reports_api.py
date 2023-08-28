@@ -119,7 +119,7 @@ def ingame_report_run():
         requestedGame= request.args.get('requestedGame')
         requestedPriorGames = request.args.get('requestedPriorGames')
 
-        executor_job = report_executor.submit(__run_ingame_report__, requestedTeamOfInterest, requestedGame, current_team, requestedPriorGames)
+        executor_job = report_executor.submit(__run_ingame_report__, requestedTeamOfInterest, requestedGame, current_team, requestedPriorGames.split(','))
         response = executor_job.result()
         return send_file( 
                 io.BytesIO(response),

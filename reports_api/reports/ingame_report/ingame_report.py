@@ -22,7 +22,7 @@ env.globals.update(static='./reports_api/reports/ingame_report/static')
 
 class IngameReport():
     def __init__(self, team_of_interest: str, game: str, team_code: str, prior_games: list) -> None:
-        self.team_of_interest = team_of_interest ## either self team or opponent
+        self.team_of_interest = team_of_interest
         self.game_id = game
         self.prior_game_ids = prior_games
         self.team_code = team_code
@@ -33,11 +33,6 @@ class IngameReport():
         self.dData = []
 
         # Temp Overriding
-        self.reportType = "Offense"
-        self.team_of_interest = "Burnsville"
-        self.team_code = "Endzone-System"
-        self.game_id = "643ad3ef-8b71-422d-ba03-f150637f148e"
-        self.prior_game_ids = ["643ad3ef-8b71-422d-ba03-f150637f148e", "a8ebe210-8ae1-4554-baef-9e73b35052ae", "35903bf5-dc8d-4512-b7ba-ed6d18ecca76"]
 
 
         self.get_data()
@@ -213,12 +208,14 @@ class IngameReport():
             teamSackRate = round((len(teamSackPlays) / len(enemyPassPlays)) * 100)
             teamSackRateStr = str(teamSackRate) + "%"
         except ZeroDivisionError:
+            teamSackRate = 0
             teamSackRateStr = "Invalid"
 
         try:
             enemySackRate = round((len(enemySackPlays) / len(teamPassPlays)) * 100)
             enemySackRateStr = str(enemySackRate) + "%"
         except ZeroDivisionError:
+            enemySackRate = 0
             enemySackRateStr = "Invalid"
 
         totalSackRate = teamSackRate + enemySackRate
