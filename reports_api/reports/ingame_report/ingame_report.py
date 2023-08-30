@@ -21,10 +21,12 @@ env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports')
 env.globals.update(static='./reports_api/reports/ingame_report/static')
 
 class IngameReport():
-    def __init__(self, team_of_interest: str, game: str, team_code: str, prior_games: list) -> None:
-        self.team_of_interest = team_of_interest
+    def __init__(self, team_of_interest: str, game: str, team_code: str, prior_games: list, opponent_prior_games: list) -> None:
+        self.opponent = team_of_interest
         self.game_id = game
+        self.team = self.getTeam()
         self.prior_game_ids = prior_games
+        self.opponent_prior_games = opponent_prior_games
         self.team_code = team_code
         self.pdfs = []
         self.pages = []
@@ -32,13 +34,20 @@ class IngameReport():
         self.oData = []
         self.dData = []
 
-        # Temp Overriding
-
-
         self.get_data()
         self.split_data()
         self.get_prior_game_data()
         self.run_report()
+
+    def getTeam(self) -> str:
+        db_engine = create_engine(db_uri)
+        Session = sessionmaker(db_engine)
+        session = Session()
+        gameData = pd.read_sql(session.query(Game).filter(Game.Game_ID == self.game_id).statement, db_engine)
+        if gameData['Home_Team'] != self.opponent:
+            self.team = gameData['Home_Team']
+        else:
+            self.team = gameData['Away_Team']
 
     def get_data(self) -> None:
         db_engine = create_engine(db_uri)
@@ -55,28 +64,26 @@ class IngameReport():
         
         
     def split_data(self) -> None:
-        dPlays = self.play_data[(self.play_data["Possession"] != self.team_of_interest)]
-        oPlays = self.play_data[(self.play_data["Possession"] == self.team_of_interest)]
-        self.oData = enrich_data(oPlays, self.team_of_interest)
-        self.dData = enrich_data(dPlays, self.team_of_interest)
+        dPlays = self.play_data[(self.play_data["Possession"] == self.opponent)]
+        oPlays = self.play_data[(self.play_data["Possession"] == self.team)]
+        self.oData = enrich_data(oPlays, self.team)
+        self.dData = enrich_data(dPlays, self.opponent)
 
-    
+    # Need to fix how data is gathered for opponent
     def get_prior_game_data(self) -> None:
         db_engine = create_engine(db_uri)
         Session = sessionmaker(db_engine)
         session = Session()
-        team_game_data = pd.read_sql(session.query(Game).filter(Game.Game_ID.in_(self.prior_game_ids)).statement, db_engine)
-        team_game_data['Game_Date'] = pd.to_datetime(team_game_data['Game_Date'])
-        team_game_data['Game_Date'] = team_game_data['Game_Date'].dt.strftime('%A, %d %B %Y')
+        game_data = pd.read_sql(session.query(Game).filter(Game.Game_ID.in_(self.prior_game_ids)).statement, db_engine)
+        game_data['Game_Date'] = pd.to_datetime(game_data['Game_Date'])
+        game_data['Game_Date'] = game_data['Game_Date'].dt.strftime('%A, %d %B %Y')
         temp_plays = pd.read_sql(session.query(Play).filter(Play.Game_ID.in_(self.prior_game_ids)).statement, db_engine)
         df_forms = pd.read_sql(session.query(Formations).filter(Formations.Team_Code == self.team_code).statement, db_engine)
         df_plays = pd.merge(temp_plays, df_forms, left_on='O_Formation', right_on="Formation", how='inner')
-        team_play_data = pd.merge(df_plays, team_game_data, on='Game_ID', how='inner')
+        play_data = pd.merge(df_plays, game_data, on='Game_ID', how='inner')
         self.prior_penalties = pd.read_sql(session.query(Penalty).filter(Penalty.Game_ID.in_(self.prior_game_ids)).statement, db_engine)
-        dPlays = team_play_data[(team_play_data["Possession"] != self.team_of_interest)]
-        oPlays = team_play_data[(team_play_data["Possession"] == self.team_of_interest)]
-        self.oPriorData = enrich_data(oPlays, self.team_of_interest)
-        self.dPriorData = enrich_data(dPlays, self.team_of_interest)
+        dPlays = play_data[(play_data["Possession"] == self.opponent)]
+        self.priorData = enrich_data(dPlays, self.team)
 
 
     def combine_reports(self) -> None:
@@ -99,7 +106,7 @@ class IngameReport():
     # Pass it as a percentage to the frontend
     def getBar(self, val, total) -> str:
         try:
-            val = str((val / total) * 100) + "%"
+            val = str((val / total) * 90) + "%"
         except:
             val = "0%"
         return val
@@ -125,12 +132,12 @@ class IngameReport():
         try:
             oAvgRush = round(oRushYards / len(oRushPlays), 1)
         except ZeroDivisionError:
-            oAvgRush = "Invalid"
+            oAvgRush = "Null"
 
         try:    
             dAvgRush = round(dRushYards / len(dRushPlays), 1)
         except ZeroDivisionError:
-            dAvgRush = "Invalid"
+            dAvgRush = "Null"
 
         totalAvgRush = oAvgRush + dAvgRush
 
@@ -209,14 +216,14 @@ class IngameReport():
             teamSackRateStr = str(teamSackRate) + "%"
         except ZeroDivisionError:
             teamSackRate = 0
-            teamSackRateStr = "Invalid"
+            teamSackRateStr = "Null"
 
         try:
             enemySackRate = round((len(enemySackPlays) / len(teamPassPlays)) * 100)
             enemySackRateStr = str(enemySackRate) + "%"
         except ZeroDivisionError:
             enemySackRate = 0
-            enemySackRateStr = "Invalid"
+            enemySackRateStr = "Null"
 
         totalSackRate = teamSackRate + enemySackRate
     
@@ -235,13 +242,13 @@ class IngameReport():
             teamBlitzRate = round((len(teamPressurePlays) / len(self.dData)) * 100)
             teamBlitzRateStr = str(teamBlitzRate) + "%"
         except ZeroDivisionError:
-            teamBlitzRateStr = "Invalid"
+            teamBlitzRateStr = "Null"
 
         try:
             enemyBlitzRate = round((len(enemyPressurePlays) / len(self.oData)) * 100)
             enemyBlitzRateStr = str(enemyBlitzRate) + "%"
         except ZeroDivisionError:
-            teamBlitzRateStr = "Invalid"
+            teamBlitzRateStr = "Null"
 
         totalBlitzRate = teamBlitzRate + enemyBlitzRate
 
@@ -293,7 +300,7 @@ class IngameReport():
                 teamNumDrives += 1
             teamStartPos = round(teamTotalStartPos / teamNumDrives)
         except:
-            enemyStartPos = "invalid"
+            enemyStartPos = "Null"
 
         try:
             enemyDriveList = []
@@ -310,7 +317,7 @@ class IngameReport():
                 enemyNumDrives += 1
             enemyStartPos = round(enemyTotalStartPos / enemyNumDrives)
         except:
-            enemyStartPos = "invalid"
+            enemyStartPos = "Null"
 
         totalStartPos = teamStartPos + enemyStartPos
         teamStartPosBar = self.getBar(teamStartPos, totalStartPos)
@@ -347,11 +354,11 @@ class IngameReport():
     
 
     def getPenalties(self) -> list:
-        teamOPenalties = len(self.penalties.query(f'Penalty_Offending_Team == "{self.team_of_interest}" & Penalty_Offending_Side == "Offense"'))
-        teamDPenalties = len(self.penalties.query(f'Penalty_Offending_Team == "{self.team_of_interest}" & Penalty_Offending_Side == "Defense"'))
+        teamOPenalties = len(self.penalties.query(f'Penalty_Offending_Team == "{self.team}" & Penalty_Offending_Side == "Offense"'))
+        teamDPenalties = len(self.penalties.query(f'Penalty_Offending_Team == "{self.team}" & Penalty_Offending_Side == "Defense"'))
 
-        enemyOPenalties = len(self.penalties.query(f'Penalty_Offending_Team != "{self.team_of_interest}" & Penalty_Offending_Side == "Offense"'))
-        enemyDPenalties = len(self.penalties.query(f'Penalty_Offending_Team != "{self.team_of_interest}" & Penalty_Offending_Side == "Defense"'))
+        enemyOPenalties = len(self.penalties.query(f'Penalty_Offending_Team != "{self.team}" & Penalty_Offending_Side == "Offense"'))
+        enemyDPenalties = len(self.penalties.query(f'Penalty_Offending_Team != "{self.team}" & Penalty_Offending_Side == "Defense"'))
 
         totalOPenalties = teamOPenalties + enemyOPenalties
         totalDPenalties = teamDPenalties + enemyDPenalties
@@ -382,12 +389,10 @@ class IngameReport():
         penaltiesList = self.getPenalties()
         data_list = totalPlays + yardList + effList + sackRateList + blitzRateList + turnoverList + \
                     conv3rdList + startPosList + playsToStrength + playsToBoundary + penaltiesList
-
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
-        html = title_template.render(title="Ingame Report", data_list=data_list, image_path = image_path)
+        html = title_template.render(image_path = image_path, teamName=self.team, opponentName=self.opponent, data_list=data_list)
         # Render this sucker!
         self.template_to_pdf(html, True)
-
 
     def o_overview_page(self) -> None:
         o_overview_template = env.get_template('ingame_report/report_pages/offense_overview.html')
@@ -438,18 +443,18 @@ class IngameReport():
                                 {"title": "Long Coverage Frequency", "graph": prior_long_coverage}
         ]
 
-        prior_coverage_play = groupedBarGraph(self.oData, "Coverage", "Play_Type", "Play Type")
-        during_coverage_play = groupedBarGraph(self.oData, "Coverage", "Play_Type", "Play Type")
+        prior_coverage_personnel = groupedBarGraph(self.oData, "Coverage", "Personnel", "Personnel")
+        during_coverage_personnel = groupedBarGraph(self.oData, "Coverage", "Personnel", "Personnel")
         prior_formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "Formation by Pressure")
         during_formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "Formation by Pressure")
-        priorDuringList = [{"title": "Prior: Coverage by Play Type", "graph": prior_coverage_play}, \
-                                {"title": "During: Coverage by Play Type", "graph": during_coverage_play}, \
-                                {"title": "Prior: Formation by Pressure", "graph": prior_formation_pressure}, \
-                                {"title": "Formation by Pressure", "graph": during_formation_pressure}
+        priorDuringList = [{"title": "Historical: Coverage by Play Type", "graph": prior_coverage_personnel}, \
+                                {"title": "Current: Coverage by Play Type", "graph": during_coverage_personnel}, \
+                                {"title": "Historical: Formation by Pressure", "graph": prior_formation_pressure}, \
+                                {"title": "Current: Formation by Pressure", "graph": during_formation_pressure}
         ]
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
-        html = o_overview_template.render(image_path = image_path, barGraphList=barGraphList, duringDownCoverageList=duringDownCoverageList, priorDownCoverageList=priorDownCoverageList, priorDownGroupCoverageList=priorDownGroupCoverageList, duringDownGroupCoverageList=duringDownGroupCoverageList, priorDuringList=priorDuringList)
+        html = o_overview_template.render(image_path = image_path, teamName=self.team, barGraphList=barGraphList, duringDownCoverageList=duringDownCoverageList, priorDownCoverageList=priorDownCoverageList, priorDownGroupCoverageList=priorDownGroupCoverageList, duringDownGroupCoverageList=duringDownGroupCoverageList, priorDuringList=priorDuringList)
         # Render this sucker!
         self.template_to_pdf(html, True)
 
@@ -457,7 +462,7 @@ class IngameReport():
     def d_overview_page(self) -> None:
         d_overview_template = env.get_template('ingame_report/report_pages/defense_overview.html')
 
-        down_play = groupedBarGraph(self.dData, "Down", "Coverage", "Coverage")
+        down_play = groupedBarGraph(self.dData, "Down", "Play_Type", "Play Type")
         personnel_formation = groupedBarGraph(self.dData, "Personnel", "Formation", "Formation")
         throw_attempts = categorical_pieChart_wrapper(self.dData.query('Pass_Zone != "Non-Passing-Play"'), "Pass_Zone", "Pass Zone Frequency")
         formation_field_pos = groupedBarGraph(self.dData, "Formation", "Field_Group", "Field Position")
@@ -512,8 +517,8 @@ class IngameReport():
         tempDataPrior['To_Boundary'] = tempDataPrior["Play_Type_Dir"] == tempDataPrior['Hash']
         boundary_prior = categorical_pieChart_wrapper(tempDataPrior, "To_Boundary", "Plays into Boundary")
 
-        priorDuringList = [{"title": "Prior: Formation by Play Type", "graph": prior_formation_play}, \
-                                {"title": "During: Formation by Play Type", "graph": during_formation_play}, \
+        priorDuringList = [{"title": "Historical: Formation by Play Type", "graph": prior_formation_play}, \
+                                {"title": "Current: Formation by Play Type", "graph": during_formation_play}, \
                                 {"title": "Into Strength", "graph": strength_prior}, \
                                 {"title": "Into Strength", "graph": strength_during}, \
                                 {"title": "Into Boundary", "graph": boundary_prior}, \
@@ -521,7 +526,7 @@ class IngameReport():
         ]
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
-        html = d_overview_template.render(image_path = image_path, frontPage=frontPage, duringDownGroupPlayList=duringDownGroupPlayList, priorDownGroupPlayList=priorDownGroupPlayList, duringDownPlayList=duringDownPlayList, priorDownPlayList=priorDownPlayList, priorDuringList=priorDuringList)
+        html = d_overview_template.render(image_path = image_path, teamName=self.team, opponentName=self.opponent, frontPage=frontPage, duringDownGroupPlayList=duringDownGroupPlayList, priorDownGroupPlayList=priorDownGroupPlayList, duringDownPlayList=duringDownPlayList, priorDownPlayList=priorDownPlayList, priorDuringList=priorDuringList)
         # Render this sucker!
         self.template_to_pdf(html, True)
 

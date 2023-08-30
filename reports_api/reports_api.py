@@ -26,9 +26,9 @@ def __run_thunderbolt_report__(team_of_interest: str, game_IDs: str, user_team_c
         pdf = report.combine_reports()
         return pdf
     
-def __run_ingame_report__(team_of_interest: str, game_ID: str, user_team_code: str, game_ids: list):
+def __run_ingame_report__(team_of_interest: str, game_ID: str, user_team_code: str, game_ids: list, opponent_games: list):
     with thread_lock:
-        report = IngameReport(team_of_interest, game_ID, user_team_code, game_ids)
+        report = IngameReport(team_of_interest, game_ID, user_team_code, game_ids, opponent_games)
         pdf = report.combine_reports()
         return pdf
 
@@ -119,7 +119,7 @@ def ingame_report_run():
         requestedGame= request.args.get('requestedGame')
         requestedPriorGames = request.args.get('requestedPriorGames')
 
-        executor_job = report_executor.submit(__run_ingame_report__, requestedTeamOfInterest, requestedGame, current_team, requestedPriorGames.split(','))
+        executor_job = report_executor.submit(__run_ingame_report__, requestedTeamOfInterest, requestedGame, current_team, requestedPriorGames.split(','), [])
         response = executor_job.result()
         return send_file( 
                 io.BytesIO(response),
