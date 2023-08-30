@@ -21,12 +21,11 @@ env = jinja2.Environment(loader=jinja2.FileSystemLoader('./reports_api/reports')
 env.globals.update(static='./reports_api/reports/ingame_report/static')
 
 class IngameReport():
-    def __init__(self, team_of_interest: str, game: str, team_code: str, prior_games: list, opponent_prior_games: list) -> None:
+    def __init__(self, team_of_interest: str, game: str, team_code: str, prior_games: list) -> None:
         self.opponent = team_of_interest
         self.game_id = game
         self.team = self.getTeam()
         self.prior_game_ids = prior_games
-        self.opponent_prior_games = opponent_prior_games
         self.team_code = team_code
         self.pdfs = []
         self.pages = []
