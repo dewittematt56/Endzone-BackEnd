@@ -44,10 +44,10 @@ class IngameReport():
         Session = sessionmaker(db_engine)
         session = Session()
         gameData = pd.read_sql(session.query(Game).filter(Game.Game_ID == self.game_id).statement, db_engine)
-        if gameData['Home_Team'] != self.opponent:
-            self.team = gameData['Home_Team']
+        if gameData['Home_Team'].iloc[0] != self.opponent:
+            return gameData['Home_Team'].iloc[0]
         else:
-            self.team = gameData['Away_Team']
+            return gameData['Away_Team'].iloc[0]
 
     def get_data(self) -> None:
         db_engine = create_engine(db_uri)
@@ -397,64 +397,46 @@ class IngameReport():
     def o_overview_page(self) -> None:
         o_overview_template = env.get_template('ingame_report/report_pages/offense_overview.html')
 
-        # This graph isn't working correctly, need the y axis to be the yards gained (outcome), not occurences
-        formation_play = groupedBarGraph(self.oData, "Formation", "Play_Type", "Play Type", "Result", "Average Yards Gained")
+        # Want to change this to be y axis average yards gained eventually
+        formation_play = groupedBarGraph(self.oData, "Formation", "Play_Type", "Play Type")
         
         down_coverage = groupedBarGraph(self.oData, "Down", "Coverage", "Coverage")
         distance_coverage = groupedBarGraph(self.oData, "Distance", "Coverage", "Coverage")
         o_formation_coverage = groupedBarGraph(self.oData, "O_Formation", "Coverage", "Coverage")
         field_pos_coverage = groupedBarGraph(self.oData, "Field_Group", "Coverage", "Coverage")
-        barGraphList = [{"title": "Avg Yards Gained for Formation by Play Type", "graph": formation_play}, \
-                     {"title": "Down by Coverage", "graph": down_coverage}, \
-                     {"title": "Distance by Coverage", "graph": distance_coverage}, \
-                     {"title": "O Formation by Coverage", "graph": o_formation_coverage}, \
-                     {"title": "Field Position by Coverage", "graph": field_pos_coverage}
+        barGraphList = [{"title": "Formation by Play Type", "graph": formation_play}, \
+                     {"title": "Coverage by Down", "graph": down_coverage}, \
+                     # Want to fix the distance coverage graph
+                     {"title": "Coverage by Distance", "graph": distance_coverage}, \
+                     {"title": "Coverage by O Formation", "graph": o_formation_coverage}, \
+                     {"title": "Coverage by Field Position", "graph": field_pos_coverage}
         ]
 
-        during_down1_coverage = categorical_pieChart_wrapper(self.oData.query('Down == 1'), "Coverage", "1st Down")
-        during_down2_coverage = categorical_pieChart_wrapper(self.oData.query('Down == 2'), "Coverage", "2nd Down")
-        during_down3_coverage = categorical_pieChart_wrapper(self.oData.query('Down == 3'), "Coverage", "3rd Down")
-        duringDownCoverageList = [{"title": "1st Down Coverage Frequency", "graph": during_down1_coverage}, \
-                        {"title": "2nd Down Coverage Frequency", "graph": during_down2_coverage}, \
-                        {"title": "3rd Down Coverage Frequency", "graph": during_down3_coverage}
-        ]
-        
-        prior_down1_coverage = categorical_pieChart_wrapper(self.oPriorData.query('Down == 1'), "Coverage", "1st Down")
-        prior_down2_coverage = categorical_pieChart_wrapper(self.oPriorData.query('Down == 2'), "Coverage", "2nd Down")
-        prior_down3_coverage = categorical_pieChart_wrapper(self.oPriorData.query('Down == 3'), "Coverage", "3rd Down")
-        priorDownCoverageList = [{"title": "1st Down Coverage Frequency", "graph": prior_down1_coverage}, \
-                        {"title": "2nd Down Coverage Frequency", "graph": prior_down2_coverage}, \
-                        {"title": "3rd Down Coverage Frequency", "graph": prior_down3_coverage}
+        down1_coverage = categorical_pieChart_wrapper(self.oData.query('Down == 1'), "Coverage", "1st Down")
+        down2_coverage = categorical_pieChart_wrapper(self.oData.query('Down == 2'), "Coverage", "2nd Down")
+        down3_coverage = categorical_pieChart_wrapper(self.oData.query('Down == 3'), "Coverage", "3rd Down")
+        downCoverageList = [{"title": "1st Down Coverage Frequency", "graph": down1_coverage}, \
+                        {"title": "2nd Down Coverage Frequency", "graph": down2_coverage}, \
+                        {"title": "3rd Down Coverage Frequency", "graph": down3_coverage}
         ]
 
-        during_short_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Short"'), "Coverage", "Short")
-        during_medium_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Medium"'), "Coverage", "Medium")
-        during_long_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Long"'), "Coverage", "Long")
-        duringDownGroupCoverageList = [{"title": "Short Coverage Frequency", "graph": during_short_coverage}, \
-                                {"title": "Medium Coverage Frequency", "graph": during_medium_coverage}, \
-                                {"title": "Long Coverage Frequency", "graph": during_long_coverage}
+
+        short_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Short"'), "Coverage", "Short")
+        medium_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Medium"'), "Coverage", "Medium")
+        long_coverage = categorical_pieChart_wrapper(self.oData.query('Down_Group == "Long"'), "Coverage", "Long")
+        downGroupCoverageList = [{"title": "Short Coverage Frequency", "graph": short_coverage}, \
+                                {"title": "Medium Coverage Frequency", "graph": medium_coverage}, \
+                                {"title": "Long Coverage Frequency", "graph": long_coverage}
         ]
 
-        prior_short_coverage = categorical_pieChart_wrapper(self.oPriorData.query('Down_Group == "Short"'), "Coverage", "Short")
-        prior_medium_coverage = categorical_pieChart_wrapper(self.oPriorData.query('Down_Group == "Medium"'), "Coverage", "Medium")
-        prior_long_coverage = categorical_pieChart_wrapper(self.oPriorData.query('Down_Group == "Long"'), "Coverage", "Long")
-        priorDownGroupCoverageList = [{"title": "Short Coverage Frequency", "graph": prior_short_coverage}, \
-                                {"title": "Medium Coverage Frequency", "graph": prior_medium_coverage}, \
-                                {"title": "Long Coverage Frequency", "graph": prior_long_coverage}
-        ]
-
-        prior_coverage_personnel = groupedBarGraph(self.oData, "Coverage", "Personnel", "Personnel")
-        during_coverage_personnel = groupedBarGraph(self.oData, "Coverage", "Personnel", "Personnel")
-        prior_formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "Formation by Pressure")
-        during_formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "Formation by Pressure")
-        priorDuringList = [{"title": "Historical: Coverage by Play Type", "graph": prior_coverage_personnel}, \
-                                {"title": "Current: Coverage by Play Type", "graph": during_coverage_personnel}, \
-                                {"title": "Historical: Formation by Pressure", "graph": prior_formation_pressure}, \
-                                {"title": "Current: Formation by Pressure", "graph": during_formation_pressure}
+        coverage_personnel = groupedBarGraph(self.oData, "Personnel", "Coverage", "Coverage")
+        formation_pressure = stackedBarGraph(self.oData, "Formation", ["Pressure_Left", "Pressure_Middle", "Pressure_Right"], "")
+        barGraph2 = [{"title": "Coverage by Personnel", "graph": coverage_personnel}, \
+                    {"title": "Pressure by Formation", "graph": formation_pressure}
         ]
 
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
-        html = o_overview_template.render(image_path = image_path, teamName=self.team, barGraphList=barGraphList, duringDownCoverageList=duringDownCoverageList, priorDownCoverageList=priorDownCoverageList, priorDownGroupCoverageList=priorDownGroupCoverageList, duringDownGroupCoverageList=duringDownGroupCoverageList, priorDuringList=priorDuringList)
+        html = o_overview_template.render(image_path = image_path, teamName=self.team, barGraphList=barGraphList, downCoverageList=downCoverageList, downGroupCoverageList=downGroupCoverageList, barGraph2=barGraph2)
         # Render this sucker!
         self.template_to_pdf(html, True)
 
@@ -463,26 +445,26 @@ class IngameReport():
         d_overview_template = env.get_template('ingame_report/report_pages/defense_overview.html')
 
         down_play = groupedBarGraph(self.dData, "Down", "Play_Type", "Play Type")
-        personnel_formation = groupedBarGraph(self.dData, "Personnel", "Formation", "Formation")
-        throw_attempts = categorical_pieChart_wrapper(self.dData.query('Pass_Zone != "Non-Passing-Play"'), "Pass_Zone", "Pass Zone Frequency")
-        formation_field_pos = groupedBarGraph(self.dData, "Formation", "Field_Group", "Field Position")
-        frontPage = [{"title": "Down by Play Type", "graph": down_play}, \
-                     {"title": "Personnel by Formation", "graph": personnel_formation}, \
+        personnel_play = groupedBarGraph(self.dData, "Personnel", "Play_Type", "Play Type")
+        throw_attempts = categorical_pieChart_wrapper(self.dData.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"'), "Pass_Zone", "Pass Zone Frequency")
+        formation_field_pos = groupedBarGraph(self.dData, "Field_Group", "Formation", "Formation")
+        frontPage = [{"title": "Play Type by Down", "graph": down_play}, \
+                     {"title": "Play Type by Personnel", "graph": personnel_play}, \
                      {"title": "Pass Zone Frequency", "graph": throw_attempts}, \
                      {"title": "Formation by Field Position", "graph": formation_field_pos}
         ]
 
         during_down1_play = categorical_pieChart_wrapper(self.dData.query('Down == 1'), "Play_Type", "1st Down")
-        during_down1_play = categorical_pieChart_wrapper(self.dData.query('Down == 2'), "Play_Type", "2nd Down")
-        during_down1_play = categorical_pieChart_wrapper(self.dData.query('Down == 3'), "Play_Type", "3rd Down")
+        during_down2_play = categorical_pieChart_wrapper(self.dData.query('Down == 2'), "Play_Type", "2nd Down")
+        during_down3_play = categorical_pieChart_wrapper(self.dData.query('Down == 3'), "Play_Type", "3rd Down")
         duringDownPlayList = [{"title": "1st Down Play Type Frequency", "graph": during_down1_play}, \
-                        {"title": "2nd Down Play Type Frequency", "graph": during_down1_play}, \
-                        {"title": "3rd Down Play Type Frequency", "graph": during_down1_play}
+                        {"title": "2nd Down Play Type Frequency", "graph": during_down2_play}, \
+                        {"title": "3rd Down Play Type Frequency", "graph": during_down3_play}
         ]
 
-        prior_down1_play = categorical_pieChart_wrapper(self.dPriorData.query('Down == 1'), "Play_Type", "1st Down")
-        prior_down2_play = categorical_pieChart_wrapper(self.dPriorData.query('Down == 2'), "Play_Type", "2nd Down")
-        prior_down3_play = categorical_pieChart_wrapper(self.dPriorData.query('Down == 3'), "Play_Type", "3rd Down")
+        prior_down1_play = categorical_pieChart_wrapper(self.priorData.query('Down == 1'), "Play_Type", "1st Down")
+        prior_down2_play = categorical_pieChart_wrapper(self.priorData.query('Down == 2'), "Play_Type", "2nd Down")
+        prior_down3_play = categorical_pieChart_wrapper(self.priorData.query('Down == 3'), "Play_Type", "3rd Down")
         priorDownPlayList = [{"title": "1st Down Play Type Frequency", "graph": prior_down1_play}, \
                         {"title": "2nd Down Play Type Frequency", "graph": prior_down2_play}, \
                         {"title": "3rd Down Play Type Frequency", "graph": prior_down3_play}
@@ -496,29 +478,29 @@ class IngameReport():
                                 {"title": "Long Play Type Frequency", "graph": during_long_play}
         ]
 
-        prior_short_play = categorical_pieChart_wrapper(self.dPriorData.query('Down_Group == "Short"'), "Play_Type", "Short")
-        prior_medium_play = categorical_pieChart_wrapper(self.dPriorData.query('Down_Group == "Medium"'), "Play_Type", "Medium")
-        prior_long_play = categorical_pieChart_wrapper(self.dPriorData.query('Down_Group == "Long"'), "Play_Type", "Long")
+        prior_short_play = categorical_pieChart_wrapper(self.priorData.query('Down_Group == "Short"'), "Play_Type", "Short")
+        prior_medium_play = categorical_pieChart_wrapper(self.priorData.query('Down_Group == "Medium"'), "Play_Type", "Medium")
+        prior_long_play = categorical_pieChart_wrapper(self.priorData.query('Down_Group == "Long"'), "Play_Type", "Long")
         priorDownGroupPlayList = [{"title": "Short Play Type Frequency", "graph": prior_short_play}, \
                                 {"title": "Medium Play Type Frequency", "graph": prior_medium_play}, \
                                 {"title": "Long Play Type Frequency", "graph": prior_long_play}
         ]
 
-        prior_formation_play = groupedBarGraph(self.dPriorData, "Formation", "Play_Type", "Play Type")
+        prior_formation_play = groupedBarGraph(self.priorData, "Formation", "Play_Type", "Play Type")
         during_formation_play = groupedBarGraph(self.dData, "Formation", "Play_Type", "Play Type")
-        strength_prior = categorical_pieChart_wrapper(self.dPriorData, "To_Strength", "Plays into Strength")
+        strength_prior = categorical_pieChart_wrapper(self.priorData, "To_Strength", "Plays into Strength")
         strength_during = categorical_pieChart_wrapper(self.dData, "To_Strength", "Plays into Strength")
 
         tempDataDuring = self.dData
         tempDataDuring['To_Boundary'] = tempDataDuring["Play_Type_Dir"] == tempDataDuring['Hash']
         boundary_during = categorical_pieChart_wrapper(tempDataDuring, "To_Boundary", "Plays into Boundary")
 
-        tempDataPrior = self.dPriorData
+        tempDataPrior = self.priorData
         tempDataPrior['To_Boundary'] = tempDataPrior["Play_Type_Dir"] == tempDataPrior['Hash']
         boundary_prior = categorical_pieChart_wrapper(tempDataPrior, "To_Boundary", "Plays into Boundary")
 
-        priorDuringList = [{"title": "Historical: Formation by Play Type", "graph": prior_formation_play}, \
-                                {"title": "Current: Formation by Play Type", "graph": during_formation_play}, \
+        priorDuringList = [{"title": "Historical: Play Type by Formation", "graph": prior_formation_play}, \
+                                {"title": "Current: Play Type by Formation", "graph": during_formation_play}, \
                                 {"title": "Into Strength", "graph": strength_prior}, \
                                 {"title": "Into Strength", "graph": strength_during}, \
                                 {"title": "Into Boundary", "graph": boundary_prior}, \
