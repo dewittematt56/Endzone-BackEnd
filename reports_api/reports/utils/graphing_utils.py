@@ -32,8 +32,11 @@ def group_by_df(df: pd.DataFrame, column: str, useOther: bool = True) -> pd.Data
     return pd.DataFrame(rows)
 
 def categorical_pieChart_wrapper(data: pd.DataFrame, category: str, title: str, isBooleanGraph: bool = False, useOther: bool = True) -> BytesIO:
-    chart_data = group_by_df(data, category, useOther)
-    return categorical_pieChart(title, chart_data, isBooleanGraph)
+    try:
+        chart_data = group_by_df(data, category, useOther)
+        return categorical_pieChart(title, chart_data, isBooleanGraph)
+    except:
+        return None
 
 def categorical_pieChart(title: str, df: pd.DataFrame, isBooleanGraph: bool = False) -> BytesIO:
     try: 
@@ -72,31 +75,34 @@ def barGraph(data, x, y, x_label: str, y_label: str):
     pass
 
 def stackedBarGraph(df: pd.DataFrame, x_col: str, y_cols: 'list[str]', title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences', include_total_plays: bool = False, total_plays_label: str = ""):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    df = df[[uniqueId_col, x_col] + y_cols]
-    grouped_df = df.groupby(x_col)[y_cols].sum()
-    len_df = df.groupby(x_col).size()
-    x = np.arange(len(grouped_df))  # x-coordinates for the bars
-    opacity = 0.8  # Opacity of the bars
+    try:
+        fig, ax = plt.subplots(figsize=(10, 6))
+        df = df[[uniqueId_col, x_col] + y_cols]
+        grouped_df = df.groupby(x_col)[y_cols].sum()
+        len_df = df.groupby(x_col).size()
+        x = np.arange(len(grouped_df))  # x-coordinates for the bars
+        opacity = 0.8  # Opacity of the bars
 
-    # Plot stacked bars for each column
-    bottom = np.zeros(len(grouped_df))
-    for i, col in enumerate(y_cols):
-        ax.bar(x, grouped_df[col], alpha=opacity, color=endzone_diverging_colors()[i],
-               label=col, bottom=bottom)
-        bottom += grouped_df[col]
-    
-    if include_total_plays:
-        ax.bar(x, len_df, alpha=0.5, color='none', edgecolor='black', linewidth=2, label=total_plays_label)
+        # Plot stacked bars for each column
+        bottom = np.zeros(len(grouped_df))
+        for i, col in enumerate(y_cols):
+            ax.bar(x, grouped_df[col], alpha=opacity, color=endzone_diverging_colors()[i],
+                label=col, bottom=bottom)
+            bottom += grouped_df[col]
+        
+        if include_total_plays:
+            ax.bar(x, len_df, alpha=0.5, color='none', edgecolor='black', linewidth=2, label=total_plays_label)
 
-    ax.set_xlabel(x_col.replace('_', ' '))
-    ax.set_ylabel(y_label)
-    ax.set_xticks(x)
-    ax.set_xticklabels(grouped_df.index)
-    ax.set_title(title)
-    ax.legend()
+        ax.set_xlabel(x_col.replace('_', ' '))
+        ax.set_ylabel(y_label)
+        ax.set_xticks(x)
+        ax.set_xticklabels(grouped_df.index)
+        ax.set_title(title)
+        ax.legend()
 
-    return save_matPlot(plt)
+        return save_matPlot(plt)
+    except:
+        return None
 
 def crossTabQuery(df_x: pd.Series, df_y: pd.Series) -> pd.DataFrame:
     crossTab = pd.crosstab(df_x, df_y, normalize="index")
@@ -138,16 +144,19 @@ def kdePlot(data) -> BytesIO:
     return save_matPlot(plt)
 
 def groupedBarGraph(df: pd.DataFrame, x_col: str, y_col: str, title: str, uniqueId_col: str = "Play_Number", y_label: str = 'Occurrences'):
-    fig, ax= plt.subplots()
-    df = df[[uniqueId_col, x_col, y_col]]
-    grouped_df = df.groupby([y_col, x_col]).count()
-    grouped_df = grouped_df.unstack(level=0)
-    ax = grouped_df.plot(kind='bar', rot=0, figsize=(10, 6), color=endzone_diverging_colors())
+    try:
+        fig, ax= plt.subplots()
+        df = df[[uniqueId_col, x_col, y_col]]
+        grouped_df = df.groupby([y_col, x_col]).count()
+        grouped_df = grouped_df.unstack(level=0)
+        ax = grouped_df.plot(kind='bar', rot=0, figsize=(10, 6), color=endzone_diverging_colors())
 
-    plt.xlabel(x_col.replace('_', ' '))
-    plt.ylabel(y_label)
-    ax.legend(title=title, labels=[col[1] for col in grouped_df.columns])
-    return save_matPlot(plt)
+        plt.xlabel(x_col.replace('_', ' '))
+        plt.ylabel(y_label)
+        ax.legend(title=title, labels=[col[1] for col in grouped_df.columns])
+        return save_matPlot(plt)
+    except:
+        return None
 
 def create_xy_map(df: pd.DataFrame, x_spatial_col: str, y_spatial_col: str, categorical_col: str, sizing_column: str = None) -> None:
     # Currently Broken

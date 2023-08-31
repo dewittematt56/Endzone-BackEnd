@@ -78,7 +78,19 @@
             </table>
         </div>
         <div style="width: 100%;">
-            <h4>Game Statistics</h4>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 33%;">
+                        <h4>{{ teamName }}</h4>
+                    </td>
+                    <td style="width: 33%;">
+                        <h4>Game Statistics</h4>
+                    </td>
+                    <td style="width: 33%;">
+                        <h4>{{ opponentName }}</h4>
+                    </td>
+                </tr>
+            </table>
             {% for item in data_list %}
                 <table>
                     <tr style="width: 100%;">
