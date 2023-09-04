@@ -153,6 +153,10 @@ def AutoPilot():
 def IngameReport():
     return render_template("/ingame/report/ingame_report.html")
 
+@content_api.route("/endzone/ingame/hub", methods = ["GET"])
+def IngameHub():
+    return render_template("/ingame/hub/ingame_hub.html")
+
 @content_api.route("/endzone/pregame/thunderbolt", methods = ["GET"])
 @login_required
 def PreGameThunderbolt():

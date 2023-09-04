@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/pages/ingame/hub/static/css/main.a98ba37a.css",
+    "main.js": "/pages/ingame/hub/static/js/main.1b42152f.js",
+    "static/media/EndzoneMainLogo.png": "/pages/ingame/hub/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
+    "index.html": "/pages/ingame/hub/index.html",
+    "main.a98ba37a.css.map": "/pages/ingame/hub/static/css/main.a98ba37a.css.map",
+    "main.1b42152f.js.map": "/pages/ingame/hub/static/js/main.1b42152f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a98ba37a.css",
+    "static/js/main.1b42152f.js"
+  ]
+}
