@@ -149,6 +149,10 @@ def PregameModelBuilder():
 def AutoPilot():
     return render_template("/ingame/autopilot/autopilot.html")
 
+@content_api.route("/endzone/ingame/autopilot/loader", methods = ["GET"])
+def AutoPilotLoader():
+    return render_template("/ingame/autopilot-loader/autopilot-loader.html")
+
 @content_api.route("/endzone/ingame/report", methods = ["GET"])
 def IngameReport():
     return render_template("/ingame/report/ingame_report.html")
