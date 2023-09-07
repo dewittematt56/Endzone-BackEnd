@@ -529,6 +529,7 @@ class PostgameReport():
         title_template = env.get_template('postgame_report/report_pages/runningBack.html')
         html = title_template.render(image_path = image_path, svg_path = svg_path, ball_carrier = ball_carrier, total_runs = total_runs,
                                      total_yards = total_yards, touchdowns = touchdowns, fumbles = fumbles, average = average, long=long)
+        
         # Render
         self.template_to_pdf(html, False)
 
