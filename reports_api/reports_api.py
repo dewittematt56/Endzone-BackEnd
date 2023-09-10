@@ -6,7 +6,7 @@ from flask import Blueprint, send_file
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from reports_api.reports.thunderbolt_report.thunderbolt_report import ThunderboltReport
-from reports_api.reports.ingame_report.ingame_report import IngameReport
+from reports_api.reports.ingame_report.ingame_report import EmptyDataException, IngameReport
 
 reports_api = Blueprint('reports_api', __name__)
 report_executor = ThreadPoolExecutor()
@@ -127,6 +127,9 @@ def ingame_report_run():
                 as_attachment=True,
                 download_name="pog.pdf"
             )
+    except EmptyDataException as e:
+        return Response(e.message, status=299)
+        
     except Exception as e:
         print(e)
         return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
