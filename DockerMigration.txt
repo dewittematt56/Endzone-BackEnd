@@ -7,6 +7,10 @@ LOG INTO EC2 via Direct Connect
 
 sudo aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 956579061637.dkr.ecr.us-east-2.amazonaws.com
 docker pull 956579061637.dkr.ecr.us-east-2.amazonaws.com/endzone-core-image-repo:latest
+
+// Stop Existing Container -- remove Container
+// Delete existing image
+
 docker run -d -p 80:5000  956579061637.dkr.ecr.us-east-2.amazonaws.com/endzone-core-image-repo:latest
 
 

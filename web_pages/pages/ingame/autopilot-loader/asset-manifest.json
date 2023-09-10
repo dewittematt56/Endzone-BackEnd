@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/pages/ingame/autopilot-loader/static/css/main.a645c211.css",
+    "main.js": "/pages/ingame/autopilot-loader/static/js/main.a3f4d692.js",
+    "index.html": "/pages/ingame/autopilot-loader/index.html",
+    "main.a645c211.css.map": "/pages/ingame/autopilot-loader/static/css/main.a645c211.css.map",
+    "main.a3f4d692.js.map": "/pages/ingame/autopilot-loader/static/js/main.a3f4d692.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a645c211.css",
+    "static/js/main.a3f4d692.js"
+  ]
+}

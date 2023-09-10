@@ -59,11 +59,11 @@ class PregameReport():
         if "d_pass" in requested_pages: self.d_pass_page(self.defensive_data); self.pages.append("Defense - Passing")
         if "d_boundary_strength" in requested_pages: self.d_boundary_strength_page(self.defensive_data); self.pages.append("Defense Field Boundary & Formation Strength")
         if "d_fieldPos" in requested_pages: self.d_field_position(self.defensive_data); self.pages.append("Defense - Field Position")
-        if "d_situational_redzone" in requested_pages: self.d_redzone_page(self.offensive_data); self.pages.append("Defense Situational - Redzone") 
-        if "d_situational_1" in requested_pages: self.d_down_1_page(self.offensive_data); self.pages.append("Defense Situational - 1st Down")
-        if "d_situational_2" in requested_pages: self.d_down_2_page(self.offensive_data); self.pages.append("Defense Situational - 2nd Down")
-        if "d_situational_3" in requested_pages: self.d_down_3_page(self.offensive_data); self.pages.append("Defense Situational - 3rd Down")
-        if "d_situational_4" in requested_pages: self.d_down_4_page(self.offensive_data); self.pages.append("Defense Situational - 4th Down")
+        if "d_situational_redzone" in requested_pages: self.d_redzone_page(self.defensive_data); self.pages.append("Defense Situational - Redzone") 
+        if "d_situational_1" in requested_pages: self.d_down_1_page(self.defensive_data); self.pages.append("Defense Situational - 1st Down")
+        if "d_situational_2" in requested_pages: self.d_down_2_page(self.defensive_data); self.pages.append("Defense Situational - 2nd Down")
+        if "d_situational_3" in requested_pages: self.d_down_3_page(self.defensive_data); self.pages.append("Defense Situational - 3rd Down")
+        if "d_situational_4" in requested_pages: self.d_down_4_page(self.defensive_data); self.pages.append("Defense Situational - 4th Down")
 
         ## These are called last to push in front of other pages.
         self.overview_page()

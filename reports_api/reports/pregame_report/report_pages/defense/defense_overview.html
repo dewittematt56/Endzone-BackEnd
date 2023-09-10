@@ -150,7 +150,7 @@
                                     <td>{{ row[column] | round(2) }}</td>
                                 {% elif column == "Efficient Stops" %}
                                     <td class="{% if row[column]  >= 66  %}good-td{% else %}netural-td{% endif %}">{{ row[column] | round(2) }}%</td>
-                                {% elif column == "Number of Plays" %}
+                                {% elif column == "Attempts" %}
                                     <td>{{ row[column] | int }}</td>
                                 {% endif %}
                             {% endfor %}

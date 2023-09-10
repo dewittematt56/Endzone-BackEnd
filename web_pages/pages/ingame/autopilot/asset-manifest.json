@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/pages/ingame/autopilot/static/css/main.16feab8f.css",
-    "main.js": "/pages/ingame/autopilot/static/js/main.b83b6948.js",
+    "main.css": "/pages/ingame/autopilot/static/css/main.d84208ab.css",
+    "main.js": "/pages/ingame/autopilot/static/js/main.8248d9fc.js",
     "static/media/EndzoneMainLogo.png": "/pages/ingame/autopilot/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/ingame/autopilot/index.html",
-    "main.16feab8f.css.map": "/pages/ingame/autopilot/static/css/main.16feab8f.css.map",
-    "main.b83b6948.js.map": "/pages/ingame/autopilot/static/js/main.b83b6948.js.map"
+    "main.d84208ab.css.map": "/pages/ingame/autopilot/static/css/main.d84208ab.css.map",
+    "main.8248d9fc.js.map": "/pages/ingame/autopilot/static/js/main.8248d9fc.js.map"
   },
   "entrypoints": [
-    "static/css/main.16feab8f.css",
-    "static/js/main.b83b6948.js"
+    "static/css/main.d84208ab.css",
+    "static/js/main.8248d9fc.js"
   ]
 }

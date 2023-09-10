@@ -28,7 +28,7 @@ def get_down_group(distance: int) -> str:
 
 def get_play_type(playType: str) -> pd.DataFrame:
     run_plays = ["Inside Run", "Outside Run", "Option"] # inside, outside, option
-    pass_plays = ["Boot Pass", "Pocket Pass"]
+    pass_plays = ["Boot Pass", "Pass"]
     # zone_formations = ["Zone 2", "Zone 3", "Zone 4", "Prevent"]
     if playType in run_plays:
         return "Run"
