@@ -13,7 +13,6 @@ from ..utils.graphing_utils import *
 from ..utils.utils import *
 from ..utils.data_report_utils import *
 import sys
-from reports_api.reports.pregame_report.pregame_report import PregameReport
 import os
 
 pd.set_option("display.max_rows", None)
