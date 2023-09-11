@@ -55,11 +55,11 @@
             .table-row td, th {
                 border: 1px solid black;
             }
-            .mid-div{
+            .middle-table{
                 width: 100%;
                 padding-left: 20px;
                 padding-right: 20px;
-                padding-top: 100px;
+                padding-top: 25px;
             }
         </style>
     </head>
@@ -147,7 +147,7 @@
                 </tr>
             </table>
         <div>    
-            <table class="mid-div">
+            <table class="middle-table">
                 <tr>
                     <td class="center">
                         <table class="statistic-table">
@@ -162,6 +162,24 @@
                                 <td>{{ total_yards }}</td>
                                 <td>{{ average }} </td>
                                 <td>{{ long }}</td> 
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table class="middle-table">
+                <tr>
+                    <td class="center">
+                        <table class="statistic-table">
+                            <tr class="table-row">
+                                <th>First Down Yards</th>
+                                <th>Second Down Yards</th>
+                                <th>Third Down Yards</th>
+                            </tr>
+                            <tr class="table-row">
+                                <td>{{ first_down_yards }}</td>
+                                <td>{{ second_down_yards }}</td>
+                                <td>{{ third_down_yards }} </td>
                             </tr>
                         </table>
                     </td>

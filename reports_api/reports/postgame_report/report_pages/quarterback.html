@@ -38,24 +38,17 @@
                 width: 100%;
             }
 
-            .targets{
-                height:300px;
-                text-align: center;
-            }
             .more-top-section{
-                height: 150px;
+                height: auto;
             }
             
-            .wheel{
-                height: 517px;
-            }
             .top-div{
-                height: 150px;
+                height: auto;
                 padding-bottom: 10px;
                 border-bottom: 1px solid black;
             }
             .top-section{
-                height: 100%;
+                height: auto;
                 width: 100%;
             }
             .statistic-table {
@@ -77,6 +70,11 @@
             .statistic-table table tr td {
                 text-align: center;
                 border: 1px solid black;
+            }
+            .bargraph-div {
+                display: inline-block;
+                width: 100%;
+                text-align: center;
             }
         </style>
     </head>
@@ -139,13 +137,13 @@
                                 </g>
                             </g>
                             </svg>
-                            <h2 style="text-decoration: underline;">32</h2>
+                            <h2 style="text-decoration: underline;">All</h2>
                         </td>
                         <td >
                             <table class="statistic-table">
                                 <tr class="table-row">
                                     <th>Comp/Att</th>
-                                    <th>%</th>
+                                    <th>Percentage</th>
                                     <th>Yards</th>
                                     <th>TD</th>
                                     <th>Int</th>
@@ -164,7 +162,19 @@
                     </tr>
                 </table>
             </div>
-            <div class="targets">Targets diagram</div>
+            <table style="width: 100%; height: auto;" >
+                <tbody style="width: 100%">
+                    <tr>
+                        <td>
+                            <img src="data:image/png;base64, {{ quarterback_yards_per_zone_graph }}" alt = "Quarterback chart" style="height: 450px; width: auto; margin: auto;">
+                        </td>
+                        <td>
+                            <img src="data:image/png;base64, {{ quarterback_comp_percentage_chart }}" alt = "Quarterback chart" style="height: 450px; width: auto; margin: auto;">
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <div class="more-top-section" style="padding-left: 50px; padding-right: 50px;">
                 <table class="statistic-table">
                     <tr class="table-row">
@@ -176,18 +186,17 @@
                         <td>Turnover Rate</td>
                     </tr>
                     <tr class="table-row">
-                        <td>{{ efficiency }}</td>
-                        <td>{{ sack_rate }}</td>
-                        <td>{{ scramble_rate }}</td>
-                        <td>{{ long }}</td>
+                        <td>{{ efficiency }}%</td>
+                        <td>{{ sack_rate }}%</td>
+                        <td>{{ scramble_rate }}%</td>
+                        <td>Coming Soon</td>
                         <td>{{ average_gain }}</td>
                         <td>{{ turnover_rate }}</td>
                     </tr>
                 </table>
             </div>
-            <div class="wheel">wheel</div>
-            <div>
-                <img src="data:image/png;base64, {{ quarterback_bar }}" alt = "Quarterback chart">
+            <div class="bargraph-div">
+                <img src="data:image/png;base64, {{ quarterback_bar }}" alt = "Quarterback chart" style="height: 450px; width: auto; margin: auto;">
             </div>
         </div>
     </body>

@@ -81,8 +81,8 @@ class PassZone(object):
         deep_left_polygon = Polygon([(0, 2), (0, 3), (1.5, 3), (1.5, 2)], closed=True, facecolor = self.__set_box_details__('Deep-Left', .75, 2.5), edgecolor = 'black')
         deep_right_polygon = Polygon([(1.5, 2), (1.5, 3), (3, 3), (3, 2)], closed=True, facecolor = self.__set_box_details__('Deep-Right', 2.25, 2.5), edgecolor = 'black')
         middle_left_polygon = Rectangle((0, 1), 1, 1, facecolor =  self.__set_box_details__('Middle-Left', .5, 1.5), edgecolor = 'black')
-        middle_middle_polygon = Rectangle((1, 1), 1, 1, facecolor= self.__set_box_details__('Middle-Right', 2.5, 1.5), edgecolor = 'black')
-        middle_right_polygon = Rectangle((2, 1), 1, 1, facecolor= self.__set_box_details__('Middle-Middle', 1.5, 1.5), edgecolor = 'black')
+        middle_middle_polygon = Rectangle((1, 1), 1, 1, facecolor= self.__set_box_details__('Middle-Middle', 1.5, 1.5), edgecolor = 'black')
+        middle_right_polygon = Rectangle((2, 1), 1, 1, facecolor= self.__set_box_details__('Middle-Right', 2.5, 1.5), edgecolor = 'black')
 
         self.ax.add_patch(flats_left_polygon)
         self.ax.add_patch(flats_right_polygon)

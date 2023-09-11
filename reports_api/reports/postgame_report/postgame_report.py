@@ -98,8 +98,7 @@ class PostgameReport():
         self.get_data()
         self.split_data()
         self.overview_page()
-        self.quarterback_page()
-        print(self.o_data["Pass_Zone"])
+        # self.quarterback_page()
         rush_data = (self.o_data[~self.o_data['Run_Type'].isnull()])
         value_counts = rush_data["Ball_Carrier"].value_counts()
         values_to_keep = value_counts[value_counts > 6].index
@@ -111,10 +110,11 @@ class PostgameReport():
         valid_passing_data = pass_data[pass_data["Ball_Carrier"].isin(values_to_keep)]
         # Create dataframe of ball carriers who have more than 6 carries
         # Same for wr 3 or more catches and pass zone has to be valid
+
         for ballCarrier in valid_running_data["Ball_Carrier"].unique():
             self.runningBack_page(ballCarrier)
-        for reciever in self.pass_data["Ball_Carrier"].unique():
-            self.receiver_page(reciever)
+        # for reciever in self.pass_data["Ball_Carrier"].unique():
+        #     self.receiver_page(reciever)
          
     def getBar(self, val, total) -> str:
         try:
@@ -161,8 +161,6 @@ class PostgameReport():
 
         return [totalDict, rushDict, passDict]
     
-    
-
     def getSackRate(self) -> list:
         teamSackPlays = self.d_data.query('Pass_Zone == "Not Thrown" & Result < 0')
         enemySackPlays = self.o_data.query('Pass_Zone == "Not Thrown" & Result < 0')
@@ -494,13 +492,27 @@ class PostgameReport():
         scramble_rate = round((scrambles / (pass_attempts + scrambles + sacks))*100, 2)
         qbr = calculate_qbr(thrown_passes)
         completion_percentage = round((complete_passes/pass_attempts) * 100)
-        efficiency = round(get_qb_efficiency(completion_percentage, pass_yards, pass_attempts, touchdowns, interceptions), 2)
+        efficiency = get_nfl_efficiency(thrown_passes)[0]
         
-        quarterback_bar = groupedBarGraph(thrown_passes, "Pass_Zone","Ball_Carrier", "POGGERS")
+        quarterback_bar = groupedBarGraph(thrown_passes, "Pass_Zone", "Ball_Carrier", "Targets")
+        
+        # Create Dataframe for Pass Zones
+        df_yards = thrown_passes.groupby('Pass_Zone')['Result'].apply(lambda x: x.sum()).reset_index()
+        df_comp_percentage = thrown_passes.groupby('Pass_Zone')['Complete_Pass'].apply(lambda x: int((x.sum() / len(x)) * 100)).reset_index()
+        df_yards.columns = ["Category", "Value"]
+        df_comp_percentage.columns = ["Category", "Value"]
+        quarterback_yards_per_zone_graph = PassZone(df_yards, 'Value', number_of_classes=3, legend_labels=['Low', 'Medium', 'High'], title="Yards Per Pass Zone").create_graph()
+        quarterback_comp_percentage_chart = PassZone(df_comp_percentage, 'Value', number_of_classes=3, legend_labels=['Low Completion %', 'Medium Completion %', 'High Completion %'], title="Completion Percentage Per Pass Zone").create_graph(),
+        
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/quarterback.html')
-        html = title_template.render(image_path = image_path, svg_path = svg_path, quarterback_bar = quarterback_bar, pass_yards = pass_yards,
+        html = title_template.render(image_path = image_path, 
+                                     svg_path = svg_path, 
+                                     quarterback_bar = quarterback_bar, 
+                                     quarterback_yards_per_zone_graph = quarterback_yards_per_zone_graph, 
+                                     quarterback_comp_percentage_chart = quarterback_comp_percentage_chart,
+                                     pass_yards = pass_yards,
                                     touchdowns = touchdowns, interceptions = interceptions, pass_attempts=pass_attempts, completion_percentage=completion_percentage,
                                     complete_passes = complete_passes, qbr=qbr, efficiency=efficiency, sacks = sacks, scrambles = scrambles, turnover_rate=turnover_rate,
                                     sack_rate=sack_rate, scramble_rate=scramble_rate, average_gain=average_gain)
@@ -513,7 +525,7 @@ class PostgameReport():
         total_yards = 0
         touchdowns = 0
         fumbles = 0
-        rush_data = (self.o_data[~self.o_data['Run_Type'].isnull()])
+        rush_data = self.o_data[~self.o_data['Run_Type'].isnull() & (self.o_data["Ball_Carrier"] == ball_carrier)]
         for run in rush_data["Distance"]:
             total_runs += 1
             total_yards += run
@@ -523,12 +535,26 @@ class PostgameReport():
                 touchdowns += 1
             elif event == "Fumble":
                 fumbles += 1
+        first_down_yards = rush_data.query("Down == 1")["Result"].sum()
+        second_down_yards = rush_data.query("Down == 2")["Result"].sum()
+        third_down_yards = rush_data.query("Down == 3")["Result"].sum()
         long = self.o_data["Distance"].max()
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
         svg_path = os.path.dirname(__file__) + '\static\american-football-helmet-svgrepo-com.svg'
         title_template = env.get_template('postgame_report/report_pages/runningBack.html')
-        html = title_template.render(image_path = image_path, svg_path = svg_path, ball_carrier = ball_carrier, total_runs = total_runs,
-                                     total_yards = total_yards, touchdowns = touchdowns, fumbles = fumbles, average = average, long=long)
+        html = title_template.render(image_path = image_path, 
+                                     svg_path = svg_path, 
+                                     ball_carrier = ball_carrier, 
+                                     total_runs = total_runs,
+                                     total_yards = total_yards, 
+                                     touchdowns = touchdowns, 
+                                     fumbles = fumbles, 
+                                     average = average, 
+                                     long=long,
+                                     first_down_yards = first_down_yards,
+                                     second_down_yards = second_down_yards,
+                                     third_down_yards = third_down_yards
+        )
         
         # Render
         self.template_to_pdf(html, False)
