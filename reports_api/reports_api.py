@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from reports_api.reports.thunderbolt_report.thunderbolt_report import ThunderboltReport
 from reports_api.reports.ingame_report.ingame_report import IngameReport
+from reports_api.reports.postgame_report.postgame_report import PostgameReport
 
 reports_api = Blueprint('reports_api', __name__)
 report_executor = ThreadPoolExecutor()
@@ -29,6 +30,12 @@ def __run_thunderbolt_report__(team_of_interest: str, game_IDs: str, user_team_c
 def __run_ingame_report__(team_of_interest: str, game_ID: str, user_team_code: str, game_ids: list):
     with thread_lock:
         report = IngameReport(team_of_interest, game_ID, user_team_code, game_ids)
+        pdf = report.combine_reports()
+        return pdf
+
+def __run_postgame_report__(team_of_interest: str, gameId: str, user_team_code: str):
+    with thread_lock:
+        report = PostgameReport(team_of_interest, gameId, user_team_code)
         pdf = report.combine_reports()
         return pdf
 
@@ -120,6 +127,27 @@ def ingame_report_run():
         requestedPriorGames = request.args.get('requestedPriorGames')
 
         executor_job = report_executor.submit(__run_ingame_report__, requestedTeamOfInterest, requestedGame, current_team, requestedPriorGames.split(','))
+        response = executor_job.result()
+        return send_file( 
+                io.BytesIO(response),
+                mimetype='application/pdf',
+                as_attachment=True,
+                download_name="pog.pdf"
+        )
+    except Exception as e:
+        print(e)
+        return Response("Error Code 500: Something unexpected happened, please contact endzone.analytics@gmail.com", status = 500)
+    
+@reports_api.route("/endzone/reports/postgame/run", methods = ["GET"]) 
+# @login_required
+def postgame_report_run():
+    try:
+        # current_team = current_user.Current_Team\
+        current_team = "Endzone-System"
+        requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
+        requestedGameId = request.args.get('requestedGame')
+
+        executor_job = report_executor.submit(__run_postgame_report__, requestedTeamOfInterest, requestedGameId, current_team)
         response = executor_job.result()
         return send_file( 
                 io.BytesIO(response),
