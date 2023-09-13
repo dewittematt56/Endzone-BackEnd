@@ -108,7 +108,7 @@ class PregameReport():
                 team = self.team_of_interest, 
                 play_type_chart = categorical_pieChart_wrapper(data, "Play_Type", "Frequency of Plays Ran"),
                 formation_chart = categorical_pieChart_wrapper(data, "O_Formation", "Frequency of Formations"),
-                point_data = points_package(data, self.team_of_interest, self.game_data)
+                point_data = points_package(data, self.team_of_interest, self.game_data, True)
             )
             self.template_to_pdf(html)
         except Exception as e:
@@ -221,8 +221,8 @@ class PregameReport():
             data['Into_Boundary'] = data['Play_Type_Dir'] == data['Hash']
             data_left = data[data["Hash"] == 'Left']
             data_right = data[data["Hash"] == 'Right']
-            left_into_boundary_chart = categorical_pieChart_wrapper(data_left, "Into_Boundary", "Frequency of Plays to Formation Strength", True, useOther=False)
-            right_into_boundary_chart = categorical_pieChart_wrapper(data_right, "Into_Boundary", "Frequency of Plays to Formation Strength", True, useOther=False)
+            left_into_boundary_chart = categorical_pieChart_wrapper(data_left, "Into_Boundary", "Frequency of Plays into Boundary", True, useOther=False)
+            right_into_boundary_chart = categorical_pieChart_wrapper(data_right, "Into_Boundary", "Frequency of Plays into Boundary", True, useOther=False)
             data_left_trim = data_left[~data_left["Play_Type"].isin(['Pocket Pass', 'Unknown', "Boot Pass"])]
             data_right_trim = data_right[~data_right["Play_Type"].isin(['Pocket Pass', 'Unknown', "Boot Pass"])]
             left_strength_boundary_chart = categorical_pieChart_wrapper(data_left_trim, "To_Strength", "Ran Ball to Strength of Formation", True, useOther=False)
@@ -324,9 +324,9 @@ class PregameReport():
             redzone_data = subset_redzone_data(data)
             redzone_data_detail_position = crossTabQuery(redzone_data.Redzone_Position, redzone_data.Play_Type)
             redzone_data_detail_down = crossTabQuery(redzone_data.Down, redzone_data.Play_Type)
-            personnel_pie_chart_data = group_by_df(data, "Personnel")
+            personnel_pie_chart_data = group_by_df(redzone_data, "Personnel")
             personnel_chart = categorical_pieChart("Frequency of Personnel Groups", personnel_pie_chart_data)
-            formation_pie_chart_data = group_by_df(data, "Formation")
+            formation_pie_chart_data = group_by_df(redzone_data, "Formation")
             formation_chart = categorical_pieChart("Frequency of Formations", formation_pie_chart_data)
             redzone_data_detail_formation = crossTabQuery(redzone_data.Formation, redzone_data.Play_Type)
             redzone_data_detail_personnel = crossTabQuery(redzone_data.Personnel, redzone_data.Play_Type)

@@ -104,7 +104,7 @@
                     </tr>
                     <tr>
                         <th>Pressure Rate</th>
-                        <td class="{% if d_overview_dict['pressure_rate'] >= 65 %}good-td{% elif d_overview_dict['pressure_rate']  > 35  %}netural-td{% else %}bad-td{% endif %}">{{d_overview_dict["pressure_rate"] | round(2)}}%</td>
+                        <td class="{% if d_overview_dict['pressure_rate'] >= 65 %}good-td{% elif d_overview_dict['pressure_rate']  > 35  %}netural-td{% else %}bad-td{% endif %}">{{d_overview_dict["pressure_rate"] * 100 | round(2)}}%</td>
                     </tr>
                     <tr>
                         <th>Edge Pressure Rate</th>
@@ -116,7 +116,7 @@
                     </tr>
                     <tr>
                         <th>Allowed Completion Percentage</th>
-                        <td class="{% if d_overview_dict['completion_percentage'] >= 65 %}bad-td{% elif d_overview_dict['completion_percentage']  > 35  %}netural-td{% else %}good-td{% endif %}">{{d_overview_dict["completion_percentage"] | round(2)}}%</td>
+                        <td class="{% if d_overview_dict['completion_percentage'] >= 65 %}bad-td{% elif d_overview_dict['completion_percentage']  > 35  %}netural-td{% else %}good-td{% endif %}">{{d_overview_dict["completion_percentage"]| round(2)}}%</td>
                     </tr>
                     <tr>
                         <th>Allowed QBR</th>

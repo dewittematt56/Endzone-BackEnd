@@ -292,10 +292,10 @@ def isHomeTeam(game, team_of_interest) -> bool:
     except Exception:
         return False
     
-def points_package(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
-    total_points_allowed = get_total_points(df, team_of_interest, game_data)
+def points_package(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame, isOffense: bool):
+    total_points_allowed = get_total_points(df, team_of_interest, game_data, isOffense)
     total_games = len(df["Game_ID"].unique())
-    total_drives = len(df["Drive"].unique())
+    total_drives = df.groupby(['Game_ID', 'Drive']).ngroup().nunique()
     total_plays = len(df)
     points_dict = {}
     points_dict["points_per_game"] = [total_points_allowed / total_games, total_games]
@@ -303,21 +303,25 @@ def points_package(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFr
     points_dict["points_per_play"] = [total_points_allowed / total_plays, total_plays]
     return points_dict
 
-def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame):
+def get_total_points(df: pd.DataFrame, team_of_interest: str, game_data: pd.DataFrame, isOffense: bool):
     grouped_df = df.groupby('Game_ID')
-    print(grouped_df)
     max_rows = grouped_df.apply(lambda x: x.loc[x['Play_Number'].idxmax()])
-    print(max_rows)
     points = 0
     for index, row in max_rows.iterrows():
         game_id = row['Game_ID']
-        print(game_id)
         game_info = game_data.loc[game_data['Game_ID'] == game_id]
-        print(game_info)
-        if isHomeTeam(game_info, team_of_interest):
-            points += row["Home_Score"]
+        # If it's not many teams
+        if isOffense:
+            if isHomeTeam(game_info, team_of_interest):
+                points += row["Home_Score"]
+            else:
+                points += row["Away_Score"]
+        # Perform Flip to get other score for defense
         else:
-            points += row["Away_Score"]
+            if isHomeTeam(game_info, team_of_interest):
+                points += row["Away_Score"]
+            else:
+                points += row["Home_Score"]
     return points
 
 def calculate_qbr(df: pd.DataFrame):
