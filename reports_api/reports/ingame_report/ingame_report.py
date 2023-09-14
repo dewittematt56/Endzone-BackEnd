@@ -513,6 +513,7 @@ class IngameReport():
 
     def run_report(self):
         if self.dData.empty or self.oData.empty or self.priorData.empty:
+            print("Raising exception")
             raise EmptyDataException("Empty data")
         self.d_overview_page()
         self.o_overview_page()

@@ -128,7 +128,7 @@ def ingame_report_run():
                 download_name="pog.pdf"
             )
     except EmptyDataException as e:
-        return Response(e.message, status=299)
+        return Response(e.message, status=500)
         
     except Exception as e:
         print(e)
