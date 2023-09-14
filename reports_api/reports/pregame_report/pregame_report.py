@@ -444,6 +444,7 @@ class PregameReport():
             self.template_to_pdf(html)            
         except Exception as e:
             print(e)
+    
     def d_boundary_strength_page(self, data: pd.DataFrame) -> None:
         if len(data) == 0: return
         try:
