@@ -512,9 +512,12 @@ class IngameReport():
         self.template_to_pdf(html, True)
 
     def run_report(self):
-        if self.dData.empty or self.oData.empty or self.priorData.empty:
-            print("Raising exception")
-            raise EmptyDataException("Empty data")
+        if self.dData.empty:
+            raise EmptyDataException("Team of interest's game data is empty")
+        elif self.oData.empty:
+            raise EmptyDataException("Your team's game data is empty")
+        elif self.priorData.empty:
+            raise EmptyDataException("Team of interest's historical data is missing")
         self.d_overview_page()
         self.o_overview_page()
         self.title_page()

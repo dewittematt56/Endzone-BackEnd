@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/pages/ingame/report/static/css/main.02bc6cef.css",
-    "main.js": "/pages/ingame/report/static/js/main.5cf9ebdf.js",
+    "main.js": "/pages/ingame/report/static/js/main.fbce9051.js",
     "static/media/Endzone_Shield.png": "/pages/ingame/report/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
     "static/media/EndzoneMainLogo.png": "/pages/ingame/report/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
     "index.html": "/pages/ingame/report/index.html",
     "main.02bc6cef.css.map": "/pages/ingame/report/static/css/main.02bc6cef.css.map",
-    "main.5cf9ebdf.js.map": "/pages/ingame/report/static/js/main.5cf9ebdf.js.map"
+    "main.fbce9051.js.map": "/pages/ingame/report/static/js/main.fbce9051.js.map"
   },
   "entrypoints": [
     "static/css/main.02bc6cef.css",
-    "static/js/main.5cf9ebdf.js"
+    "static/js/main.fbce9051.js"
   ]
 }
