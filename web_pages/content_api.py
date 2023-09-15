@@ -165,3 +165,8 @@ def IngameHub():
 @login_required
 def PreGameThunderbolt():
     return render_template("/pregame/thunderbolt/thunderbolt.html")
+
+@content_api.route("/endzone/postgame/report", methods = ["GET"])
+@login_required
+def PostGameThunderbolt():
+    return render_template("/postgame/report/postgame-report.html")

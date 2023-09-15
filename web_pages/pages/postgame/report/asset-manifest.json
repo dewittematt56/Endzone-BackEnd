@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/pages/postgame/report/static/css/main.02bc6cef.css",
+    "main.js": "/pages/postgame/report/static/js/main.b5cefdd6.js",
+    "static/media/Endzone_Shield.png": "/pages/postgame/report/static/media/Endzone_Shield.9b802a2aebc2e11503b1.png",
+    "static/media/EndzoneMainLogo.png": "/pages/postgame/report/static/media/EndzoneMainLogo.b1ab6b4dfcac1ea460ee.png",
+    "index.html": "/pages/postgame/report/index.html",
+    "main.02bc6cef.css.map": "/pages/postgame/report/static/css/main.02bc6cef.css.map",
+    "main.b5cefdd6.js.map": "/pages/postgame/report/static/js/main.b5cefdd6.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.02bc6cef.css",
+    "static/js/main.b5cefdd6.js"
+  ]
+}

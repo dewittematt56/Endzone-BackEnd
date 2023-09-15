@@ -37,7 +37,7 @@ def get_qb_efficiency(completion_percentage: bool, yards: int, pass_attempts: in
 
 def get_play_type(playType: str) -> pd.DataFrame:
     run_plays = ["Inside Run", "Outside Run", "Option"] # inside, outside, option
-    pass_plays = ["Boot Pass", "Pocket Pass"]
+    pass_plays = ["Boot Pass", "Pass"]
     # zone_formations = ["Zone 2", "Zone 3", "Zone 4", "Prevent"]
     if playType in run_plays:
         return "Run"
@@ -88,16 +88,13 @@ class PostgameReport():
     def __init__(self, team_of_interest: str, gameId: str, user_team_code: str) -> None: 
         self.team_of_interest = team_of_interest
         self.gameId = gameId
-        self.user_team_code = user_team_code # Temp, placeholders, remove later
-        self.team_of_interest = "Burnsville"
-        self.team_code = "Endzone-System"
-        self.gameId = "643ad3ef-8b71-422d-ba03-f150637f148e"
+        self.user_team_code = user_team_code
         self.pdf_write = PyPDF2.PdfWriter()
         self.pdfs = []
         self.get_data()
         self.split_data()
         self.overview_page()
-        # self.quarterback_page()
+        self.quarterback_page()
         rush_data = (self.o_data[~self.o_data['Run_Type'].isnull()])
         value_counts = rush_data["Ball_Carrier"].value_counts()
         values_to_keep = value_counts[value_counts > 6].index
@@ -112,8 +109,8 @@ class PostgameReport():
 
         for ballCarrier in valid_running_data["Ball_Carrier"].unique():
             self.runningBack_page(ballCarrier)
-        # for reciever in self.pass_data["Ball_Carrier"].unique():
-        #     self.receiver_page(reciever)
+        for reciever in self.pass_data["Ball_Carrier"].unique():
+            self.receiver_page(reciever)
          
     def getBar(self, val, total) -> str:
         try:
@@ -130,8 +127,8 @@ class PostgameReport():
 
         oRushPlays = self.o_data.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
         dRushPlays = self.d_data.query('Play_Type == "Inside Run" | Play_Type == "Outside Run"')
-        oPassPlays = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
-        dPassPlays = self.d_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        oPassPlays = self.o_data.query('Play_Type == "Pass" | Play_Type == "Boot Pass"')
+        dPassPlays = self.d_data.query('Play_Type == "Pass" | Play_Type == "Boot Pass"')
 
         oRushEff = get_nfl_efficiency(oRushPlays)[0]
         dRushEff = get_nfl_efficiency(dRushPlays)[0]
@@ -163,19 +160,21 @@ class PostgameReport():
     def getSackRate(self) -> list:
         teamSackPlays = self.d_data.query('Pass_Zone == "Not Thrown" & Result < 0')
         enemySackPlays = self.o_data.query('Pass_Zone == "Not Thrown" & Result < 0')
-        teamPassPlays = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
-        enemyPassPlays = self.d_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        teamPassPlays = self.o_data.query('Play_Type == "Pass" | Play_Type == "Boot Pass"')
+        enemyPassPlays = self.d_data.query('Play_Type == "Pass" | Play_Type == "Boot Pass"')
 
         try:
             teamSackRate = round((len(teamSackPlays) / len(enemyPassPlays)) * 100)
             teamSackRateStr = str(teamSackRate) + "%"
         except ZeroDivisionError:
+            teamSackRate = 0
             teamSackRateStr = "Invalid"
 
         try:
             enemySackRate = round((len(enemySackPlays) / len(teamPassPlays)) * 100)
             enemySackRateStr = str(enemySackRate) + "%"
         except ZeroDivisionError:
+            enemySackRate = 0
             enemySackRateStr = "Invalid"
 
         totalSackRate = teamSackRate + enemySackRate
@@ -183,7 +182,7 @@ class PostgameReport():
         teamBar = self.getBar(teamSackRate, totalSackRate)
         enemyBar = self.getBar(enemySackRate, totalSackRate)
 
-        sackDict = {"stat": "Sack Rate", "teamVal": teamSackRateStr, "enemyVal": enemySackRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
+        sackDict = {"stat": "Sack Rate", "teamVal": enemySackRateStr, "enemyVal": teamSackRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
         # Returning list in case we want to add stuff later on down the road to this function
         return [sackDict]
     
@@ -196,19 +195,21 @@ class PostgameReport():
             teamBlitzRateStr = str(teamBlitzRate) + "%"
         except ZeroDivisionError:
             teamBlitzRateStr = "Invalid"
+            teamBlitzRate = 0
 
         try:
             enemyBlitzRate = round((len(enemyPressurePlays) / len(self.o_data)) * 100)
             enemyBlitzRateStr = str(enemyBlitzRate) + "%"
         except ZeroDivisionError:
-            teamBlitzRateStr = "Invalid"
+            enemyBlitzRateStr = "Invalid"
+            enemyBlitzRate = 0
 
         totalBlitzRate = teamBlitzRate + enemyBlitzRate
 
         teamBar = self.getBar(teamBlitzRate, totalBlitzRate)
         enemyBar = self.getBar(enemyBlitzRate, totalBlitzRate)
 
-        sackDict = {"stat": "Blitz Rate", "teamVal": teamBlitzRateStr, "enemyVal": enemyBlitzRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
+        sackDict = {"stat": "Blitz Rate", "teamVal": enemyBlitzRateStr, "enemyVal": teamBlitzRateStr, "teamBar": teamBar, "enemyBar": enemyBar}
         # Returning list in case we want to add stuff later on down the road to this function
         return [sackDict]
     
@@ -220,7 +221,7 @@ class PostgameReport():
         teamBar = self.getBar(teamTurnovers, totalTurnovers)
         enemyBar = self.getBar(enemyTurnovers, totalTurnovers)
         
-        turnoverDict = {"stat": "Forced Turnovers", "teamVal": teamTurnovers, "enemyVal": enemyTurnovers, "teamBar": teamBar, "enemyBar": enemyBar}
+        turnoverDict = {"stat": "Turnovers", "teamVal": enemyTurnovers, "enemyVal": teamTurnovers, "teamBar": teamBar, "enemyBar": enemyBar}
         return [turnoverDict]
     
     def get3rdConv(self) -> list:
@@ -252,7 +253,7 @@ class PostgameReport():
                 teamNumDrives += 1
             teamStartPos = round(teamTotalStartPos / teamNumDrives)
         except:
-            enemyStartPos = "invalid"
+            teamStartPos = 0
 
         try:
             enemyDriveList = []
@@ -269,7 +270,7 @@ class PostgameReport():
                 enemyNumDrives += 1
             enemyStartPos = round(enemyTotalStartPos / enemyNumDrives)
         except:
-            enemyStartPos = "invalid"
+            enemyStartPos = 0
 
         totalStartPos = teamStartPos + enemyStartPos
         teamBar = self.getBar(teamStartPos, totalStartPos)
@@ -308,8 +309,8 @@ class PostgameReport():
 
         totalAvgRush = oAvgRush + dAvgRush
 
-        oPassPlays = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
-        dPassPlays = self.d_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        oPassPlays = self.o_data.query('Play_Type == "Pass" | Play_Type == "Boot Pass"')
+        dPassPlays = self.d_data.query('Play_Type == "Pass" | Play_Type == "Boot Pass"')
         oPassYards = sum(oPassPlays["Result"])
         dPassYards = sum(dPassPlays["Result"])
 
@@ -342,12 +343,18 @@ class PostgameReport():
         o_redzone = self.o_data.query("Yard >= 80")
         o_number_of_redzone_scores = len(o_redzone[o_redzone['Event'].isin(['Touchdown', 'Field Goal'])])
         o_number_of_redzone_drives = len(o_redzone.groupby("Drive"))
-        o_redzone_percentage = round((o_number_of_redzone_scores / o_number_of_redzone_drives) * 100, 1)
+        try:
+            o_redzone_percentage = round((o_number_of_redzone_scores / o_number_of_redzone_drives) * 100, 1)
+        except ZeroDivisionError:
+            o_redzone_percentage = 0
 
         d_redzone = self.d_data.query("Yard >= 80")
         d_number_of_redzone_scores = len(d_redzone[d_redzone['Event'].isin(['Touchdown', 'Field Goal'])])
         d_number_of_redzone_drives = len(d_redzone.groupby("Drive"))
-        d_redzone_percentage = round((d_number_of_redzone_scores / d_number_of_redzone_drives) * 100, 1)
+        try:
+            d_redzone_percentage = round((d_number_of_redzone_scores / d_number_of_redzone_drives) * 100, 1)
+        except ZeroDivisionError:
+            d_redzone_percentage = 0
 
         total_redzone_percentage = o_redzone_percentage + d_redzone_percentage
         return [{"stat": "Redzone Percentage", "teamVal": o_redzone_percentage, "enemyVal": d_redzone_percentage, "teamBar": self.getBar(o_redzone_percentage, total_redzone_percentage), "enemyBar": self.getBar(d_redzone_percentage, total_redzone_percentage)}]
@@ -361,11 +368,12 @@ class PostgameReport():
         d_neg_plays = len(self.d_data.query("Result < 0"))
         total_neg_plays = o_neg_plays + d_neg_plays
 
-        bigPlayDict = {"stat": "Big Plays", "teamVal": o_big_plays, "enemyVal": d_big_plays, "teamBar": self.getBar(o_big_plays, total_big_plays), "enemyBar": self.getBar(d_big_plays, total_big_plays)}
-        negPlayDict = {"stat": "Negative Plays", "teamVal": o_neg_plays, "enemyVal": d_neg_plays, "teamBar": self.getBar(o_neg_plays, total_neg_plays), "enemyBar": self.getBar(d_neg_plays, total_neg_plays)}
+        bigPlayDict = {"stat": "Big Plays", "teamVal": d_big_plays, "enemyVal": o_big_plays, "teamBar": self.getBar(o_big_plays, total_big_plays), "enemyBar": self.getBar(d_big_plays, total_big_plays)}
+        negPlayDict = {"stat": "Negative Plays", "teamVal": d_neg_plays, "enemyVal": o_neg_plays, "teamBar": self.getBar(o_neg_plays, total_neg_plays), "enemyBar": self.getBar(d_neg_plays, total_neg_plays)}
         return [bigPlayDict, negPlayDict]
 
     def getPlaysToStrength(self) -> list:
+        if len(self.o_data) == 0 or len(self.d_data) == 0: return
         teamStrengthPlays = len(self.o_data.query('To_Strength == True'))
         enemyStrengthPlays = len(self.d_data.query('To_Strength == True'))
         totalPlays = teamStrengthPlays + enemyStrengthPlays
@@ -378,9 +386,8 @@ class PostgameReport():
         return [strengthDict]
     
     def getPlaysToBoundary(self) -> list:
-        # boundaryData = self.oData['Play_Type_Dir'] == self.oData['Hash']
-        teamBoundaryPlays = len(self.o_data.query('Play_Type_Dir == Hash'))
-        enemyBoundaryPlays = len(self.d_data.query('Play_Type_Dir == Hash'))
+        teamBoundaryPlays = len(self.o_data.query('Play_Type_Dir == Hash and (Hash == "Right" or Hash == "Left")'))
+        enemyBoundaryPlays = len(self.d_data.query('Play_Type_Dir == Hash and (Hash == "Right" or Hash == "Left")'))
         totalPlays = teamBoundaryPlays + enemyBoundaryPlays
 
         teamBoundaryBar = self.getBar(teamBoundaryPlays, totalPlays)
@@ -405,8 +412,8 @@ class PostgameReport():
         teamDBar = self.getBar(teamDPenalties, totalDPenalties)
         enemyDBar = self.getBar(enemyDPenalties, totalDPenalties)
 
-        oPenaltiesDict = {"stat": "O Penalty Yards", "teamVal": teamOPenalties, "enemyVal": enemyOPenalties, "teamBar": teamOBar, "enemyBar": enemyOBar}
-        dPenaltiesDict = {"stat": "D Penalty Yards", "teamVal": teamDPenalties, "enemyVal": enemyDPenalties, "teamBar": teamDBar, "enemyBar": enemyDBar}
+        oPenaltiesDict = {"stat": "O Penalty Yards", "teamVal": enemyOPenalties, "enemyVal": teamOPenalties, "teamBar": teamOBar, "enemyBar": enemyOBar}
+        dPenaltiesDict = {"stat": "D Penalty Yards", "teamVal": enemyDPenalties, "enemyVal": teamDPenalties, "teamBar": teamDBar, "enemyBar": enemyDBar}
         return [oPenaltiesDict, dPenaltiesDict]
 
     def template_to_pdf(self, html, appendToFront: bool = False) -> None:
@@ -429,12 +436,12 @@ class PostgameReport():
         Session = sessionmaker(db_engine)
         session = Session()
         
-        self.game_data = pd.read_sql(session.query(Game).filter(Game.Team_Code == self.team_code).filter(Game.Game_ID == self.gameId).statement, db_engine)
+        self.game_data = pd.read_sql(session.query(Game).filter(Game.Team_Code == self.user_team_code).filter(Game.Game_ID == self.gameId).statement, db_engine)
         self.game_data['Game_Date'] = pd.to_datetime(self.game_data['Game_Date'])
         self.game_data['Game_Date'] = self.game_data['Game_Date'].dt.strftime('%A, %d %B %Y')
 
         df_plays = pd.read_sql(session.query(Play).filter(Play.Game_ID == self.gameId).statement, db_engine)
-        df_forms = pd.read_sql(session.query(Formations).filter(Formations.Team_Code == self.team_code).statement, db_engine)
+        df_forms = pd.read_sql(session.query(Formations).filter(Formations.Team_Code == self.user_team_code).statement, db_engine)
         df_plays = pd.merge(df_plays, df_forms, left_on='O_Formation', right_on="Formation", how='inner')
         self.play_data = pd.merge(df_plays, self.game_data, on='Game_ID', how='inner')
         self.penalties = pd.read_sql(session.query(Penalty).filter(Penalty.Game_ID == self.gameId).statement, db_engine)
@@ -444,7 +451,7 @@ class PostgameReport():
         self.o_data = self.report_data[(self.report_data["Possession"] == self.team_of_interest)]
         self.d_data = self.report_data[(self.report_data["Possession"] != self.team_of_interest)]
         self.run_data = self.report_data[(self.report_data["Play_Type"].isin(["Inside Run", "Outside Run", "Option"]))]
-        self.pass_data = self.report_data[(self.report_data["Play_Type"].isin(["Pass", "Pocket Pass"]))]
+        self.pass_data = self.report_data[(self.report_data["Play_Type"].isin(["Pass", "Boot Pass"]))]
 
     def overview_page(self) -> None:
         image_path = os.path.dirname(__file__) + '\static\endzone_shield.png'
@@ -452,7 +459,7 @@ class PostgameReport():
 
         data_list = self.getYardage() + self.getStartingFieldPos() + self.getRedzonePercentage() + self.getEfficiency() + self.get3rdConv() + self.getBigAndNegativePlays() + self.getSackRate() + self.getBlitzRate() + self.getPlaysToStrength() + self.getPlaysToBoundary() + self.getPenalties() + self.getForcedTurnovers()
         
-        html = title_template.render(image_path = image_path, data_list = data_list, home_team = self.o_data['Home_Team'].iloc[0], away_team = self.o_data['Away_Team'].iloc[0], away_score = self.play_data["Home_Score"].iloc[len(self.play_data) - 1], home_score = self.play_data["Away_Score"].iloc[len(self.play_data) - 1])
+        html = title_template.render(image_path = image_path, data_list = data_list, home_team = self.o_data['Home_Team'].iloc[0], away_team = self.o_data['Away_Team'].iloc[0], away_score = self.play_data["Home_Score"].iloc[0], home_score = self.play_data["Away_Score"].iloc[0])
         # Render
         self.template_to_pdf(html, True) 
     
@@ -464,7 +471,7 @@ class PostgameReport():
         touchdowns = 0
         interceptions = 0
         fumbles = 0
-        thrown_passes = self.o_data.query('Play_Type == "Pocket Pass" | Play_Type == "Boot Pass"')
+        thrown_passes = self.o_data.query('Play_Type == "Pass" | Play_Type == "Boot Pass"')
         pass_attempts = len(thrown_passes)
         thrown_passes["Distance"] = pd.to_numeric(thrown_passes["Distance"], errors='coerce')
         thrown_passes['Pass_Zone'] = thrown_passes['Pass_Zone'].replace('Non-Passing-Play', 'Not Thrown')

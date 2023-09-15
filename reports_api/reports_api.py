@@ -143,7 +143,7 @@ def ingame_report_run():
 def postgame_report_run():
     try:
         # current_team = current_user.Current_Team\
-        current_team = "Endzone-System"
+        current_team = current_user.Current_Team
         requestedTeamOfInterest = request.args.get('requestedTeamOfInterest')
         requestedGameId = request.args.get('requestedGame')
 
